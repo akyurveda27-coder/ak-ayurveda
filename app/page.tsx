@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { HeroContent, StatsContent, DoctorContent, ContactContent, Service, Condition, Testimonial, FAQ } from '@/lib/types'
 
-export const revalidate = 0 // Always fetch fresh data — no caching
+
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
 import Stats from '@/components/Stats'
@@ -78,7 +78,7 @@ async function getFAQs(): Promise<FAQ[]> {
   }
 }
 
-export const revalidate = 60 // Revalidate every 60 seconds
+export const revalidate = 0 // Always fresh — no cache
 
 export default async function HomePage() {
   const [content, services, conditions, testimonials, faqs] = await Promise.all([
