@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, supabaseAdmin } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -42,7 +42,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing key or value' }, { status: 400 })
     }
 
-    const { error } = await supabase
+    // Use admin client to bypass RLS
+    const { error } = await supabaseAdmin
       .from('site_content')
       .upsert({ key, value, updated_at: new Date().toISOString() })
 
