@@ -1,5 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { HeroContent, StatsContent, DoctorContent, ContactContent, Service, Condition, Testimonial, FAQ } from '@/lib/types'
+
+export const revalidate = 0 // Always fetch fresh data — no caching
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
 import Stats from '@/components/Stats'
