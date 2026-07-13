@@ -1,7 +1,12 @@
 'use client'
 
+import Link from 'next/link'
 import { Service } from '@/lib/types'
 import { defaultServices } from '@/lib/defaults'
+
+function toSlug(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+}
 
 interface ServicesProps {
   services?: Service[]
@@ -42,15 +47,24 @@ export default function Services({ services }: ServicesProps) {
               <p className="font-body text-sm text-sage leading-relaxed">
                 {service.description}
               </p>
-              <a
-                href="#book-appointment"
-                className="inline-flex items-center gap-1 mt-4 text-accent text-sm font-medium font-body hover:gap-2 transition-all duration-200"
-              >
-                Book this treatment
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
+              <div className="flex items-center gap-3 mt-4">
+                <Link
+                  href={`/services/${toSlug(service.name)}`}
+                  className="inline-flex items-center gap-1 text-accent text-sm font-medium font-body hover:gap-2 transition-all duration-200"
+                >
+                  Learn more
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+                <span className="text-green-200">·</span>
+                <a
+                  href="#book-appointment"
+                  className="inline-flex items-center gap-1 text-primary text-sm font-medium font-body hover:text-primaryDark transition-colors"
+                >
+                  Book
+                </a>
+              </div>
             </div>
           ))}
         </div>
