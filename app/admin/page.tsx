@@ -311,6 +311,7 @@ function ServicesEditor() {
       testimonial_name: service.testimonial_name ?? null,
       testimonial_location: service.testimonial_location ?? null,
       testimonial_stars: service.testimonial_stars ?? 5,
+      testimonials: service.testimonials ?? [],
     }).eq('id', service.id)
     setSaving(null); setSaved(true); setTimeout(() => setSaved(false), 2000)
   }
@@ -512,25 +513,54 @@ function ServicesEditor() {
 
             {/* ── TESTIMONIAL ── */}
             {activeTab === 'testimonial' && (
-              <div className="space-y-4">
-                <div>
-                  <label className={labelClass}>Patient Quote</label>
-                  <textarea value={s.testimonial_quote ?? ''} onChange={e => upd(s.id, { testimonial_quote: e.target.value })} rows={4} placeholder="I came in skeptical and exhausted..." className={`${inputClass} resize-none`} />
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <div><label className={labelClass}>Patient Name</label>
-                    <input value={s.testimonial_name ?? ''} onChange={e => upd(s.id, { testimonial_name: e.target.value })} placeholder="Meera Kapoor" className={inputClass} /></div>
-                  <div><label className={labelClass}>Patient Location</label>
-                    <input value={s.testimonial_location ?? ''} onChange={e => upd(s.id, { testimonial_location: e.target.value })} placeholder="Gurugram" className={inputClass} /></div>
-                  <div><label className={labelClass}>Stars (1–5)</label>
-                    <input type="number" min={1} max={5} value={s.testimonial_stars ?? 5} onChange={e => upd(s.id, { testimonial_stars: Number(e.target.value) })} className={inputClass} /></div>
-                </div>
-                {s.testimonial_quote && (
-                  <div className="bg-amber-50 border-l-4 border-amber-400 rounded-xl p-4 mt-2">
-                    <p className="italic text-sm text-gray-700 mb-2">&ldquo;{s.testimonial_quote}&rdquo;</p>
-                    <p className="text-xs font-semibold text-primary">{s.testimonial_name} · {s.testimonial_location} · {'★'.repeat(s.testimonial_stars ?? 5)}</p>
+              <div className="space-y-3">
+                <p className="text-xs text-sage">Add multiple patient testimonials — sab page pe dikhenge.</p>
+                {((s.testimonials ?? []) as {quote:string;name:string;location?:string;stars:number}[]).map((t, i) => (
+                  <div key={i} className="bg-amber-50/60 rounded-xl p-4 space-y-3 border border-amber-100">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-amber-700">Testimonial {i + 1}</span>
+                      <button onClick={() => {
+                        const n = [...((s.testimonials ?? []) as {quote:string;name:string;location?:string;stars:number}[])]
+                        n.splice(i, 1)
+                        upd(s.id, { testimonials: n })
+                      }} className="text-xs text-red-400 hover:text-red-600">✕ Remove</button>
+                    </div>
+                    <textarea value={t.quote} onChange={e => {
+                      const n = [...((s.testimonials ?? []) as {quote:string;name:string;location?:string;stars:number}[])]
+                      n[i] = { ...n[i], quote: e.target.value }
+                      upd(s.id, { testimonials: n })
+                    }} rows={3} placeholder="I came in skeptical and exhausted..." className={`${inputClass} resize-none`} />
+                    <div className="grid grid-cols-3 gap-2">
+                      <input value={t.name} onChange={e => {
+                        const n = [...((s.testimonials ?? []) as {quote:string;name:string;location?:string;stars:number}[])]
+                        n[i] = { ...n[i], name: e.target.value }
+                        upd(s.id, { testimonials: n })
+                      }} placeholder="Meera Kapoor" className={inputClass} />
+                      <input value={t.location ?? ''} onChange={e => {
+                        const n = [...((s.testimonials ?? []) as {quote:string;name:string;location?:string;stars:number}[])]
+                        n[i] = { ...n[i], location: e.target.value }
+                        upd(s.id, { testimonials: n })
+                      }} placeholder="Gurugram" className={inputClass} />
+                      <select value={t.stars} onChange={e => {
+                        const n = [...((s.testimonials ?? []) as {quote:string;name:string;location?:string;stars:number}[])]
+                        n[i] = { ...n[i], stars: Number(e.target.value) }
+                        upd(s.id, { testimonials: n })
+                      }} className={inputClass}>
+                        {[5,4,3,2,1].map(v => <option key={v} value={v}>{'★'.repeat(v)} ({v})</option>)}
+                      </select>
+                    </div>
+                    {t.quote && (
+                      <div className="bg-white border-l-4 border-amber-400 rounded-lg p-3">
+                        <p className="italic text-xs text-gray-600 mb-1">&ldquo;{t.quote}&rdquo;</p>
+                        <p className="text-xs font-semibold text-primary">{t.name}{t.location && ` · ${t.location}`} · {'★'.repeat(t.stars)}</p>
+                      </div>
+                    )}
                   </div>
-                )}
+                ))}
+                <button onClick={() => upd(s.id, { testimonials: [...((s.testimonials ?? []) as {quote:string;name:string;location?:string;stars:number}[]), { quote: '', name: '', location: '', stars: 5 }] })}
+                  className="w-full py-2.5 border-2 border-dashed border-amber-200 text-amber-700 text-sm rounded-xl hover:bg-amber-50 transition-colors">
+                  + Add Testimonial
+                </button>
               </div>
             )}
 

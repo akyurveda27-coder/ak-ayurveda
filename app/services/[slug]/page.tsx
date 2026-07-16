@@ -338,23 +338,39 @@ export default function ServicePage() {
             </section>
           )}
 
-          {/* Testimonial */}
-          {service.testimonial_quote && (
-            <section className="block">
-              <div className="ornament">Patient Story</div>
-              <h2>In their words</h2>
-              <div className="testimonial-card">
-                <p className="quote">{service.testimonial_quote}</p>
-                <div className="testimonial-footer">
-                  <div className="patient">
-                    {service.testimonial_name}
-                    {service.testimonial_location && <span>{service.testimonial_location}</span>}
-                  </div>
-                  <div className="stars">{'★'.repeat(stars)}</div>
+          {/* Testimonials — array (new) + legacy single */}
+          {(() => {
+            const arr = (service.testimonials ?? []) as {quote:string;name:string;location?:string;stars:number}[]
+            const legacyQuote = service.testimonial_quote
+            const hasAny = arr.length > 0 || !!legacyQuote
+            if (!hasAny) return null
+            const items = arr.length > 0 ? arr : [{
+              quote: legacyQuote!,
+              name: service.testimonial_name ?? '',
+              location: service.testimonial_location,
+              stars: service.testimonial_stars ?? 5,
+            }]
+            return (
+              <section className="block">
+                <div className="ornament">Patient Stories</div>
+                <h2>In their words</h2>
+                <div style={{display:'flex',flexDirection:'column',gap:20,marginTop:28}}>
+                  {items.map((t, i) => (
+                    <div key={i} className="testimonial-card">
+                      <p className="quote">{t.quote}</p>
+                      <div className="testimonial-footer">
+                        <div className="patient">
+                          {t.name}
+                          {t.location && <span>{t.location}</span>}
+                        </div>
+                        <div className="stars">{'★'.repeat(t.stars ?? 5)}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            </section>
-          )}
+              </section>
+            )
+          })()}
 
           {/* FAQs */}
           {faqs.length > 0 && (

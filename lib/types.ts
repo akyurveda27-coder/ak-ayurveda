@@ -62,6 +62,7 @@ export interface Service {
   testimonial_name?: string
   testimonial_location?: string
   testimonial_stars?: number
+  testimonials?: { quote: string; name: string; location?: string; stars: number }[]
 }
 
 export interface Condition {
