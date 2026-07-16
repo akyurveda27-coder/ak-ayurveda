@@ -1,81 +1,35 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { Service } from '@/lib/types'
 
-// ─── Slug helper ─────────────────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
+interface FAQ { q: string; a: string }
+interface TrustStat { num: string; label: string }
+
+interface Service {
+  id: string
+  name: string
+  description: string
+  icon: string
+  sort_order: number
+  duration?: string
+  price_from?: string
+  benefits?: string[]
+  process?: string[]
+  ideal_for?: string[]
+  faqs?: FAQ[]
+  trust_stats?: TrustStat[]
+  hero_image?: string
+}
+
 function toSlug(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
-// ─── Static benefit/detail content per service name ──────────────────────────
-const serviceDetails: Record<string, {
-  duration: string
-  benefits: string[]
-  process: string[]
-  ideal_for: string[]
-  price_from: string
-}> = {
-  default: {
-    duration: '60–90 minutes',
-    benefits: ['Detoxifies the body', 'Restores doshic balance', 'Strengthens immunity', 'Improves overall wellbeing'],
-    process: ['Initial consultation & Prakriti assessment', 'Customized treatment plan', 'Therapy session with medicated oils', 'Post-treatment guidance & diet plan'],
-    ideal_for: ['Chronic conditions', 'Preventive wellness', 'Stress & fatigue', 'Detoxification'],
-    price_from: 'Consultation required',
-  },
-  panchakarma: {
-    duration: '7–21 days program',
-    benefits: ['Deep systemic detoxification', 'Reverses chronic diseases', 'Restores cellular intelligence', 'Anti-aging & rejuvenation', 'Clears blocked energy channels'],
-    process: ['Detailed Prakriti & Vikriti assessment', 'Purvakarma: Snehana (internal/external oleation)', 'Svedana (therapeutic sweating)', 'Main Panchakarma procedures (Vamana, Virechana, Basti, Nasya, Raktamokshana)', 'Paschatkarma: dietary & lifestyle guidance'],
-    ideal_for: ['Autoimmune conditions', 'Chronic digestive disorders', 'Joint & musculoskeletal issues', 'Neurological conditions', 'Annual preventive detox'],
-    price_from: '₹15,000 (7-day program)',
-  },
-  abhyanga: {
-    duration: '60–75 minutes',
-    benefits: ['Nourishes all 7 dhatus (tissues)', 'Improves blood & lymph circulation', 'Reduces Vata-related dryness & stiffness', 'Deep relaxation of nervous system', 'Improves skin tone & texture'],
-    process: ['Dosha-specific medicated oil selection', 'Warm oil application in specific marma strokes', 'Full-body synchronized massage', 'Steam therapy (optional)', 'Rest period & aftercare guidance'],
-    ideal_for: ['Anxiety & stress', 'Dry skin & fatigue', 'Insomnia', 'Muscle aches & joint stiffness', 'General rejuvenation'],
-    price_from: '₹2,500 per session',
-  },
-  shirodhara: {
-    duration: '45–60 minutes',
-    benefits: ['Activates the hypothalamus & pituitary gland', 'Deeply calms the mind', 'Relieves chronic headaches & migraines', 'Improves sleep quality', 'Reduces anxiety & depression'],
-    process: ['Scalp & neck oil massage (15 min)', 'Continuous warm oil stream over the "third eye" point', 'Duration adjusted to constitution', 'Post-therapy head wrap & rest'],
-    ideal_for: ['Insomnia & sleep disorders', 'Migraines', 'Anxiety & mental fatigue', 'Hypertension', 'Post-burnout recovery'],
-    price_from: '₹3,000 per session',
-  },
-  'herbal-medicine': {
-    duration: 'Ongoing (review every 4–6 weeks)',
-    benefits: ['Addresses root cause — not just symptoms', 'No chemical side effects', 'Synergistic classical formulations', 'Customized to your constitution', 'Complements modern medicine safely'],
-    process: ['Detailed case history & pulse diagnosis (Nadi Pariksha)', 'Identification of doshic imbalance', 'Classical formulation selection (kashaya, churna, ghrita, tablet)', 'Dispensing with clear dosage & anupana (vehicle)', 'Follow-up at 4–6 week intervals'],
-    ideal_for: ['Digestive disorders', 'Hormonal imbalances', 'Skin conditions', 'Immunity building', 'Chronic disease management'],
-    price_from: '₹800–₹2,500 / month',
-  },
-  'diet-nutrition': {
-    duration: '45-minute consultation + plan',
-    benefits: ['Food customized to your Prakriti', 'Seasonal Ritucharya guidelines', 'Addresses nutritional deficiencies', 'Supports ongoing treatment', 'Sustainable long-term changes'],
-    process: ['Prakriti & current Vikriti analysis', 'Review of current diet & lifestyle', 'Personalized Ahara plan', 'Recipes & substitution guidance', 'Monthly check-in & plan revision'],
-    ideal_for: ['Weight management', 'Digestive health', 'Diabetics & pre-diabetics', 'Athletes & active individuals', 'Preventive wellness'],
-    price_from: '₹1,500 per consultation',
-  },
-  'yoga-pranayama': {
-    duration: '60 minutes per session',
-    benefits: ['Regulates prana (life force)', 'Strengthens the respiratory system', 'Balances the autonomic nervous system', 'Complements Ayurvedic treatments', 'Improves flexibility, strength & calm'],
-    process: ['Assessment of current fitness & health', 'Dosha-specific asana selection', 'Pranayama sequence design', 'Meditation & relaxation techniques', 'Home practice plan provided'],
-    ideal_for: ['Respiratory conditions', 'Stress & anxiety', 'Spinal & postural issues', 'Post-Panchakarma maintenance', 'General preventive wellness'],
-    price_from: '₹1,200 per session',
-  },
-}
-
-function getDetails(name: string) {
-  const slug = toSlug(name)
-  return serviceDetails[slug] || serviceDetails.default
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// ── Page ─────────────────────────────────────────────────────────────────────
 export default function ServicePage() {
   const params = useParams()
   const slug = params.slug as string
@@ -83,10 +37,11 @@ export default function ServicePage() {
   const [service, setService] = useState<Service | null>(null)
   const [allServices, setAllServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   useEffect(() => {
     supabase.from('services').select('*').order('sort_order').then(({ data }) => {
-      const all = data ?? []
+      const all = (data ?? []) as Service[]
       setAllServices(all)
       const found = all.find((s) => toSlug(s.name) === slug)
       setService(found ?? null)
@@ -96,175 +51,304 @@ export default function ServicePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <div style={{ minHeight: '100vh', background: '#FDFBF5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 36, border: '3px solid #2D5016', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </div>
     )
   }
 
   if (!service) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
-        <p className="font-display text-2xl text-primary font-bold">Service not found</p>
-        <Link href="/#services" className="font-body text-sm text-sage hover:text-primary transition-colors">← Back to services</Link>
+      <div style={{ minHeight: '100vh', background: '#FDFBF5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <p style={{ fontFamily: "'Fraunces', serif", fontSize: 28, color: '#2D5016' }}>Service not found</p>
+        <Link href="/#services" style={{ color: '#6B7B4F', fontSize: 14 }}>← Back to services</Link>
       </div>
     )
   }
 
-  const details = getDetails(service.name)
   const otherServices = allServices.filter((s) => s.id !== service.id).slice(0, 3)
+  const benefits = service.benefits ?? []
+  const process = service.process ?? []
+  const idealFor = service.ideal_for ?? []
+  const faqs = service.faqs ?? []
+  const trustStats = service.trust_stats ?? []
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-green-100">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="font-display font-bold text-primary text-lg">AK Ayurveda</Link>
-          <Link href="/#book-appointment" className="bg-primary text-white px-4 py-2 rounded-xl font-body text-sm font-medium hover:bg-primaryDark transition-colors">
-            Book Appointment
-          </Link>
-        </div>
-      </nav>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap');
+        :root{--primary:#2D5016;--primary-dark:#1F3A10;--accent:#C9A84C;--cream:#FDFBF5;--sage:#6B7B4F;--text:#1A1A1A;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:#FDFBF5;color:#1A1A1A;-webkit-font-smoothing:antialiased;}
+        h1,h2,h3,h4{font-family:'Fraunces',serif;}
+        a{text-decoration:none;color:inherit;}
+        .fade-in{animation:fadeUp 0.7s ease forwards;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+        .btn-gold{background:linear-gradient(135deg,#C9A84C,#b3903a);color:#fff;padding:14px 32px;border-radius:100px;font-size:14px;font-weight:600;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(201,168,76,0.35);transition:transform .25s,box-shadow .25s;display:inline-block;}
+        .btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(201,168,76,0.45);}
+        .btn-outline{background:transparent;color:var(--primary);padding:14px 32px;border-radius:100px;font-size:14px;font-weight:600;border:2px solid var(--primary);cursor:pointer;transition:all .25s;display:inline-block;}
+        .btn-outline:hover{background:var(--primary);color:#fff;}
+        .chip{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(45,80,22,0.10);padding:10px 20px;border-radius:100px;font-size:13.5px;font-weight:600;color:var(--primary-dark);box-shadow:0 2px 8px rgba(45,80,22,0.04);}
+        .tag-pill{background:#fff;border:1px solid rgba(45,80,22,0.14);color:var(--primary-dark);padding:12px 22px;border-radius:100px;font-size:14px;font-weight:500;transition:all .25s;}
+        .tag-pill:hover{background:var(--primary);color:#fff;border-color:var(--primary);transform:translateY(-2px);}
+      `}</style>
 
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-primary/5 via-background to-accent/5 border-b border-green-100">
-        <div className="max-w-5xl mx-auto px-4 py-14 md:py-20">
-          <Link href="/#services" className="inline-flex items-center gap-1.5 font-body text-sm text-sage hover:text-primary transition-colors mb-6">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            All Treatments
+      {/* ── Navbar ── */}
+      <header style={{ position: 'sticky', top: 0, zIndex: 100, background: 'rgba(253,251,245,0.92)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(45,80,22,0.08)' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '18px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link href="/" style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 600, color: '#1F3A10' }}>
+            AK <span style={{ fontStyle: 'italic', color: '#C9A84C', fontWeight: 400 }}>Ayurveda</span>
           </Link>
-          <div className="flex items-start gap-5">
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl flex-shrink-0">
-              {service.icon}
+          <nav style={{ display: 'flex', gap: 32, fontSize: 14.5, fontWeight: 500 }}>
+            <Link href="/#services" style={{ color: '#1F3A10', opacity: 0.75 }}>Services</Link>
+            <Link href="/#about" style={{ color: '#1F3A10', opacity: 0.75 }}>About</Link>
+            <Link href="/#contact" style={{ color: '#1F3A10', opacity: 0.75 }}>Contact</Link>
+          </nav>
+          <Link href="/#book-appointment" className="btn-gold" style={{ fontSize: 13, padding: '10px 22px' }}>Book Appointment</Link>
+        </div>
+      </header>
+
+      {/* ── Hero ── */}
+      <section style={{ position: 'relative', padding: '64px 0 76px', overflow: 'hidden', background: '#FDFBF5' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 18% 20%, rgba(201,168,76,0.14), transparent 55%), radial-gradient(circle at 82% 10%, rgba(45,80,22,0.09), transparent 50%)', pointerEvents: 'none' }} />
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', position: 'relative', zIndex: 1 }}>
+          {/* Breadcrumb */}
+          <div style={{ marginBottom: 28, fontSize: 13, color: '#6B7B4F' }}>
+            <Link href="/" style={{ opacity: 0.8 }}>Home</Link>
+            <span style={{ margin: '0 8px', opacity: 0.5 }}>›</span>
+            <Link href="/#services" style={{ opacity: 0.8 }}>Services</Link>
+            <span style={{ margin: '0 8px', opacity: 0.5 }}>›</span>
+            <span style={{ color: '#1F3A10', fontWeight: 600 }}>{service.name}</span>
+          </div>
+
+          <div className="fade-in" style={{ maxWidth: 760 }}>
+            {/* Eyebrow */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(45,80,22,0.06)', color: '#2D5016', padding: '8px 18px', borderRadius: 100, fontSize: 12.5, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 24 }}>
+              <span style={{ color: '#C9A84C' }}>✦</span> Ancient Ayurvedic Treatment
             </div>
-            <div>
-              <h1 className="font-display text-3xl md:text-4xl font-bold text-primary leading-tight">{service.name}</h1>
-              <p className="font-body text-textSecondary mt-2 text-base md:text-lg max-w-2xl">{service.description}</p>
-              <div className="flex items-center gap-4 mt-4">
-                <span className="inline-flex items-center gap-1.5 font-body text-sm text-sage bg-white border border-green-100 px-3 py-1.5 rounded-full">
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {details.duration}
+
+            <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(38px, 5.4vw, 60px)', lineHeight: 1.08, color: '#1F3A10', marginBottom: 22, fontWeight: 500 }}>
+              {service.name}
+            </h1>
+            <p style={{ fontSize: 18, color: '#3f3f3f', maxWidth: 600, marginBottom: 34, lineHeight: 1.65 }}>
+              {service.description}
+            </p>
+
+            {/* Meta chips */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 40 }}>
+              {service.duration && (
+                <span className="chip">
+                  <span style={{ color: '#C9A84C' }}>⏱</span> {service.duration}
                 </span>
-                <span className="inline-flex items-center gap-1.5 font-body text-sm text-sage bg-white border border-green-100 px-3 py-1.5 rounded-full">
-                  💰 {details.price_from}
+              )}
+              {service.price_from && (
+                <span className="chip">
+                  <span style={{ color: '#C9A84C' }}>₹</span> From {service.price_from}
                 </span>
-              </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+              <Link href="/#book-appointment" className="btn-gold">Book This Treatment</Link>
+              <Link href="/#contact" className="btn-outline">Ask a Question</Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Content */}
-      <section className="max-w-5xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-8">
-        {/* Main */}
-        <div className="md:col-span-2 space-y-8">
-          {/* Benefits */}
-          <div className="bg-white rounded-2xl border border-green-100 p-6 shadow-sm">
-            <h2 className="font-display text-xl font-bold text-primary mb-4">Key Benefits</h2>
-            <ul className="space-y-3">
-              {details.benefits.map((b, i) => (
-                <li key={i} className="flex items-start gap-3 font-body text-sm text-textMain">
-                  <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold">{i + 1}</span>
-                  {b}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Process */}
-          <div className="bg-white rounded-2xl border border-green-100 p-6 shadow-sm">
-            <h2 className="font-display text-xl font-bold text-primary mb-4">What to Expect</h2>
-            <ol className="space-y-4">
-              {details.process.map((step, i) => (
-                <li key={i} className="flex items-start gap-4">
-                  <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center flex-shrink-0 font-display text-xs font-bold">{i + 1}</div>
-                  <p className="font-body text-sm text-textMain pt-1">{step}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          {/* Ideal for */}
-          <div className="bg-primary/5 rounded-2xl border border-primary/10 p-6">
-            <h2 className="font-display text-xl font-bold text-primary mb-4">Ideal For</h2>
-            <div className="flex flex-wrap gap-2">
-              {details.ideal_for.map((item, i) => (
-                <span key={i} className="bg-white border border-green-100 text-textMain font-body text-sm px-3 py-1.5 rounded-full shadow-sm">
-                  {item}
-                </span>
+      {/* ── Trust Strip ── */}
+      {trustStats.length > 0 && (
+        <div style={{ background: '#1F3A10', padding: '40px 0' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${trustStats.length}, 1fr)`, gap: 24, textAlign: 'center' }}>
+              {trustStats.map((s, i) => (
+                <div key={i}>
+                  <div style={{ fontFamily: "'Fraunces', serif", fontSize: 34, color: '#C9A84C', fontWeight: 500 }}>{s.num}</div>
+                  <div style={{ fontSize: 12.5, color: 'rgba(253,251,245,0.75)', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 4 }}>{s.label}</div>
+                </div>
               ))}
             </div>
           </div>
         </div>
+      )}
 
-        {/* Sidebar */}
-        <div className="space-y-5">
-          {/* CTA Card */}
-          <div className="bg-primary rounded-2xl p-6 text-white shadow-md sticky top-20">
-            <h3 className="font-display text-lg font-bold mb-2">Book {service.name}</h3>
-            <p className="font-body text-sm text-green-200 mb-5">Consult with Dr. Anjali Kumar and start your healing journey today.</p>
-            <Link
-              href="/#book-appointment"
-              className="block w-full bg-white text-primary text-center py-3 rounded-xl font-body font-semibold text-sm hover:bg-green-50 transition-colors"
-            >
-              Book Appointment →
-            </Link>
-            <div className="mt-4 pt-4 border-t border-white/20 space-y-2">
-              <div className="flex items-center gap-2 font-body text-xs text-green-200">
-                <span>⏱</span> {details.duration}
+      {/* ── Main Content + Sidebar ── */}
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '76px 32px 100px', display: 'grid', gridTemplateColumns: '1fr 340px', gap: 56, alignItems: 'start' }}>
+
+        {/* ── LEFT COLUMN ── */}
+        <div>
+          {/* Benefits */}
+          {benefits.length > 0 && (
+            <section style={{ marginBottom: 72 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, color: '#C9A84C', fontSize: 13, letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 22 }}>
+                <span>✦</span><span style={{ color: '#6B7B4F' }}>Benefits</span><span>✦</span>
               </div>
-              <div className="flex items-center gap-2 font-body text-xs text-green-200">
-                <span>💰</span> Starting {details.price_from}
+              <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(26px, 3vw, 34px)', color: '#1F3A10', marginBottom: 8, fontWeight: 500 }}>
+                Why Choose This Treatment
+              </h2>
+              <p style={{ color: '#4a4a4a', marginBottom: 36, fontSize: 15.5 }}>Evidence-based outcomes from classical Ayurvedic practice.</p>
+              <div style={{ background: '#fff', borderRadius: 20, padding: 44, boxShadow: '0 2px 12px rgba(45,80,22,0.04)', border: '1px solid rgba(45,80,22,0.06)' }}>
+                {benefits.map((b, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 20, alignItems: 'flex-start', padding: '20px 0', borderBottom: i < benefits.length - 1 ? '1px solid rgba(45,80,22,0.07)' : 'none' }}>
+                    <div style={{ flexShrink: 0, width: 38, height: 38, borderRadius: '50%', background: '#2D5016', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Fraunces', serif", fontSize: 15, fontWeight: 500 }}>{i + 1}</div>
+                    <div>
+                      <div style={{ fontSize: 16.5, fontWeight: 600, color: '#1A1A1A', marginBottom: 4 }}>{b}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center gap-2 font-body text-xs text-green-200">
-                <span>📍</span> In-clinic, Bengaluru
+            </section>
+          )}
+
+          {/* Process */}
+          {process.length > 0 && (
+            <section style={{ marginBottom: 72 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, color: '#C9A84C', fontSize: 13, letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 22 }}>
+                <span>✦</span><span style={{ color: '#6B7B4F' }}>The Process</span><span>✦</span>
               </div>
-            </div>
-          </div>
+              <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(26px, 3vw, 34px)', color: '#1F3A10', marginBottom: 8, fontWeight: 500 }}>
+                What to Expect
+              </h2>
+              <p style={{ color: '#4a4a4a', marginBottom: 36, fontSize: 15.5 }}>A step-by-step walkthrough of your treatment journey.</p>
+              <div style={{ paddingLeft: 6 }}>
+                {process.map((step, i) => (
+                  <div key={i} style={{ position: 'relative', paddingLeft: 56, paddingBottom: i < process.length - 1 ? 46 : 0 }}>
+                    {i < process.length - 1 && (
+                      <div style={{ position: 'absolute', left: 19, top: 40, bottom: 0, width: 2, background: 'linear-gradient(to bottom, rgba(45,80,22,0.18), rgba(45,80,22,0.04))' }} />
+                    )}
+                    <div style={{ position: 'absolute', left: 0, top: 0, width: 40, height: 40, borderRadius: '50%', background: '#fff', border: '2px solid #2D5016', color: '#2D5016', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Fraunces', serif", fontWeight: 600, fontSize: 15 }}>{i + 1}</div>
+                    <div style={{ paddingTop: 8 }}>
+                      <div style={{ fontSize: 17, fontWeight: 600, color: '#1A1A1A', marginBottom: 4 }}>{step}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Ideal For */}
+          {idealFor.length > 0 && (
+            <section style={{ marginBottom: 72 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, color: '#C9A84C', fontSize: 13, letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 22 }}>
+                <span>✦</span><span style={{ color: '#6B7B4F' }}>Ideal For</span><span>✦</span>
+              </div>
+              <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(26px, 3vw, 34px)', color: '#1F3A10', marginBottom: 8, fontWeight: 500 }}>
+                Who Benefits Most
+              </h2>
+              <p style={{ color: '#4a4a4a', marginBottom: 36, fontSize: 15.5 }}>This treatment is especially recommended for the following conditions.</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+                {idealFor.map((item, i) => (
+                  <span key={i} className="tag-pill">{item}</span>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* FAQs */}
+          {faqs.length > 0 && (
+            <section style={{ marginBottom: 72 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, color: '#C9A84C', fontSize: 13, letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 22 }}>
+                <span>✦</span><span style={{ color: '#6B7B4F' }}>FAQ</span><span>✦</span>
+              </div>
+              <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(26px, 3vw, 34px)', color: '#1F3A10', marginBottom: 36, fontWeight: 500 }}>
+                Common Questions
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {faqs.map((faq, i) => (
+                  <div key={i} style={{ background: '#fff', borderRadius: 16, border: '1px solid rgba(45,80,22,0.08)', overflow: 'hidden', boxShadow: '0 2px 8px rgba(45,80,22,0.03)' }}>
+                    <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{ width: '100%', padding: '20px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
+                      <span style={{ fontSize: 16, fontWeight: 600, color: '#1F3A10', fontFamily: "'Inter', sans-serif" }}>{faq.q}</span>
+                      <span style={{ color: '#C9A84C', fontSize: 20, flexShrink: 0, marginLeft: 16, transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0)', transition: 'transform .25s' }}>+</span>
+                    </button>
+                    {openFaq === i && (
+                      <div style={{ padding: '0 28px 24px', fontSize: 15, color: '#4a4a4a', lineHeight: 1.7 }}>{faq.a}</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Other services */}
           {otherServices.length > 0 && (
-            <div className="bg-white rounded-2xl border border-green-100 p-5 shadow-sm">
-              <h3 className="font-display text-base font-bold text-primary mb-3">Other Treatments</h3>
-              <div className="space-y-2">
+            <section>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, color: '#C9A84C', fontSize: 13, letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 22 }}>
+                <span>✦</span><span style={{ color: '#6B7B4F' }}>Explore More</span><span>✦</span>
+              </div>
+              <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(26px, 3vw, 34px)', color: '#1F3A10', marginBottom: 36, fontWeight: 500 }}>Other Treatments</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
                 {otherServices.map((s) => (
-                  <Link
-                    key={s.id}
-                    href={`/services/${toSlug(s.name)}`}
-                    className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-green-50 transition-colors group"
-                  >
-                    <span className="text-xl">{s.icon}</span>
-                    <div>
-                      <p className="font-body text-sm font-semibold text-textMain group-hover:text-primary transition-colors">{s.name}</p>
-                      <p className="font-body text-xs text-sage truncate">{s.description.slice(0, 40)}…</p>
-                    </div>
+                  <Link key={s.id} href={`/services/${toSlug(s.name)}`} style={{ background: '#fff', borderRadius: 16, padding: '28px 24px', border: '1px solid rgba(45,80,22,0.08)', boxShadow: '0 2px 8px rgba(45,80,22,0.04)', transition: 'transform .25s, box-shadow .25s', display: 'block' }}>
+                    <div style={{ fontSize: 28, marginBottom: 12 }}>{s.icon}</div>
+                    <div style={{ fontFamily: "'Fraunces', serif", fontSize: 18, color: '#1F3A10', marginBottom: 8, fontWeight: 500 }}>{s.name}</div>
+                    <div style={{ fontSize: 13, color: '#6B7B4F' }}>{s.description?.substring(0, 60)}…</div>
+                    <div style={{ marginTop: 16, fontSize: 13, color: '#C9A84C', fontWeight: 600 }}>Learn more →</div>
                   </Link>
                 ))}
               </div>
-              <Link href="/#services" className="block text-center font-body text-xs text-primary hover:underline mt-3">
-                View all treatments →
-              </Link>
-            </div>
+            </section>
           )}
+        </div>
+
+        {/* ── SIDEBAR ── */}
+        <aside style={{ position: 'sticky', top: 90 }}>
+          {/* Book card */}
+          <div style={{ background: '#1F3A10', borderRadius: 20, padding: '36px 32px', color: '#FDFBF5', marginBottom: 20 }}>
+            <div style={{ fontFamily: "'Fraunces', serif", fontSize: 22, marginBottom: 8, fontWeight: 500 }}>Ready to Begin?</div>
+            <p style={{ fontSize: 14, opacity: 0.8, marginBottom: 24, lineHeight: 1.6 }}>Book a consultation and start your healing journey today.</p>
+            <Link href="/#book-appointment" className="btn-gold" style={{ width: '100%', textAlign: 'center', display: 'block' }}>Book Appointment</Link>
+            <Link href="/#contact" style={{ display: 'block', textAlign: 'center', marginTop: 12, fontSize: 13, color: 'rgba(253,251,245,0.65)' }}>Or contact us first →</Link>
+          </div>
+
+          {/* Details card */}
+          <div style={{ background: '#fff', borderRadius: 20, padding: '28px', border: '1px solid rgba(45,80,22,0.08)', boxShadow: '0 2px 12px rgba(45,80,22,0.04)' }}>
+            <div style={{ fontFamily: "'Fraunces', serif", fontSize: 17, color: '#1F3A10', marginBottom: 20, fontWeight: 500 }}>Treatment Details</div>
+            {service.duration && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid rgba(45,80,22,0.07)', fontSize: 14 }}>
+                <span style={{ color: '#6B7B4F', fontWeight: 500 }}>Duration</span>
+                <span style={{ color: '#1F3A10', fontWeight: 600 }}>{service.duration}</span>
+              </div>
+            )}
+            {service.price_from && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid rgba(45,80,22,0.07)', fontSize: 14 }}>
+                <span style={{ color: '#6B7B4F', fontWeight: 500 }}>Starting from</span>
+                <span style={{ color: '#1F3A10', fontWeight: 600 }}>{service.price_from}</span>
+              </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0', fontSize: 14 }}>
+              <span style={{ color: '#6B7B4F', fontWeight: 500 }}>Available</span>
+              <span style={{ color: '#2D5016', fontWeight: 600 }}>✓ By appointment</span>
+            </div>
+          </div>
+
+          {/* Guarantee */}
+          <div style={{ background: 'rgba(201,168,76,0.08)', borderRadius: 16, padding: '24px', marginTop: 20, border: '1px solid rgba(201,168,76,0.2)' }}>
+            <div style={{ color: '#C9A84C', fontSize: 20, marginBottom: 8 }}>✦</div>
+            <div style={{ fontFamily: "'Fraunces', serif", fontSize: 16, color: '#1F3A10', marginBottom: 8, fontWeight: 500 }}>Classical Protocols</div>
+            <p style={{ fontSize: 13, color: '#6B7B4F', lineHeight: 1.6 }}>All treatments follow authentic Ayurvedic classical texts — not modern adaptations.</p>
+          </div>
+        </aside>
+      </div>
+
+      {/* ── CTA Banner ── */}
+      <section style={{ background: 'linear-gradient(135deg, #2D5016, #1F3A10)', padding: '80px 32px', textAlign: 'center' }}>
+        <div style={{ maxWidth: 620, margin: '0 auto' }}>
+          <div style={{ color: '#C9A84C', fontSize: 13, letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 20 }}>✦ Begin Your Journey ✦</div>
+          <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(28px, 4vw, 44px)', color: '#FDFBF5', marginBottom: 16, fontWeight: 400 }}>
+            Experience the Power of <em style={{ fontStyle: 'italic', color: '#C9A84C' }}>{service.name}</em>
+          </h2>
+          <p style={{ fontSize: 16, color: 'rgba(253,251,245,0.75)', marginBottom: 36, lineHeight: 1.7 }}>
+            Book your consultation today and take the first step towards holistic healing.
+          </p>
+          <Link href="/#book-appointment" className="btn-gold" style={{ fontSize: 15, padding: '16px 40px' }}>Book Your Appointment</Link>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-primaryDark text-white py-8 mt-8">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <p className="font-display font-bold text-lg">AK Ayurveda</p>
-          <p className="font-body text-green-300 text-sm mt-1">Ancient Wisdom, Modern Healing</p>
-          <div className="flex justify-center gap-6 mt-4">
-            <Link href="/" className="font-body text-xs text-green-300 hover:text-white transition-colors">Home</Link>
-            <Link href="/#services" className="font-body text-xs text-green-300 hover:text-white transition-colors">Treatments</Link>
-            <Link href="/#book-appointment" className="font-body text-xs text-green-300 hover:text-white transition-colors">Book</Link>
-          </div>
-        </div>
+      {/* ── Footer ── */}
+      <footer style={{ background: '#111', padding: '28px 32px', textAlign: 'center' }}>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>© {new Date().getFullYear()} AK Ayurveda. All rights reserved.</p>
       </footer>
-    </div>
+    </>
   )
 }
