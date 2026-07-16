@@ -47,12 +47,21 @@ export interface Service {
   sort_order: number
   duration?: string
   price_from?: string
+  location?: string
+  phone?: string
   benefits?: string[]
+  benefit_descriptions?: string[]
   process?: string[]
+  process_days?: string[]
+  process_descriptions?: string[]
   ideal_for?: string[]
   faqs?: { q: string; a: string }[]
   trust_stats?: { num: string; label: string }[]
   hero_image?: string
+  testimonial_quote?: string
+  testimonial_name?: string
+  testimonial_location?: string
+  testimonial_stars?: number
 }
 
 export interface Condition {
