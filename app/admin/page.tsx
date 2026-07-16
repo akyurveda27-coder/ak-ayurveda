@@ -278,171 +278,299 @@ function ServicesEditor() {
   const [newService, setNewService] = useState({ name: '', description: '', icon: '🌿' })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState<string | null>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<'basic'|'benefits'|'process'|'testimonial'|'trust'>('basic')
+  const [saved, setSaved] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
     const { data } = await supabase.from('services').select('*').order('sort_order')
-    setServices(data ?? [])
+    const list = (data ?? []) as Service[]
+    setServices(list)
+    if (!selectedId && list.length > 0) setSelectedId(list[0].id)
     setLoading(false)
-  }, [])
+  }, [selectedId])
 
   useEffect(() => { load() }, [load])
+
+  const upd = (id: string, patch: Partial<Service>) =>
+    setServices(prev => prev.map(x => x.id === id ? { ...x, ...patch } : x))
 
   const handleUpdate = async (service: Service) => {
     setSaving(service.id)
     await supabase.from('services').update({
-      name: service.name,
-      description: service.description,
-      icon: service.icon,
-      duration: service.duration ?? null,
-      price_from: service.price_from ?? null,
-      location: service.location ?? null,
-      phone: service.phone ?? null,
-      benefits: service.benefits ?? [],
-      benefit_descriptions: service.benefit_descriptions ?? [],
-      process: service.process ?? [],
-      process_days: service.process_days ?? [],
+      name: service.name, description: service.description, icon: service.icon,
+      duration: service.duration ?? null, price_from: service.price_from ?? null,
+      location: service.location ?? null, phone: service.phone ?? null,
+      benefits: service.benefits ?? [], benefit_descriptions: service.benefit_descriptions ?? [],
+      process: service.process ?? [], process_days: service.process_days ?? [],
       process_descriptions: service.process_descriptions ?? [],
-      ideal_for: service.ideal_for ?? [],
-      faqs: service.faqs ?? [],
+      ideal_for: service.ideal_for ?? [], faqs: service.faqs ?? [],
       trust_stats: service.trust_stats ?? [],
       testimonial_quote: service.testimonial_quote ?? null,
       testimonial_name: service.testimonial_name ?? null,
       testimonial_location: service.testimonial_location ?? null,
       testimonial_stars: service.testimonial_stars ?? 5,
     }).eq('id', service.id)
-    setSaving(null)
+    setSaving(null); setSaved(true); setTimeout(() => setSaved(false), 2000)
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this service?')) return
     await supabase.from('services').delete().eq('id', id)
-    load()
+    setSelectedId(null); load()
   }
 
   const handleAdd = async () => {
     if (!newService.name) return
-    await supabase.from('services').insert({ ...newService, sort_order: services.length + 1 })
+    const { data } = await supabase.from('services').insert({ ...newService, sort_order: services.length + 1 }).select().single()
     setNewService({ name: '', description: '', icon: '🌿' })
-    load()
+    await load()
+    if (data) setSelectedId(data.id)
   }
 
   if (loading) return <p className="text-sage font-body text-sm">Loading services...</p>
 
+  const s = services.find(x => x.id === selectedId)
+  const TABS = [
+    { key: 'basic', label: '📝 Basic Info' },
+    { key: 'benefits', label: '✅ Benefits' },
+    { key: 'process', label: '🔄 Process' },
+    { key: 'testimonial', label: '💬 Testimonial' },
+    { key: 'trust', label: '📊 Trust Stats' },
+  ] as const
+
   return (
     <div className="space-y-4">
-      {services.map((s) => (
-        <div key={s.id} className="bg-green-50/50 rounded-xl p-4 space-y-2">
-          <div className="grid grid-cols-4 gap-2">
+      {/* Service selector */}
+      <div className="flex gap-2 flex-wrap items-center">
+        {services.map(sv => (
+          <button key={sv.id} onClick={() => { setSelectedId(sv.id); setActiveTab('basic') }}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${selectedId === sv.id ? 'bg-primary text-white' : 'bg-green-50 text-primary hover:bg-green-100'}`}>
+            {sv.icon} {sv.name}
+          </button>
+        ))}
+        <button onClick={() => setSelectedId('new')}
+          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${selectedId === 'new' ? 'bg-accent text-white' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'}`}>
+          + New Service
+        </button>
+      </div>
+
+      {/* Add new */}
+      {selectedId === 'new' && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 space-y-3">
+          <p className="font-body text-sm font-semibold text-amber-800">New Service</p>
+          <div className="grid grid-cols-5 gap-3">
             <div>
-              <label className={labelClass}>Icon (emoji)</label>
-              <input value={s.icon} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, icon: e.target.value } : x))} className={inputClass} />
+              <label className={labelClass}>Icon</label>
+              <input value={newService.icon} onChange={e => setNewService(p => ({ ...p, icon: e.target.value }))} className={inputClass} />
             </div>
-            <div className="col-span-3">
+            <div className="col-span-4">
               <label className={labelClass}>Name</label>
-              <input value={s.name} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, name: e.target.value } : x))} className={inputClass} />
+              <input value={newService.name} onChange={e => setNewService(p => ({ ...p, name: e.target.value }))} placeholder="Service name" className={inputClass} />
             </div>
           </div>
           <div>
             <label className={labelClass}>Description</label>
-            <textarea value={s.description} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, description: e.target.value } : x))} rows={2} className={`${inputClass} resize-none`} />
+            <textarea value={newService.description} onChange={e => setNewService(p => ({ ...p, description: e.target.value }))} rows={2} className={`${inputClass} resize-none`} placeholder="Brief description..." />
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className={labelClass}>Duration</label>
-              <input value={s.duration ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, duration: e.target.value } : x))} placeholder="e.g. 60–90 minutes" className={inputClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Price From</label>
-              <input value={s.price_from ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, price_from: e.target.value } : x))} placeholder="e.g. ₹2,500 per session" className={inputClass} />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className={labelClass}>Location</label>
-              <input value={s.location ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, location: e.target.value } : x))} placeholder="e.g. Gurugram Clinic" className={inputClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Phone</label>
-              <input value={s.phone ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, phone: e.target.value } : x))} placeholder="+91 98765 43210" className={inputClass} />
-            </div>
-          </div>
-          <div>
-            <label className={labelClass}>Benefits — Titles (one per line)</label>
-            <textarea value={(s.benefits ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, benefits: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Deep detoxification&#10;Reduces stress&#10;Improves immunity" className={`${inputClass} resize-none font-mono text-xs`} />
-          </div>
-          <div>
-            <label className={labelClass}>Benefits — Descriptions (one per line, same order)</label>
-            <textarea value={(s.benefit_descriptions ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, benefit_descriptions: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Removes toxins from tissue level...&#10;Rebuilds digestive fire..." className={`${inputClass} resize-none font-mono text-xs`} />
-          </div>
-          <div>
-            <label className={labelClass}>Process Steps — Titles (one per line)</label>
-            <textarea value={(s.process ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, process: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Consultation & Assessment&#10;Preparation Phase&#10;Core Treatment" className={`${inputClass} resize-none font-mono text-xs`} />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className={labelClass}>Process — Day Labels (one per line)</label>
-              <textarea value={(s.process_days ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, process_days: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Days 1–2&#10;Days 3–5&#10;Days 6–10" className={`${inputClass} resize-none font-mono text-xs`} />
-            </div>
-            <div>
-              <label className={labelClass}>Process — Descriptions (one per line)</label>
-              <textarea value={(s.process_descriptions ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, process_descriptions: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Pulse reading and assessment...&#10;Oil therapies begin..." className={`${inputClass} resize-none font-mono text-xs`} />
-            </div>
-          </div>
-          <div>
-            <label className={labelClass}>Ideal For (one per line)</label>
-            <textarea value={(s.ideal_for ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, ideal_for: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={3} placeholder="Stress & anxiety&#10;Insomnia&#10;Chronic fatigue" className={`${inputClass} resize-none font-mono text-xs`} />
-          </div>
-          <div>
-            <label className={labelClass}>Patient Testimonial Quote</label>
-            <textarea value={s.testimonial_quote ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, testimonial_quote: e.target.value } : x))} rows={3} placeholder="I came in skeptical and exhausted..." className={`${inputClass} resize-none`} />
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <div>
-              <label className={labelClass}>Patient Name</label>
-              <input value={s.testimonial_name ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, testimonial_name: e.target.value } : x))} placeholder="Meera Kapoor" className={inputClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Patient Location</label>
-              <input value={s.testimonial_location ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, testimonial_location: e.target.value } : x))} placeholder="Gurugram" className={inputClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Stars (1–5)</label>
-              <input type="number" min={1} max={5} value={s.testimonial_stars ?? 5} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, testimonial_stars: Number(e.target.value) } : x))} className={inputClass} />
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <button onClick={() => handleUpdate(s)} disabled={saving === s.id} className="px-4 py-1.5 bg-primary text-white rounded-lg font-body text-xs font-medium hover:bg-primaryDark transition-colors disabled:opacity-50">
-              {saving === s.id ? 'Saving...' : 'Save Changes'}
-            </button>
-            <button onClick={() => handleDelete(s.id)} className="px-4 py-1.5 bg-red-100 text-red-600 rounded-lg font-body text-xs font-medium hover:bg-red-200 transition-colors">
-              Delete
-            </button>
-          </div>
+          <button onClick={handleAdd} className="px-5 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:opacity-90">Add Service</button>
         </div>
-      ))}
+      )}
 
-      {/* Add new */}
-      <div className="border-2 border-dashed border-green-200 rounded-xl p-4 space-y-2">
-        <p className="font-body text-sm font-semibold text-primary">+ Add New Service</p>
-        <div className="grid grid-cols-4 gap-2">
-          <div>
-            <label className={labelClass}>Icon</label>
-            <input value={newService.icon} onChange={(e) => setNewService(p => ({ ...p, icon: e.target.value }))} className={inputClass} />
+      {/* Edit selected service */}
+      {s && (
+        <div className="bg-white border border-green-100 rounded-2xl overflow-hidden shadow-sm">
+          {/* Header */}
+          <div className="bg-primary/5 border-b border-green-100 px-5 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{s.icon}</span>
+              <div>
+                <p className="font-display font-semibold text-primary text-base">{s.name}</p>
+                <p className="text-xs text-sage">{s.duration ?? 'Duration not set'} · {s.price_from ?? 'Price not set'}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {saved && <span className="text-xs text-green-600 font-medium">✓ Saved!</span>}
+              <button onClick={() => handleUpdate(s)} disabled={saving === s.id}
+                className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primaryDark disabled:opacity-50 transition-colors">
+                {saving === s.id ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button onClick={() => handleDelete(s.id)}
+                className="px-3 py-2 bg-red-50 text-red-500 rounded-lg text-sm hover:bg-red-100 transition-colors">
+                Delete
+              </button>
+            </div>
           </div>
-          <div className="col-span-3">
-            <label className={labelClass}>Name</label>
-            <input value={newService.name} onChange={(e) => setNewService(p => ({ ...p, name: e.target.value }))} placeholder="Service name" className={inputClass} />
+
+          {/* Tabs */}
+          <div className="flex border-b border-green-100 overflow-x-auto">
+            {TABS.map(t => (
+              <button key={t.key} onClick={() => setActiveTab(t.key)}
+                className={`px-4 py-3 text-xs font-semibold whitespace-nowrap transition-colors ${activeTab === t.key ? 'border-b-2 border-primary text-primary bg-white' : 'text-sage hover:text-primary hover:bg-green-50'}`}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="p-5 space-y-4">
+
+            {/* ── BASIC INFO ── */}
+            {activeTab === 'basic' && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-5 gap-3">
+                  <div>
+                    <label className={labelClass}>Icon</label>
+                    <input value={s.icon} onChange={e => upd(s.id, { icon: e.target.value })} className={inputClass} />
+                  </div>
+                  <div className="col-span-4">
+                    <label className={labelClass}>Name</label>
+                    <input value={s.name} onChange={e => upd(s.id, { name: e.target.value })} className={inputClass} />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelClass}>Description</label>
+                  <textarea value={s.description} onChange={e => upd(s.id, { description: e.target.value })} rows={3} className={`${inputClass} resize-none`} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><label className={labelClass}>Duration</label>
+                    <input value={s.duration ?? ''} onChange={e => upd(s.id, { duration: e.target.value })} placeholder="e.g. 60–90 minutes" className={inputClass} /></div>
+                  <div><label className={labelClass}>Price From</label>
+                    <input value={s.price_from ?? ''} onChange={e => upd(s.id, { price_from: e.target.value })} placeholder="e.g. ₹2,500 per session" className={inputClass} /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><label className={labelClass}>Location</label>
+                    <input value={s.location ?? ''} onChange={e => upd(s.id, { location: e.target.value })} placeholder="e.g. Gurugram Clinic" className={inputClass} /></div>
+                  <div><label className={labelClass}>Phone</label>
+                    <input value={s.phone ?? ''} onChange={e => upd(s.id, { phone: e.target.value })} placeholder="+91 98765 43210" className={inputClass} /></div>
+                </div>
+                <div>
+                  <label className={labelClass}>Ideal For (one condition per line)</label>
+                  <textarea value={(s.ideal_for ?? []).join('\n')} onChange={e => upd(s.id, { ideal_for: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) })} rows={4} placeholder="Stress & anxiety&#10;Insomnia&#10;Chronic fatigue&#10;Joint stiffness" className={`${inputClass} resize-none`} />
+                </div>
+              </div>
+            )}
+
+            {/* ── BENEFITS ── */}
+            {activeTab === 'benefits' && (
+              <div className="space-y-3">
+                <p className="text-xs text-sage">Each benefit has a title and a description shown below it on the page.</p>
+                {(s.benefits ?? []).map((b, i) => (
+                  <div key={i} className="bg-green-50/60 rounded-xl p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-primary">Benefit {i + 1}</span>
+                      <button onClick={() => {
+                        const nb = [...(s.benefits ?? [])]; nb.splice(i, 1)
+                        const nd = [...(s.benefit_descriptions ?? [])]; nd.splice(i, 1)
+                        upd(s.id, { benefits: nb, benefit_descriptions: nd })
+                      }} className="text-xs text-red-400 hover:text-red-600">✕ Remove</button>
+                    </div>
+                    <input value={b} onChange={e => { const n = [...(s.benefits ?? [])]; n[i] = e.target.value; upd(s.id, { benefits: n }) }}
+                      placeholder="Benefit title" className={inputClass} />
+                    <textarea value={(s.benefit_descriptions ?? [])[i] ?? ''} onChange={e => { const n = [...(s.benefit_descriptions ?? [])]; n[i] = e.target.value; upd(s.id, { benefit_descriptions: n }) }}
+                      rows={2} placeholder="Brief description of this benefit..." className={`${inputClass} resize-none`} />
+                  </div>
+                ))}
+                <button onClick={() => upd(s.id, { benefits: [...(s.benefits ?? []), ''], benefit_descriptions: [...(s.benefit_descriptions ?? []), ''] })}
+                  className="w-full py-2.5 border-2 border-dashed border-green-200 text-primary text-sm rounded-xl hover:bg-green-50 transition-colors">
+                  + Add Benefit
+                </button>
+              </div>
+            )}
+
+            {/* ── PROCESS ── */}
+            {activeTab === 'process' && (
+              <div className="space-y-3">
+                <p className="text-xs text-sage">Each step shows a day/period label, a title, and a description in a timeline.</p>
+                {(s.process ?? []).map((step, i) => (
+                  <div key={i} className="bg-green-50/60 rounded-xl p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-primary">Step {i + 1}</span>
+                      <button onClick={() => {
+                        const np = [...(s.process ?? [])]; np.splice(i, 1)
+                        const nd = [...(s.process_days ?? [])]; nd.splice(i, 1)
+                        const ndd = [...(s.process_descriptions ?? [])]; ndd.splice(i, 1)
+                        upd(s.id, { process: np, process_days: nd, process_descriptions: ndd })
+                      }} className="text-xs text-red-400 hover:text-red-600">✕ Remove</button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <input value={(s.process_days ?? [])[i] ?? ''} onChange={e => { const n = [...(s.process_days ?? [])]; n[i] = e.target.value; upd(s.id, { process_days: n }) }}
+                        placeholder="Days 1–2" className={inputClass} />
+                      <input value={step} onChange={e => { const n = [...(s.process ?? [])]; n[i] = e.target.value; upd(s.id, { process: n }) }}
+                        placeholder="Step title" className={`${inputClass} col-span-2`} />
+                    </div>
+                    <textarea value={(s.process_descriptions ?? [])[i] ?? ''} onChange={e => { const n = [...(s.process_descriptions ?? [])]; n[i] = e.target.value; upd(s.id, { process_descriptions: n }) }}
+                      rows={2} placeholder="What happens during this step..." className={`${inputClass} resize-none`} />
+                  </div>
+                ))}
+                <button onClick={() => upd(s.id, { process: [...(s.process ?? []), ''], process_days: [...(s.process_days ?? []), ''], process_descriptions: [...(s.process_descriptions ?? []), ''] })}
+                  className="w-full py-2.5 border-2 border-dashed border-green-200 text-primary text-sm rounded-xl hover:bg-green-50 transition-colors">
+                  + Add Step
+                </button>
+              </div>
+            )}
+
+            {/* ── TESTIMONIAL ── */}
+            {activeTab === 'testimonial' && (
+              <div className="space-y-4">
+                <div>
+                  <label className={labelClass}>Patient Quote</label>
+                  <textarea value={s.testimonial_quote ?? ''} onChange={e => upd(s.id, { testimonial_quote: e.target.value })} rows={4} placeholder="I came in skeptical and exhausted..." className={`${inputClass} resize-none`} />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div><label className={labelClass}>Patient Name</label>
+                    <input value={s.testimonial_name ?? ''} onChange={e => upd(s.id, { testimonial_name: e.target.value })} placeholder="Meera Kapoor" className={inputClass} /></div>
+                  <div><label className={labelClass}>Patient Location</label>
+                    <input value={s.testimonial_location ?? ''} onChange={e => upd(s.id, { testimonial_location: e.target.value })} placeholder="Gurugram" className={inputClass} /></div>
+                  <div><label className={labelClass}>Stars (1–5)</label>
+                    <input type="number" min={1} max={5} value={s.testimonial_stars ?? 5} onChange={e => upd(s.id, { testimonial_stars: Number(e.target.value) })} className={inputClass} /></div>
+                </div>
+                {s.testimonial_quote && (
+                  <div className="bg-amber-50 border-l-4 border-amber-400 rounded-xl p-4 mt-2">
+                    <p className="italic text-sm text-gray-700 mb-2">&ldquo;{s.testimonial_quote}&rdquo;</p>
+                    <p className="text-xs font-semibold text-primary">{s.testimonial_name} · {s.testimonial_location} · {'★'.repeat(s.testimonial_stars ?? 5)}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── TRUST STATS ── */}
+            {activeTab === 'trust' && (
+              <div className="space-y-3">
+                <p className="text-xs text-sage">These appear in the dark green trust strip below the hero. Max 4 stats recommended.</p>
+                {(s.trust_stats ?? []).map((stat, i) => (
+                  <div key={i} className="bg-green-50/60 rounded-xl p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-primary">Stat {i + 1}</span>
+                      <button onClick={() => { const n = [...(s.trust_stats ?? [])]; n.splice(i, 1); upd(s.id, { trust_stats: n }) }}
+                        className="text-xs text-red-400 hover:text-red-600">✕ Remove</button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input value={stat.num} onChange={e => { const n = [...(s.trust_stats ?? [])]; n[i] = { ...n[i], num: e.target.value }; upd(s.id, { trust_stats: n }) }}
+                        placeholder="27+" className={inputClass} />
+                      <input value={stat.label} onChange={e => { const n = [...(s.trust_stats ?? [])]; n[i] = { ...n[i], label: e.target.value }; upd(s.id, { trust_stats: n }) }}
+                        placeholder="Years of Practice" className={inputClass} />
+                    </div>
+                  </div>
+                ))}
+                <button onClick={() => upd(s.id, { trust_stats: [...(s.trust_stats ?? []), { num: '', label: '' }] })}
+                  className="w-full py-2.5 border-2 border-dashed border-green-200 text-primary text-sm rounded-xl hover:bg-green-50 transition-colors">
+                  + Add Stat
+                </button>
+              </div>
+            )}
+
+            {/* Save button bottom */}
+            <div className="pt-2 border-t border-green-100 flex items-center gap-3">
+              <button onClick={() => handleUpdate(s)} disabled={saving === s.id}
+                className="px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primaryDark disabled:opacity-50 transition-colors">
+                {saving === s.id ? 'Saving...' : '💾 Save Changes'}
+              </button>
+              {saved && <span className="text-sm text-green-600 font-medium">✓ Saved successfully!</span>}
+            </div>
           </div>
         </div>
-        <div>
-          <label className={labelClass}>Description</label>
-          <textarea value={newService.description} onChange={(e) => setNewService(p => ({ ...p, description: e.target.value }))} rows={2} placeholder="Service description..." className={`${inputClass} resize-none`} />
-        </div>
-        <button onClick={handleAdd} className="px-4 py-1.5 bg-accent text-white rounded-lg font-body text-xs font-medium hover:opacity-90 transition-colors">
-          Add Service
-        </button>
-      </div>
+      )}
     </div>
   )
 }
