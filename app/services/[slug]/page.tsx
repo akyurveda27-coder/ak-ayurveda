@@ -164,15 +164,42 @@ export default function ServicePage() {
   const [allServices, setAllServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [reviewForm, setReviewForm] = useState({ name: '', location: '', quote: '', stars: 5 })
+  const [reviewSubmitting, setReviewSubmitting] = useState(false)
+  const [reviewDone, setReviewDone] = useState(false)
+  const [approvedReviews, setApprovedReviews] = useState<{id:string;name:string;location?:string;quote:string;stars:number}[]>([])
 
   useEffect(() => {
     supabase.from('services').select('*').order('sort_order').then(({ data }) => {
       const all = (data ?? []) as Service[]
       setAllServices(all)
-      setService(all.find((s) => toSlug(s.name) === slug) ?? null)
+      const found = all.find((s) => toSlug(s.name) === slug) ?? null
+      setService(found)
       setLoading(false)
+      if (found) {
+        supabase.from('reviews').select('id,name,location,quote,stars')
+          .eq('service_name', found.name).eq('status', 'approved')
+          .order('created_at', { ascending: false })
+          .then(({ data: rd }) => setApprovedReviews(rd ?? []))
+      }
     })
   }, [slug])
+
+  const submitReview = async () => {
+    if (!reviewForm.name || !reviewForm.quote || !service) return
+    setReviewSubmitting(true)
+    await supabase.from('reviews').insert({
+      service_name: service.name,
+      name: reviewForm.name,
+      location: reviewForm.location || null,
+      quote: reviewForm.quote,
+      stars: reviewForm.stars,
+      status: 'pending',
+    })
+    setReviewSubmitting(false)
+    setReviewDone(true)
+    setReviewForm({ name: '', location: '', quote: '', stars: 5 })
+  }
 
   if (loading) return (
     <div style={{ minHeight: '100vh', background: '#FDFBF5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -347,6 +374,78 @@ export default function ServicePage() {
               </div>
             </section>
           )}
+
+          {/* Approved customer reviews */}
+          {approvedReviews.length > 0 && (
+            <section className="block">
+              <div className="ornament">What Our Patients Say</div>
+              <h2>Patient Reviews</h2>
+              <div style={{display:'flex',flexDirection:'column',gap:16,marginTop:28}}>
+                {approvedReviews.map(r => (
+                  <div key={r.id} className="testimonial-card">
+                    <p className="quote">{r.quote}</p>
+                    <div className="testimonial-footer">
+                      <div className="patient">{r.name}{r.location && <span>{r.location}</span>}</div>
+                      <div className="stars">{'★'.repeat(r.stars)}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Leave a Review */}
+          <section className="block">
+            <div className="ornament">Share Your Experience</div>
+            <h2>Leave a Review</h2>
+            <p className="intro" style={{marginBottom: 28}}>Had a treatment with us? We&apos;d love to hear your experience.</p>
+            {reviewDone ? (
+              <div style={{background:'#f0fdf4',border:'1px solid #bbf7d0',borderRadius:16,padding:'28px 32px',textAlign:'center'}}>
+                <div style={{fontSize:32,marginBottom:12}}>🙏</div>
+                <p style={{fontFamily:"'Fraunces',serif",fontSize:20,color:'#1F3A10',marginBottom:8}}>Thank you for your review!</p>
+                <p style={{fontSize:14,color:'#6B7B4F'}}>Your review is pending approval and will appear on this page shortly.</p>
+                <button onClick={() => setReviewDone(false)} style={{marginTop:16,fontSize:13,color:'#2D5016',cursor:'pointer',background:'none',border:'none',textDecoration:'underline'}}>Write another review</button>
+              </div>
+            ) : (
+              <div style={{background:'#fff',borderRadius:20,padding:'36px 40px',boxShadow:'0 2px 12px rgba(45,80,22,0.04)',border:'1px solid rgba(45,80,22,0.06)'}}>
+                {/* Stars */}
+                <div style={{marginBottom:20}}>
+                  <label style={{fontSize:12,fontWeight:600,letterSpacing:'0.08em',textTransform:'uppercase',color:'#6B7B4F',display:'block',marginBottom:10}}>Your Rating</label>
+                  <div style={{display:'flex',gap:8}}>
+                    {[1,2,3,4,5].map(n => (
+                      <button key={n} onClick={() => setReviewForm(p => ({...p, stars: n}))}
+                        style={{fontSize:28,color: n <= reviewForm.stars ? '#C9A84C' : '#e5e7eb',background:'none',border:'none',cursor:'pointer',transition:'color .15s'}}>★</button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:16}}>
+                  <div>
+                    <label style={{fontSize:12,fontWeight:600,letterSpacing:'0.08em',textTransform:'uppercase',color:'#6B7B4F',display:'block',marginBottom:6}}>Your Name *</label>
+                    <input value={reviewForm.name} onChange={e => setReviewForm(p => ({...p, name: e.target.value}))}
+                      placeholder="Meera Kapoor"
+                      style={{width:'100%',padding:'10px 14px',borderRadius:10,border:'1px solid rgba(45,80,22,0.15)',fontSize:14,outline:'none',fontFamily:'Inter,sans-serif'}} />
+                  </div>
+                  <div>
+                    <label style={{fontSize:12,fontWeight:600,letterSpacing:'0.08em',textTransform:'uppercase',color:'#6B7B4F',display:'block',marginBottom:6}}>City / Location</label>
+                    <input value={reviewForm.location} onChange={e => setReviewForm(p => ({...p, location: e.target.value}))}
+                      placeholder="Delhi"
+                      style={{width:'100%',padding:'10px 14px',borderRadius:10,border:'1px solid rgba(45,80,22,0.15)',fontSize:14,outline:'none',fontFamily:'Inter,sans-serif'}} />
+                  </div>
+                </div>
+                <div style={{marginBottom:20}}>
+                  <label style={{fontSize:12,fontWeight:600,letterSpacing:'0.08em',textTransform:'uppercase',color:'#6B7B4F',display:'block',marginBottom:6}}>Your Experience *</label>
+                  <textarea value={reviewForm.quote} onChange={e => setReviewForm(p => ({...p, quote: e.target.value}))}
+                    rows={4} placeholder="Share how the treatment helped you..."
+                    style={{width:'100%',padding:'12px 14px',borderRadius:10,border:'1px solid rgba(45,80,22,0.15)',fontSize:14,outline:'none',fontFamily:'Inter,sans-serif',resize:'none'}} />
+                </div>
+                <button onClick={submitReview} disabled={reviewSubmitting || !reviewForm.name || !reviewForm.quote}
+                  className="btn-gold" style={{opacity: (!reviewForm.name || !reviewForm.quote) ? 0.5 : 1}}>
+                  {reviewSubmitting ? 'Submitting...' : 'Submit Review'}
+                </button>
+                <p style={{fontSize:12,color:'#9ca3af',marginTop:12}}>Reviews are moderated and appear after approval.</p>
+              </div>
+            )}
+          </section>
 
         </main>
 

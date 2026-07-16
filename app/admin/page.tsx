@@ -857,9 +857,115 @@ function AppointmentsViewer() {
   )
 }
 
+// ─── Reviews Viewer ───────────────────────────────────────────────────────────
+
+interface Review {
+  id: string
+  service_name: string
+  name: string
+  location?: string
+  quote: string
+  stars: number
+  status: 'pending' | 'approved' | 'rejected'
+  created_at: string
+}
+
+function ReviewsViewer() {
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending')
+  const [acting, setActing] = useState<string | null>(null)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    const { data } = await supabase.from('reviews').select('*').order('created_at', { ascending: false })
+    setReviews((data ?? []) as Review[])
+    setLoading(false)
+  }, [])
+
+  useEffect(() => { load() }, [load])
+
+  const setStatus = async (id: string, status: 'approved' | 'rejected') => {
+    setActing(id)
+    await supabase.from('reviews').update({ status }).eq('id', id)
+    await load()
+    setActing(null)
+  }
+
+  const deleteReview = async (id: string) => {
+    if (!confirm('Delete this review permanently?')) return
+    await supabase.from('reviews').delete().eq('id', id)
+    await load()
+  }
+
+  const filtered = filter === 'all' ? reviews : reviews.filter(r => r.status === filter)
+  const counts = {
+    pending: reviews.filter(r => r.status === 'pending').length,
+    approved: reviews.filter(r => r.status === 'approved').length,
+    rejected: reviews.filter(r => r.status === 'rejected').length,
+  }
+
+  if (loading) return <p className="text-sage font-body text-sm">Loading reviews...</p>
+
+  return (
+    <div className="space-y-4">
+      {/* Filter tabs */}
+      <div className="flex gap-2">
+        {(['pending', 'approved', 'rejected', 'all'] as const).map(f => (
+          <button key={f} onClick={() => setFilter(f)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors capitalize ${filter === f ? 'bg-primary text-white' : 'bg-green-50 text-primary hover:bg-green-100'}`}>
+            {f} {f !== 'all' && counts[f] > 0 && <span className="ml-1 bg-white/30 px-1.5 py-0.5 rounded-full">{counts[f]}</span>}
+          </button>
+        ))}
+      </div>
+
+      {filtered.length === 0 && (
+        <p className="text-sage text-sm text-center py-8">No {filter} reviews yet.</p>
+      )}
+
+      {filtered.map(r => (
+        <div key={r.id} className={`rounded-xl border p-4 space-y-3 ${r.status === 'pending' ? 'bg-amber-50 border-amber-200' : r.status === 'approved' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-100'}`}>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-semibold text-sm text-primary">{r.name}</span>
+                {r.location && <span className="text-xs text-sage">· {r.location}</span>}
+                <span className="text-amber-500 text-xs">{'★'.repeat(r.stars)}</span>
+              </div>
+              <span className="text-xs text-sage bg-white px-2 py-0.5 rounded-full border border-green-100">{r.service_name}</span>
+            </div>
+            <span className={`text-xs font-semibold px-2 py-1 rounded-full ${r.status === 'pending' ? 'bg-amber-100 text-amber-700' : r.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+              {r.status}
+            </span>
+          </div>
+          <p className="text-sm text-gray-700 italic leading-relaxed">&ldquo;{r.quote}&rdquo;</p>
+          <div className="flex gap-2">
+            {r.status !== 'approved' && (
+              <button onClick={() => setStatus(r.id, 'approved')} disabled={acting === r.id}
+                className="px-3 py-1.5 bg-primary text-white rounded-lg text-xs font-medium hover:bg-primaryDark disabled:opacity-50 transition-colors">
+                ✓ Approve
+              </button>
+            )}
+            {r.status !== 'rejected' && (
+              <button onClick={() => setStatus(r.id, 'rejected')} disabled={acting === r.id}
+                className="px-3 py-1.5 bg-red-100 text-red-600 rounded-lg text-xs font-medium hover:bg-red-200 disabled:opacity-50 transition-colors">
+                ✕ Reject
+              </button>
+            )}
+            <button onClick={() => deleteReview(r.id)}
+              className="px-3 py-1.5 bg-gray-100 text-gray-500 rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors ml-auto">
+              🗑 Delete
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ─── Main Admin Panel ────────────────────────────────────────────────────────
 
-type AdminTab = 'hero' | 'stats' | 'services' | 'doctor' | 'conditions' | 'testimonials' | 'faqs' | 'contact' | 'appointments'
+type AdminTab = 'hero' | 'stats' | 'services' | 'doctor' | 'conditions' | 'testimonials' | 'faqs' | 'contact' | 'appointments' | 'reviews'
 
 const tabs: { id: AdminTab; label: string; icon: string }[] = [
   { id: 'hero', label: 'Hero', icon: '🏠' },
@@ -871,6 +977,7 @@ const tabs: { id: AdminTab; label: string; icon: string }[] = [
   { id: 'faqs', label: 'FAQs', icon: '❓' },
   { id: 'contact', label: 'Contact', icon: '📍' },
   { id: 'appointments', label: 'Appointments', icon: '📅' },
+  { id: 'reviews', label: 'Reviews', icon: '⭐' },
 ]
 
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
@@ -888,6 +995,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       case 'faqs': return <FAQEditor />
       case 'contact': return <ContactEditor />
       case 'appointments': return <AppointmentsViewer />
+      case 'reviews': return <ReviewsViewer />
     }
   }
 
