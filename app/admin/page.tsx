@@ -296,11 +296,20 @@ function ServicesEditor() {
       icon: service.icon,
       duration: service.duration ?? null,
       price_from: service.price_from ?? null,
+      location: service.location ?? null,
+      phone: service.phone ?? null,
       benefits: service.benefits ?? [],
+      benefit_descriptions: service.benefit_descriptions ?? [],
       process: service.process ?? [],
+      process_days: service.process_days ?? [],
+      process_descriptions: service.process_descriptions ?? [],
       ideal_for: service.ideal_for ?? [],
       faqs: service.faqs ?? [],
       trust_stats: service.trust_stats ?? [],
+      testimonial_quote: service.testimonial_quote ?? null,
+      testimonial_name: service.testimonial_name ?? null,
+      testimonial_location: service.testimonial_location ?? null,
+      testimonial_stars: service.testimonial_stars ?? 5,
     }).eq('id', service.id)
     setSaving(null)
   }
@@ -348,17 +357,59 @@ function ServicesEditor() {
               <input value={s.price_from ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, price_from: e.target.value } : x))} placeholder="e.g. ₹2,500 per session" className={inputClass} />
             </div>
           </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className={labelClass}>Location</label>
+              <input value={s.location ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, location: e.target.value } : x))} placeholder="e.g. Gurugram Clinic" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Phone</label>
+              <input value={s.phone ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, phone: e.target.value } : x))} placeholder="+91 98765 43210" className={inputClass} />
+            </div>
+          </div>
           <div>
-            <label className={labelClass}>Benefits (one per line)</label>
+            <label className={labelClass}>Benefits — Titles (one per line)</label>
             <textarea value={(s.benefits ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, benefits: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Deep detoxification&#10;Reduces stress&#10;Improves immunity" className={`${inputClass} resize-none font-mono text-xs`} />
           </div>
           <div>
-            <label className={labelClass}>Process Steps (one per line)</label>
-            <textarea value={(s.process ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, process: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Initial consultation&#10;Oil selection&#10;Treatment session" className={`${inputClass} resize-none font-mono text-xs`} />
+            <label className={labelClass}>Benefits — Descriptions (one per line, same order)</label>
+            <textarea value={(s.benefit_descriptions ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, benefit_descriptions: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Removes toxins from tissue level...&#10;Rebuilds digestive fire..." className={`${inputClass} resize-none font-mono text-xs`} />
+          </div>
+          <div>
+            <label className={labelClass}>Process Steps — Titles (one per line)</label>
+            <textarea value={(s.process ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, process: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Consultation & Assessment&#10;Preparation Phase&#10;Core Treatment" className={`${inputClass} resize-none font-mono text-xs`} />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className={labelClass}>Process — Day Labels (one per line)</label>
+              <textarea value={(s.process_days ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, process_days: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Days 1–2&#10;Days 3–5&#10;Days 6–10" className={`${inputClass} resize-none font-mono text-xs`} />
+            </div>
+            <div>
+              <label className={labelClass}>Process — Descriptions (one per line)</label>
+              <textarea value={(s.process_descriptions ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, process_descriptions: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Pulse reading and assessment...&#10;Oil therapies begin..." className={`${inputClass} resize-none font-mono text-xs`} />
+            </div>
           </div>
           <div>
             <label className={labelClass}>Ideal For (one per line)</label>
             <textarea value={(s.ideal_for ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, ideal_for: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={3} placeholder="Stress & anxiety&#10;Insomnia&#10;Chronic fatigue" className={`${inputClass} resize-none font-mono text-xs`} />
+          </div>
+          <div>
+            <label className={labelClass}>Patient Testimonial Quote</label>
+            <textarea value={s.testimonial_quote ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, testimonial_quote: e.target.value } : x))} rows={3} placeholder="I came in skeptical and exhausted..." className={`${inputClass} resize-none`} />
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <label className={labelClass}>Patient Name</label>
+              <input value={s.testimonial_name ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, testimonial_name: e.target.value } : x))} placeholder="Meera Kapoor" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Patient Location</label>
+              <input value={s.testimonial_location ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, testimonial_location: e.target.value } : x))} placeholder="Gurugram" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Stars (1–5)</label>
+              <input type="number" min={1} max={5} value={s.testimonial_stars ?? 5} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, testimonial_stars: Number(e.target.value) } : x))} className={inputClass} />
+            </div>
           </div>
           <div className="flex gap-2">
             <button onClick={() => handleUpdate(s)} disabled={saving === s.id} className="px-4 py-1.5 bg-primary text-white rounded-lg font-body text-xs font-medium hover:bg-primaryDark transition-colors disabled:opacity-50">
