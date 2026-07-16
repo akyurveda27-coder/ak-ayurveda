@@ -30,6 +30,7 @@ interface Service {
   testimonial_name?: string
   testimonial_location?: string
   testimonial_stars?: number
+  testimonials?: { quote: string; name: string; location?: string; stars: number }[]
 }
 
 function toSlug(name: string) {
