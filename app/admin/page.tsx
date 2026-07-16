@@ -287,9 +287,9 @@ function ServicesEditor() {
     const { data } = await supabase.from('services').select('*').order('sort_order')
     const list = (data ?? []) as Service[]
     setServices(list)
-    if (!selectedId && list.length > 0) setSelectedId(list[0].id)
+    setSelectedId(prev => prev ?? (list[0]?.id ?? null))
     setLoading(false)
-  }, [selectedId])
+  }, [])
 
   useEffect(() => { load() }, [load])
 
