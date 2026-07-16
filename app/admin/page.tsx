@@ -447,7 +447,7 @@ function ServicesEditor() {
                 </div>
                 <div>
                   <label className={labelClass}>Ideal For (one condition per line)</label>
-                  <textarea value={(s.ideal_for ?? []).join('\n')} onChange={e => upd(s.id, { ideal_for: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) })} rows={4} placeholder="Stress & anxiety&#10;Insomnia&#10;Chronic fatigue&#10;Joint stiffness" className={`${inputClass} resize-none`} />
+                  <textarea value={(s.ideal_for ?? []).join('\n')} onChange={e => upd(s.id, { ideal_for: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) })} rows={3} placeholder="Stress & anxiety&#10;Insomnia&#10;Chronic fatigue" className={`${inputClass}`} style={{resize:'vertical'}} />
                 </div>
               </div>
             )}
@@ -1101,7 +1101,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto max-w-3xl">
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto w-full">
           {renderContent()}
         </main>
       </div>
