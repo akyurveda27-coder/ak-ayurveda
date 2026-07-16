@@ -290,7 +290,18 @@ function ServicesEditor() {
 
   const handleUpdate = async (service: Service) => {
     setSaving(service.id)
-    await supabase.from('services').update({ name: service.name, description: service.description, icon: service.icon }).eq('id', service.id)
+    await supabase.from('services').update({
+      name: service.name,
+      description: service.description,
+      icon: service.icon,
+      duration: service.duration ?? null,
+      price_from: service.price_from ?? null,
+      benefits: service.benefits ?? [],
+      process: service.process ?? [],
+      ideal_for: service.ideal_for ?? [],
+      faqs: service.faqs ?? [],
+      trust_stats: service.trust_stats ?? [],
+    }).eq('id', service.id)
     setSaving(null)
   }
 
@@ -327,9 +338,31 @@ function ServicesEditor() {
             <label className={labelClass}>Description</label>
             <textarea value={s.description} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, description: e.target.value } : x))} rows={2} className={`${inputClass} resize-none`} />
           </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className={labelClass}>Duration</label>
+              <input value={s.duration ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, duration: e.target.value } : x))} placeholder="e.g. 60–90 minutes" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Price From</label>
+              <input value={s.price_from ?? ''} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, price_from: e.target.value } : x))} placeholder="e.g. ₹2,500 per session" className={inputClass} />
+            </div>
+          </div>
+          <div>
+            <label className={labelClass}>Benefits (one per line)</label>
+            <textarea value={(s.benefits ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, benefits: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Deep detoxification&#10;Reduces stress&#10;Improves immunity" className={`${inputClass} resize-none font-mono text-xs`} />
+          </div>
+          <div>
+            <label className={labelClass}>Process Steps (one per line)</label>
+            <textarea value={(s.process ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, process: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={4} placeholder="Initial consultation&#10;Oil selection&#10;Treatment session" className={`${inputClass} resize-none font-mono text-xs`} />
+          </div>
+          <div>
+            <label className={labelClass}>Ideal For (one per line)</label>
+            <textarea value={(s.ideal_for ?? []).join('\n')} onChange={(e) => setServices(prev => prev.map(x => x.id === s.id ? { ...x, ideal_for: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) } : x))} rows={3} placeholder="Stress & anxiety&#10;Insomnia&#10;Chronic fatigue" className={`${inputClass} resize-none font-mono text-xs`} />
+          </div>
           <div className="flex gap-2">
             <button onClick={() => handleUpdate(s)} disabled={saving === s.id} className="px-4 py-1.5 bg-primary text-white rounded-lg font-body text-xs font-medium hover:bg-primaryDark transition-colors disabled:opacity-50">
-              {saving === s.id ? 'Saving...' : 'Save'}
+              {saving === s.id ? 'Saving...' : 'Save Changes'}
             </button>
             <button onClick={() => handleDelete(s.id)} className="px-4 py-1.5 bg-red-100 text-red-600 rounded-lg font-body text-xs font-medium hover:bg-red-200 transition-colors">
               Delete

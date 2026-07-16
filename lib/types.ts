@@ -45,6 +45,14 @@ export interface Service {
   description: string
   icon: string
   sort_order: number
+  duration?: string
+  price_from?: string
+  benefits?: string[]
+  process?: string[]
+  ideal_for?: string[]
+  faqs?: { q: string; a: string }[]
+  trust_stats?: { num: string; label: string }[]
+  hero_image?: string
 }
 
 export interface Condition {
