@@ -6,8 +6,11 @@ import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
 // import Stats from '@/components/Stats'
 import Services from '@/components/Services'
+import AboutIntro from '@/components/AboutIntro'
+import WhyChooseUs from '@/components/WhyChooseUs'
 import Conditions from '@/components/Conditions'
 import BookAppointment from '@/components/BookAppointment'
+import BlogPreview from '@/components/BlogPreview'
 import FAQComponent from '@/components/FAQ'
 import Footer from '@/components/Footer'
 
@@ -96,10 +99,13 @@ export default async function HomePage() {
     <main>
       <Navbar />
       <Hero content={hero} />
+      <AboutIntro />
 
       <Services services={services} />
+      <WhyChooseUs />
       <Conditions conditions={conditions} />
       <BookAppointment services={services.map((s) => s.name)} />
+      <BlogPreview />
       <FAQComponent faqs={faqs} />
       <Footer contact={contactInfo} />
     </main>
