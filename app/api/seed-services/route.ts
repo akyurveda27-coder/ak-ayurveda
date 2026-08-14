@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase'
 
 const SERVICES_DATA = [
   {
@@ -506,7 +506,7 @@ export async function GET(request: NextRequest) {
 
   for (const service of SERVICES_DATA) {
     const { name, ...data } = service
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('services')
       .update(data)
       .eq('name', name)
