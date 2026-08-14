@@ -34,6 +34,7 @@ interface Service {
   testimonial_location?: string
   testimonial_stars?: number
   testimonials?: { quote: string; name: string; location?: string; stars: number }[]
+  pricing?: { d: string; p: string }[]
 }
 
 function toSlug(name: string) {
@@ -202,6 +203,16 @@ section.block:last-child{margin-bottom:0;}
 .trust-grid .label{font-size:12px;color:rgba(253,251,245,0.72);letter-spacing:0.06em;text-transform:uppercase;margin-top:4px;}
 .trust-divider{width:1px;background:rgba(255,255,255,0.12);}
 
+/* ── PRICING OPTIONS ── */
+.pricing-section{margin-bottom:28px;}
+.pricing-label{font-size:11.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6B7B4F;margin-bottom:10px;}
+.pricing-options{display:flex;gap:10px;flex-wrap:wrap;}
+.pricing-card{background:#fff;border:2px solid rgba(45,80,22,0.12);border-radius:14px;padding:14px 22px;text-align:center;min-width:100px;cursor:pointer;transition:border-color .2s,box-shadow .2s;}
+.pricing-card:hover{border-color:#2D5016;box-shadow:0 4px 16px rgba(45,80,22,0.12);}
+.pricing-card.selected{border-color:#2D5016;background:rgba(45,80,22,0.04);}
+.pricing-duration{font-size:13px;font-weight:600;color:#6B7B4F;margin-bottom:4px;}
+.pricing-price{font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:#1F3A10;}
+
 /* ── RESPONSIVE ── */
 @media(max-width:1024px){
   .hero-split{grid-template-columns:1fr;gap:40px;}
@@ -338,17 +349,35 @@ export default function ServicePage() {
               <div className="eyebrow fade-up d1">Ayurvedic Treatment</div>
               <h1 className="fade-up d2">{service.name}</h1>
               <p className="lead fade-up d3">{service.description}</p>
+
+              {/* Pricing Options — shown when pricing array is available */}
+              {service.pricing && service.pricing.length > 0 ? (
+                <div className="pricing-section fade-up d4">
+                  <div className="pricing-label">Choose Duration</div>
+                  <div className="pricing-options">
+                    {service.pricing.map((opt, i) => (
+                      <div key={i} className={`pricing-card${i === 0 ? ' selected' : ''}`}>
+                        <div className="pricing-duration">{opt.d}</div>
+                        <div className="pricing-price">{opt.p}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
               <div className="hero-actions fade-up d4">
                 <Link href="/#book-appointment" className="btn-gold">Book This Treatment</Link>
                 <Link href="/#services" className="btn-outline">View All Treatments</Link>
               </div>
               <div className="meta-chips fade-up d5">
-                {service.duration && (
+                {/* Show duration chip only when no pricing array */}
+                {!(service.pricing && service.pricing.length > 0) && service.duration && (
                   <div className="chip">
                     <span className="ic">◷</span> {service.duration}
                   </div>
                 )}
-                {service.price_from && (
+                {/* Show price chip only when no pricing array */}
+                {!(service.pricing && service.pricing.length > 0) && service.price_from && (
                   <div className="chip">
                     <span className="ic">£</span> From {service.price_from}
                   </div>
@@ -373,39 +402,48 @@ export default function ServicePage() {
       </section>
 
       {/* 4. Quick Info Bar */}
-      {(service.duration || service.price_from || service.location) && (
-        <div className="info-bar">
-          <div className="wrap info-bar-inner">
-            {service.duration && (
-              <div className="info-chip">
-                <span className="ic">◷</span> {service.duration}
-              </div>
-            )}
-            {service.duration && service.price_from && <div className="info-sep" />}
-            {service.price_from && (
-              <div className="info-chip">
-                <span className="ic">£</span> From {service.price_from}
-              </div>
-            )}
-            {service.location && (
-              <>
-                <div className="info-sep" />
+      {(service.pricing?.length || service.duration || service.price_from || service.location) && (() => {
+        const hasPricing = service.pricing && service.pricing.length > 0
+        const fromPrice = hasPricing ? service.pricing![0].p : service.price_from
+        const durationDisplay = hasPricing
+          ? (service.pricing!.length === 1
+              ? service.pricing![0].d
+              : `${service.pricing![0].d} – ${service.pricing![service.pricing!.length - 1].d}`)
+          : service.duration
+        return (
+          <div className="info-bar">
+            <div className="wrap info-bar-inner">
+              {durationDisplay && (
                 <div className="info-chip">
-                  <span className="ic">◎</span> {service.location}
+                  <span className="ic">◷</span> {durationDisplay}
                 </div>
-              </>
-            )}
-            {service.phone && (
-              <>
-                <div className="info-sep" />
+              )}
+              {durationDisplay && fromPrice && <div className="info-sep" />}
+              {fromPrice && (
                 <div className="info-chip">
-                  <span className="ic">☏</span> {service.phone}
+                  <span className="ic">£</span> From {fromPrice}
                 </div>
-              </>
-            )}
+              )}
+              {service.location && (
+                <>
+                  <div className="info-sep" />
+                  <div className="info-chip">
+                    <span className="ic">◎</span> {service.location}
+                  </div>
+                </>
+              )}
+              {service.phone && (
+                <>
+                  <div className="info-sep" />
+                  <div className="info-chip">
+                    <span className="ic">☏</span> {service.phone}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* Trust Strip */}
       {trustStats.length > 0 && (
@@ -611,17 +649,36 @@ export default function ServicePage() {
             <p className="cta-sub">Ready to begin your healing journey? Reserve your appointment today.</p>
             <Link href="/#book-appointment" className="btn-gold">Book Appointment</Link>
             <div className="cta-divider" />
-            {service.duration && (
-              <div className="detail-row">
-                <span className="k">◷ Duration</span>
-                <span className="v">{service.duration}</span>
-              </div>
-            )}
-            {service.price_from && (
-              <div className="detail-row">
-                <span className="k">£ From</span>
-                <span className="v">{service.price_from}</span>
-              </div>
+            {(service.pricing && service.pricing.length > 0) ? (
+              <>
+                <div className="detail-row">
+                  <span className="k">◷ Duration</span>
+                  <span className="v">
+                    {service.pricing.length === 1
+                      ? service.pricing[0].d
+                      : `${service.pricing[0].d} – ${service.pricing[service.pricing.length - 1].d}`}
+                  </span>
+                </div>
+                <div className="detail-row">
+                  <span className="k">£ From</span>
+                  <span className="v">{service.pricing[0].p}</span>
+                </div>
+              </>
+            ) : (
+              <>
+                {service.duration && (
+                  <div className="detail-row">
+                    <span className="k">◷ Duration</span>
+                    <span className="v">{service.duration}</span>
+                  </div>
+                )}
+                {service.price_from && (
+                  <div className="detail-row">
+                    <span className="k">£ From</span>
+                    <span className="v">{service.price_from}</span>
+                  </div>
+                )}
+              </>
             )}
             {service.location && (
               <div className="detail-row">
