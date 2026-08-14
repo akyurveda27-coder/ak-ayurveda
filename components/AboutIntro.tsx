@@ -20,9 +20,9 @@ export default function AboutIntro() {
               to the heart of the UK, helping you restore balance, vitality, and inner harmony.
             </p>
             <p className="font-body text-sage leading-relaxed mb-8">
-              Whether you seek relief from a chronic condition or simply wish to deepen your wellbeing,
-              our holistic approach treats the whole person — mind, body, and spirit — using time-tested
-              therapies and pure herbal formulations.
+              Whether you are exploring Ayurveda for the first time or looking to deepen your everyday
+              wellbeing, our holistic approach supports the whole person — mind, body, and spirit — using
+              time-tested therapies and pure herbal formulations.
             </p>
             <Link
               href="/about"

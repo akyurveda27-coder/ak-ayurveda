@@ -21,7 +21,7 @@ const cards = [
     emoji: '🇬🇧',
     title: 'Based in London, UK',
     description:
-      'Conveniently located in London, we bring the healing wisdom of India to the heart of the United Kingdom.',
+      'Conveniently located in London, we bring the ancient wellness wisdom of India to the heart of the United Kingdom.',
   },
 ]
 

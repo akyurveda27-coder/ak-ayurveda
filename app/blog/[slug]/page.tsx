@@ -14,8 +14,24 @@ interface Blog {
   content: string | null
   image_url: string | null
   category: string | null
+  author: string | null
   published: boolean
   published_at: string | null
+}
+
+const CATEGORY_COLORS: Record<string, string> = {
+  'Ayurveda Basics': 'bg-green-100 text-green-800',
+  'Treatments': 'bg-emerald-100 text-emerald-800',
+  'Skincare': 'bg-rose-100 text-rose-800',
+  'Lifestyle': 'bg-amber-100 text-amber-800',
+  'Nutrition': 'bg-orange-100 text-orange-800',
+  'Seasonal Wellness': 'bg-sky-100 text-sky-800',
+}
+
+function estimateReadTime(content: string | null): number {
+  if (!content) return 3
+  const wordCount = content.replace(/<[^>]+>/g, '').split(/\s+/).filter(Boolean).length
+  return Math.max(1, Math.ceil(wordCount / 200))
 }
 
 async function getBlogBySlug(slug: string): Promise<Blog | null> {
@@ -29,6 +45,23 @@ async function getBlogBySlug(slug: string): Promise<Blog | null> {
     return (data as Blog) ?? null
   } catch {
     return null
+  }
+}
+
+async function getRelatedBlogs(category: string | null, excludeId: string): Promise<Blog[]> {
+  if (!category) return []
+  try {
+    const { data } = await supabase
+      .from('blogs')
+      .select('id, title, slug, excerpt, content, image_url, category, published_at')
+      .eq('published', true)
+      .eq('category', category)
+      .neq('id', excludeId)
+      .order('published_at', { ascending: false })
+      .limit(3)
+    return (data ?? []) as Blog[]
+  } catch {
+    return []
   }
 }
 
@@ -61,14 +94,22 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
   if (!blog) notFound()
 
+  const [related] = await Promise.all([getRelatedBlogs(blog.category, blog.id)])
+
+  const readTime = estimateReadTime(blog.content)
+  const catColor = blog.category
+    ? (CATEGORY_COLORS[blog.category] ?? 'bg-gray-100 text-gray-700')
+    : null
+
   return (
     <main>
       <Navbar />
 
-      <article className="bg-background min-h-screen">
+      <article className="bg-[#FDFBF5] min-h-screen">
         {/* Hero */}
         <div className="bg-primary pt-28 pb-16 px-4">
           <div className="max-w-3xl mx-auto">
+            {/* Back link */}
             <Link
               href="/blog"
               className="inline-flex items-center gap-1.5 text-green-300 hover:text-white font-body text-sm transition-colors mb-6"
@@ -79,29 +120,55 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               Back to Journal
             </Link>
 
-            {blog.category && (
-              <span className="inline-block text-xs font-body font-semibold tracking-widest text-accent uppercase mb-4">
+            {/* Category badge */}
+            {blog.category && catColor && (
+              <span className={`inline-block text-xs font-body font-semibold px-3 py-1 rounded-full mb-4 ${catColor}`}>
                 {blog.category}
               </span>
             )}
+
+            {/* Title */}
             <h1 className="font-display text-4xl md:text-5xl font-bold text-white leading-tight mb-4">
               {blog.title}
             </h1>
+
+            {/* Excerpt */}
             {blog.excerpt && (
-              <p className="font-body text-green-200 text-lg leading-relaxed">
+              <p className="font-body text-green-200 text-lg leading-relaxed mb-5">
                 {blog.excerpt}
               </p>
             )}
-            {blog.published_at && (
-              <p className="font-body text-green-300 text-sm mt-4">
-                Published{' '}
-                {new Date(blog.published_at).toLocaleDateString('en-GB', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </p>
-            )}
+
+            {/* Meta row: author · date · read time */}
+            <div className="flex flex-wrap items-center gap-4 font-body text-sm text-green-300">
+              {(blog.author || 'AK Ayurveda') && (
+                <span className="flex items-center gap-1.5">
+                  <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  {blog.author ?? 'AK Ayurveda'}
+                </span>
+              )}
+              {blog.published_at && (
+                <>
+                  <span className="opacity-30">·</span>
+                  <span>
+                    {new Date(blog.published_at).toLocaleDateString('en-GB', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </>
+              )}
+              <span className="opacity-30">·</span>
+              <span className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z" />
+                </svg>
+                {readTime} min read
+              </span>
+            </div>
           </div>
         </div>
 
@@ -122,16 +189,22 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         )}
 
         {/* Content */}
-        <div className="max-w-3xl mx-auto px-4 pb-20">
+        <div className="max-w-3xl mx-auto px-4 pb-16">
           {blog.content ? (
             <div
-              className="prose prose-lg max-w-none
-                prose-headings:font-display prose-headings:text-primary
-                prose-p:font-body prose-p:text-sage prose-p:leading-relaxed
+              className="
+                prose prose-lg max-w-none
+                prose-headings:font-display prose-headings:text-primary prose-headings:leading-snug
+                prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:border-b prose-h2:border-green-100
+                prose-p:font-body prose-p:text-[#4a4a4a] prose-p:leading-relaxed prose-p:mb-4
                 prose-a:text-accent prose-a:no-underline hover:prose-a:underline
                 prose-strong:text-primary prose-strong:font-semibold
-                prose-ul:text-sage prose-ol:text-sage
-                prose-blockquote:border-l-accent prose-blockquote:text-sage prose-blockquote:italic"
+                prose-ul:text-[#4a4a4a] prose-ol:text-[#4a4a4a]
+                prose-li:mb-1.5 prose-li:leading-relaxed
+                prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:bg-accent/5
+                prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg
+                prose-blockquote:text-primary prose-blockquote:italic prose-blockquote:not-italic
+              "
               dangerouslySetInnerHTML={{ __html: blog.content }}
             />
           ) : (
@@ -140,8 +213,15 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             </div>
           )}
 
+          {/* Disclaimer */}
+          <div className="mt-10 p-4 bg-green-50 border border-green-100 rounded-xl">
+            <p className="font-body text-xs text-sage leading-relaxed">
+              <strong className="text-primary">Wellbeing Disclaimer:</strong> The information in this article is for general educational purposes and reflects traditional Ayurvedic knowledge. It is not intended as medical advice. Always consult a qualified healthcare professional before making changes to your health routine or if you have an existing medical condition.
+            </p>
+          </div>
+
           {/* Footer nav */}
-          <div className="mt-16 pt-8 border-t border-green-100 flex items-center justify-between">
+          <div className="mt-10 pt-8 border-t border-green-100 flex items-center justify-between">
             <Link
               href="/blog"
               className="inline-flex items-center gap-2 font-body text-sm font-medium text-primary hover:text-accent transition-colors"
@@ -159,6 +239,84 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             </Link>
           </div>
         </div>
+
+        {/* Related Posts */}
+        {related.length > 0 && (
+          <div className="bg-white border-t border-green-50 py-16 px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-10">
+                <span className="inline-block text-xs font-body font-semibold tracking-widest text-accent uppercase mb-3">
+                  Keep Reading
+                </span>
+                <h2 className="font-display text-3xl font-bold text-primary">
+                  More in {blog.category}
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {related.map((rel) => {
+                  const relReadTime = estimateReadTime(rel.content)
+                  const relCatColor = rel.category
+                    ? (CATEGORY_COLORS[rel.category] ?? 'bg-gray-100 text-gray-700')
+                    : 'bg-gray-100 text-gray-700'
+                  return (
+                    <article
+                      key={rel.id}
+                      className="bg-[#FDFBF5] rounded-2xl overflow-hidden border border-green-50 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col group"
+                    >
+                      <div className="relative h-40 overflow-hidden">
+                        {rel.image_url ? (
+                          <Image
+                            src={rel.image_url}
+                            alt={rel.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+                            <span className="text-4xl opacity-30">🌿</span>
+                          </div>
+                        )}
+                        {rel.category && (
+                          <div className="absolute top-2 left-2">
+                            <span className={`inline-block text-xs font-body font-semibold px-2 py-0.5 rounded-full ${relCatColor}`}>
+                              {rel.category}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4 flex flex-col flex-1">
+                        <span className="text-xs font-body text-sage mb-2 flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z" />
+                          </svg>
+                          {relReadTime} min read
+                        </span>
+                        <h3 className="font-display font-semibold text-primary text-base leading-snug mb-2 line-clamp-2 group-hover:text-accent transition-colors">
+                          {rel.title}
+                        </h3>
+                        {rel.excerpt && (
+                          <p className="font-body text-sage text-xs leading-relaxed mb-3 flex-1 line-clamp-2">
+                            {rel.excerpt}
+                          </p>
+                        )}
+                        <Link
+                          href={`/blog/${rel.slug}`}
+                          className="inline-flex items-center gap-1 font-body text-xs font-semibold text-primary hover:text-accent transition-colors mt-auto"
+                        >
+                          Read Article
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          </svg>
+                        </Link>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
       </article>
 
       <Footer contact={contact ?? undefined} />

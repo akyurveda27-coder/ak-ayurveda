@@ -51,19 +51,19 @@ export const defaultServices: Omit<Service, 'id'>[] = [
 ]
 
 export const defaultConditions: Omit<Condition, 'id'>[] = [
-  { name: 'Joint & Arthritis', icon: '🦴', sort_order: 1 },
-  { name: 'Digestive Health', icon: '🫁', sort_order: 2 },
-  { name: 'Skin Disorders', icon: '✨', sort_order: 3 },
-  { name: 'Stress & Anxiety', icon: '🧠', sort_order: 4 },
-  { name: 'Respiratory', icon: '💨', sort_order: 5 },
-  { name: "Women's Health", icon: '🌸', sort_order: 6 },
+  { name: 'Joint & Mobility Wellness', icon: '🦴', sort_order: 1 },
+  { name: 'Digestive Wellness', icon: '🫁', sort_order: 2 },
+  { name: 'Skin Health & Care', icon: '✨', sort_order: 3 },
+  { name: 'Stress & Relaxation', icon: '🧠', sort_order: 4 },
+  { name: 'Respiratory Wellness', icon: '💨', sort_order: 5 },
+  { name: "Women's Wellness", icon: '🌸', sort_order: 6 },
 ]
 
 export const defaultFAQs: Omit<FAQ, 'id'>[] = [
-  { question: 'What is Ayurveda?', answer: 'Ayurveda is one of the world\'s oldest holistic healing systems, developed more than 3,000 years ago in India. It is based on the belief that health and wellness depend on a delicate balance between the mind, body, and spirit.', sort_order: 1 },
-  { question: 'How long does a treatment session take?', answer: 'Treatment duration varies by therapy. A consultation is typically 45–60 minutes. Panchakarma programs run 7–21 days. Individual therapies like Abhyanga or Shirodhara are usually 60–90 minutes.', sort_order: 2 },
-  { question: 'Is Ayurveda safe alongside modern medicine?', answer: 'Yes, Ayurveda can be safely integrated with modern medicine when guided by a qualified practitioner. Always inform both your allopathic and Ayurvedic doctors about all medications you are taking.', sort_order: 3 },
-  { question: 'How many sessions will I need?', answer: 'The number of sessions depends on your condition, severity, and constitution. Acute conditions may resolve in 3–5 sessions, while chronic conditions often require 2–3 months of treatment. Dr. Kumar will outline a personalized plan during your consultation.', sort_order: 4 },
-  { question: 'Do you offer online consultations?', answer: 'Yes, we offer teleconsultation for initial assessments, follow-ups, and dietary guidance. Hands-on Panchakarma therapies require in-person visits. Contact us to schedule an online session.', sort_order: 5 },
-  { question: 'What should I bring to my first appointment?', answer: 'Please bring any previous medical reports, a list of current medications, and wear comfortable clothing. Arrive 10 minutes early to complete intake forms. Avoid heavy meals 2 hours before your appointment.', sort_order: 6 },
+  { question: 'What is Ayurveda?', answer: 'Ayurveda is one of the world\'s oldest holistic wellbeing systems, developed more than 3,000 years ago in India. It is based on the principle that good health depends on a delicate balance between the mind, body, and spirit.', sort_order: 1 },
+  { question: 'How long does a treatment session take?', answer: 'Session duration varies by therapy. A consultation is typically 45–60 minutes. Individual therapies like Abhyanga or Shirodhara are usually 60–90 minutes. Your practitioner will advise on the most appropriate duration during your initial consultation.', sort_order: 2 },
+  { question: 'Is Ayurveda safe alongside conventional healthcare?', answer: 'Ayurveda can complement conventional healthcare when guided by a qualified practitioner. Always inform both your GP and your Ayurvedic practitioner about any medications or existing health conditions before beginning any new wellness programme.', sort_order: 3 },
+  { question: 'How many sessions will I need?', answer: 'The number of sessions varies depending on your individual constitution, wellbeing goals, and current state of balance. Your practitioner will outline a personalised plan during your initial consultation and review it as your wellbeing journey progresses.', sort_order: 4 },
+  { question: 'Do you offer online consultations?', answer: 'Yes, we offer teleconsultations for initial assessments, follow-ups, and dietary guidance. Hands-on therapies such as Abhyanga and Shirodhara require in-person visits. Contact us to schedule an online session.', sort_order: 5 },
+  { question: 'What should I bring to my first appointment?', answer: 'Please wear comfortable clothing and, if you have them, bring any relevant previous health reports or a list of current medications. We recommend arriving 10 minutes early to complete your intake form and to settle in calmly before your session begins.', sort_order: 6 },
 ]

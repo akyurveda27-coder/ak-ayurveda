@@ -550,7 +550,7 @@ export default function ServicePage() {
           {/* Testimonials */}
           {testimonials.length > 0 && (
             <section className="block">
-              <div className="ornament">Patient Stories</div>
+              <div className="ornament">Client Stories</div>
               <h2>In their words</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginTop: 28 }}>
                 {testimonials.map((t, i) => (
@@ -573,7 +573,7 @@ export default function ServicePage() {
           {approvedReviews.length > 0 && (
             <section className="block">
               <div className="ornament">Verified Reviews</div>
-              <h2>What our patients say</h2>
+              <h2>What our clients say</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 24 }}>
                 {approvedReviews.map(r => (
                   <div key={r.id} className="testimonial-card">
@@ -668,7 +668,7 @@ export default function ServicePage() {
           <div className="cta-card" id="book-section">
             <div className="cta-icon">{service.icon}</div>
             <h3>{service.name.split('–')[0].trim()}</h3>
-            <p className="cta-sub">Ready to begin your healing journey? Reserve your appointment today.</p>
+            <p className="cta-sub">Ready to begin your wellness journey? Reserve your appointment today.</p>
             <button
               className="btn-gold"
               onClick={() => {
@@ -786,8 +786,8 @@ export default function ServicePage() {
       <div className="book-banner">
         <div className="wrap book-banner-inner">
           <div className="ornament" style={{ justifyContent: 'center', color: 'rgba(201,168,76,0.9)' }}>Begin Your Journey</div>
-          <h2>Ready to Begin Your Healing Journey?</h2>
-          <p>Experience the transformative power of authentic Ayurvedic care. Our practitioners are here to guide you toward lasting wellness.</p>
+          <h2>Ready to Begin Your Wellness Journey?</h2>
+          <p>Experience the restorative traditions of authentic Ayurvedic care. Our practitioners are here to guide you toward everyday balance and lasting wellbeing.</p>
           <div className="book-banner-actions">
             <button
               className="btn-gold"

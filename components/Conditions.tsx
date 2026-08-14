@@ -18,11 +18,11 @@ export default function Conditions({ conditions }: ConditionsProps) {
         {/* Header */}
         <div className="text-center mb-14">
           <span className="inline-block text-accent text-sm font-body font-semibold tracking-widest uppercase mb-3">
-            What We Treat
+            Wellness Areas
           </span>
-          <h2 className="section-title">Conditions We Heal</h2>
+          <h2 className="section-title">Conditions We Support</h2>
           <p className="section-subtitle max-w-2xl mx-auto">
-            Ayurveda addresses the root cause of disease, not just symptoms. We treat a wide range of chronic and acute conditions.
+            We offer a range of traditional Ayurvedic wellness therapies to support your everyday health and wellbeing.
           </p>
         </div>
 
@@ -45,9 +45,9 @@ export default function Conditions({ conditions }: ConditionsProps) {
 
         {/* CTA */}
         <div className="text-center mt-12">
-          <p className="font-body text-sage text-sm mb-4">Not sure if Ayurveda is right for your condition?</p>
+          <p className="font-body text-sage text-sm mb-4">Not sure if Ayurveda is right for you?</p>
           <a href="#book-appointment" className="btn-outline inline-block">
-            Book a Free Consultation
+            Book a Consultation
           </a>
         </div>
       </div>
