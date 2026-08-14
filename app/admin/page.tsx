@@ -883,6 +883,197 @@ function AppointmentsViewer() {
   )
 }
 
+// ─── Blog Editor ─────────────────────────────────────────────────────────────
+
+interface BlogPost {
+  id: string
+  title: string
+  slug: string
+  excerpt: string
+  content: string
+  image_url: string
+  category: string
+  published: boolean
+  published_at: string | null
+  created_at: string
+}
+
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
+
+const emptyBlog = (): Omit<BlogPost, 'id' | 'created_at'> => ({
+  title: '', slug: '', excerpt: '', content: '', image_url: '', category: '', published: false, published_at: null,
+})
+
+function BlogEditor() {
+  const [blogs, setBlogs] = useState<BlogPost[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selected, setSelected] = useState<string | null>(null) // 'new' | id
+  const [form, setForm] = useState(emptyBlog())
+  const [saving, setSaving] = useState(false)
+  const [savedMsg, setSavedMsg] = useState('')
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    const { data } = await supabase.from('blogs').select('*').order('created_at', { ascending: false })
+    setBlogs((data ?? []) as BlogPost[])
+    setLoading(false)
+  }, [])
+
+  useEffect(() => { load() }, [load])
+
+  const selectBlog = (b: BlogPost) => {
+    setSelected(b.id)
+    setForm({
+      title: b.title, slug: b.slug, excerpt: b.excerpt ?? '', content: b.content ?? '',
+      image_url: b.image_url ?? '', category: b.category ?? '', published: b.published,
+      published_at: b.published_at,
+    })
+  }
+
+  const newBlog = () => {
+    setSelected('new')
+    setForm(emptyBlog())
+  }
+
+  const handleTitleChange = (title: string) => {
+    setForm(f => ({ ...f, title, slug: selected === 'new' ? slugify(title) : f.slug }))
+  }
+
+  const handleSave = async () => {
+    if (!form.title.trim()) return
+    setSaving(true)
+    const payload = {
+      title: form.title, slug: form.slug || slugify(form.title),
+      excerpt: form.excerpt, content: form.content,
+      image_url: form.image_url || null, category: form.category || null,
+      published: form.published,
+      published_at: form.published ? (form.published_at || new Date().toISOString()) : null,
+    }
+    if (selected === 'new') {
+      await supabase.from('blogs').insert(payload)
+    } else {
+      await supabase.from('blogs').update(payload).eq('id', selected)
+    }
+    setSaving(false)
+    setSavedMsg('✓ Saved!')
+    setTimeout(() => setSavedMsg(''), 2000)
+    await load()
+    if (selected === 'new') setSelected(null)
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this blog post permanently?')) return
+    await supabase.from('blogs').delete().eq('id', id)
+    if (selected === id) { setSelected(null); setForm(emptyBlog()) }
+    load()
+  }
+
+  const togglePublish = async (b: BlogPost) => {
+    const newPub = !b.published
+    await supabase.from('blogs').update({
+      published: newPub,
+      published_at: newPub ? (b.published_at || new Date().toISOString()) : null,
+    }).eq('id', b.id)
+    load()
+  }
+
+  if (loading) return <p className="text-sage font-body text-sm">Loading blogs...</p>
+
+  return (
+    <div className="space-y-4">
+      {/* Blog list */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="font-body text-xs font-semibold text-sage uppercase tracking-wide">{blogs.length} Posts</p>
+          <button onClick={newBlog}
+            className="px-4 py-1.5 bg-accent text-white rounded-lg text-xs font-medium hover:opacity-90 transition-colors">
+            + New Post
+          </button>
+        </div>
+        {blogs.length === 0 && selected !== 'new' && (
+          <p className="text-sage text-sm text-center py-8">No blog posts yet. Create your first!</p>
+        )}
+        {blogs.map(b => (
+          <div key={b.id}
+            className={`flex items-center gap-3 rounded-xl px-4 py-3 border cursor-pointer transition-all ${selected === b.id ? 'bg-primary/5 border-primary/20' : 'bg-white border-green-100 hover:border-green-200'}`}
+            onClick={() => selectBlog(b)}>
+            <div className="flex-1 min-w-0">
+              <p className="font-body text-sm font-semibold text-primary truncate">{b.title || 'Untitled'}</p>
+              <p className="text-xs text-sage truncate">/{b.slug}</p>
+            </div>
+            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${b.published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+              {b.published ? 'Live' : 'Draft'}
+            </span>
+            <button onClick={(e) => { e.stopPropagation(); togglePublish(b) }}
+              className="text-xs px-2 py-1 rounded-lg bg-white border border-green-100 hover:bg-green-50 text-sage transition-colors shrink-0">
+              {b.published ? 'Unpublish' : 'Publish'}
+            </button>
+            <button onClick={(e) => { e.stopPropagation(); handleDelete(b.id) }}
+              className="text-xs px-2 py-1 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors shrink-0">✕</button>
+          </div>
+        ))}
+      </div>
+
+      {/* Editor */}
+      {selected && (
+        <div className="bg-white border border-green-100 rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-primary/5 border-b border-green-100 px-5 py-4 flex items-center justify-between">
+            <p className="font-display font-semibold text-primary">{selected === 'new' ? 'New Post' : 'Edit Post'}</p>
+            <div className="flex items-center gap-3">
+              {savedMsg && <span className="text-xs text-green-600 font-medium">{savedMsg}</span>}
+              <button onClick={handleSave} disabled={saving}
+                className="px-5 py-2 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primaryDark disabled:opacity-50 transition-colors">
+                {saving ? 'Saving...' : '💾 Save'}
+              </button>
+            </div>
+          </div>
+          <div className="p-5 space-y-4">
+            <div>
+              <label className={labelClass}>Title</label>
+              <input value={form.title} onChange={e => handleTitleChange(e.target.value)} placeholder="Article title..." className={inputClass} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className={labelClass}>Slug (URL)</label>
+                <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} placeholder="auto-generated" className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Category</label>
+                <input value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} placeholder="e.g. Wellness, Treatments" className={inputClass} />
+              </div>
+            </div>
+            <div>
+              <label className={labelClass}>Excerpt</label>
+              <textarea value={form.excerpt} onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))} rows={2} placeholder="Short summary shown on card..." className={`${inputClass} resize-none`} />
+            </div>
+            <div>
+              <label className={labelClass}>Image URL</label>
+              <input value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} placeholder="https://..." className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Content (HTML or plain text)</label>
+              <textarea value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))} rows={10} placeholder="Write your article content here..." className={`${inputClass} resize-y`} />
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setForm(f => ({ ...f, published: !f.published }))}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${form.published ? 'bg-primary' : 'bg-gray-200'}`}>
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${form.published ? 'translate-x-6' : 'translate-x-1'}`} />
+              </button>
+              <span className="font-body text-sm text-textMain">{form.published ? '✅ Published (Live)' : '📝 Draft (Hidden)'}</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Reviews Viewer ───────────────────────────────────────────────────────────
 
 interface Review {
@@ -991,7 +1182,7 @@ function ReviewsViewer() {
 
 // ─── Main Admin Panel ────────────────────────────────────────────────────────
 
-type AdminTab = 'hero' | 'stats' | 'services' | 'doctor' | 'conditions' | 'testimonials' | 'faqs' | 'contact' | 'appointments' | 'reviews'
+type AdminTab = 'hero' | 'stats' | 'services' | 'doctor' | 'conditions' | 'testimonials' | 'faqs' | 'contact' | 'appointments' | 'reviews' | 'blogs'
 
 const tabs: { id: AdminTab; label: string; icon: string }[] = [
   { id: 'hero', label: 'Hero', icon: '🏠' },
@@ -1004,6 +1195,7 @@ const tabs: { id: AdminTab; label: string; icon: string }[] = [
   { id: 'contact', label: 'Contact', icon: '📍' },
   { id: 'appointments', label: 'Appointments', icon: '📅' },
   { id: 'reviews', label: 'Reviews', icon: '⭐' },
+  { id: 'blogs', label: 'Blog Posts', icon: '📝' },
 ]
 
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
@@ -1022,6 +1214,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       case 'contact': return <ContactEditor />
       case 'appointments': return <AppointmentsViewer />
       case 'reviews': return <ReviewsViewer />
+      case 'blogs': return <BlogEditor />
     }
   }
 
