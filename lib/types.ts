@@ -47,6 +47,7 @@ export interface Service {
   sort_order: number
   duration?: string
   price_from?: string
+  pricing?: { d: string; p: string }[]
   location?: string
   phone?: string
   benefits?: string[]
