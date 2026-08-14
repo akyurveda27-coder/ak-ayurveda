@@ -16,7 +16,7 @@ interface Blog {
   category: string | null
   author: string | null
   published: boolean
-  published_at: string | null
+  created_at: string | null
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -53,11 +53,11 @@ async function getRelatedBlogs(category: string | null, excludeId: string): Prom
   try {
     const { data } = await supabase
       .from('blogs')
-      .select('id, title, slug, excerpt, content, image_url, category, published_at')
+      .select('id, title, slug, excerpt, content, image_url, category, created_at')
       .eq('published', true)
       .eq('category', category)
       .neq('id', excludeId)
-      .order('published_at', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(3)
     return (data ?? []) as Blog[]
   } catch {
@@ -149,11 +149,11 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                   {blog.author ?? 'AK Ayurveda'}
                 </span>
               )}
-              {blog.published_at && (
+              {blog.created_at && (
                 <>
                   <span className="opacity-30">·</span>
                   <span>
-                    {new Date(blog.published_at).toLocaleDateString('en-GB', {
+                    {new Date(blog.created_at).toLocaleDateString('en-GB', {
                       day: 'numeric',
                       month: 'long',
                       year: 'numeric',

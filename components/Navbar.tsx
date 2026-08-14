@@ -16,6 +16,7 @@ export default function Navbar() {
     { label: 'Services', href: '#services' },
     { label: 'About', href: '#doctor' },
     { label: 'Conditions', href: '#conditions' },
+    { label: 'Blog', href: '/blog' },
     { label: 'Contact', href: '#footer' },
   ]
 

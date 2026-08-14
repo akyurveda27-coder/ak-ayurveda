@@ -16,7 +16,7 @@ interface Blog {
   content: string | null
   image_url: string | null
   category: string | null
-  published_at: string | null
+  created_at: string | null
 }
 
 const CATEGORIES = [
@@ -54,9 +54,9 @@ export default function BlogPage() {
     Promise.all([
       supabase
         .from('blogs')
-        .select('id, title, slug, excerpt, content, image_url, category, published_at')
+        .select('id, title, slug, excerpt, content, image_url, category, created_at')
         .eq('published', true)
-        .order('published_at', { ascending: false }),
+        .order('created_at', { ascending: false }),
       supabase
         .from('site_content')
         .select('value')
@@ -199,9 +199,9 @@ export default function BlogPage() {
                       <div className="p-5 flex flex-col flex-1">
                         {/* Meta row */}
                         <div className="flex items-center gap-3 mb-2.5">
-                          {blog.published_at && (
+                          {blog.created_at && (
                             <span className="text-xs font-body text-sage">
-                              {new Date(blog.published_at).toLocaleDateString('en-GB', {
+                              {new Date(blog.created_at).toLocaleDateString('en-GB', {
                                 day: 'numeric',
                                 month: 'short',
                                 year: 'numeric',

@@ -13,7 +13,7 @@ interface Blog {
   image_url: string | null
   category: string | null
   published: boolean
-  published_at: string | null
+  created_at: string | null
 }
 
 export default function BlogPreview() {
@@ -23,9 +23,9 @@ export default function BlogPreview() {
   useEffect(() => {
     supabase
       .from('blogs')
-      .select('id, title, slug, excerpt, image_url, category, published, published_at')
+      .select('id, title, slug, excerpt, image_url, category, published, created_at')
       .eq('published', true)
-      .order('published_at', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(3)
       .then(({ data }) => {
         setBlogs((data ?? []) as Blog[])
