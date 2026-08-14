@@ -4,7 +4,7 @@ import { supabase, supabaseAdmin } from '@/lib/supabase'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, phone, email, service, preferred_date, message } = body
+    const { name, phone, email, service, preferred_date, message, selected_duration, selected_price } = body
 
     if (!name || !phone || !email || !service) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -18,6 +18,8 @@ export async function POST(request: NextRequest) {
       preferred_date: preferred_date || null,
       message: message || '',
       status: 'pending',
+      selected_duration: selected_duration || null,
+      selected_price: selected_price || null,
     })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })

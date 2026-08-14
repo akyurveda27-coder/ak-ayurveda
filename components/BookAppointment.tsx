@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect } from 'react'
 
 interface BookAppointmentProps {
   services?: string[]
@@ -28,6 +28,24 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
     message: '',
   })
 
+  // Duration/price pre-fill from treatment page selection
+  const [selectedDuration, setSelectedDuration] = useState('')
+  const [selectedPrice, setSelectedPrice] = useState('')
+  const [bookService, setBookService] = useState('')
+
+  useEffect(() => {
+    const svc = sessionStorage.getItem('book_service') ?? ''
+    const dur = sessionStorage.getItem('book_duration') ?? ''
+    const prc = sessionStorage.getItem('book_price') ?? ''
+    setBookService(svc)
+    setSelectedDuration(dur)
+    setSelectedPrice(prc)
+    // Pre-fill the service dropdown if we know which service
+    if (svc) {
+      setForm((prev) => ({ ...prev, service: svc }))
+    }
+  }, [])
+
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -44,7 +62,11 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
       const res = await fetch('/api/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          selected_duration: selectedDuration || null,
+          selected_price: selectedPrice || null,
+        }),
       })
       const data = await res.json()
 
@@ -54,6 +76,13 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
       } else {
         setStatus('success')
         setForm({ name: '', phone: '', email: '', service: '', preferred_date: '', message: '' })
+        // Clear sessionStorage after successful booking
+        sessionStorage.removeItem('book_service')
+        sessionStorage.removeItem('book_duration')
+        sessionStorage.removeItem('book_price')
+        setSelectedDuration('')
+        setSelectedPrice('')
+        setBookService('')
       }
     } catch {
       setStatus('error')
@@ -64,7 +93,7 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
   const inputClass = 'w-full px-4 py-3 rounded-xl border border-green-100 bg-white font-body text-sm text-textMain placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200'
 
   return (
-    <section id="book-appointment" className="py-20 md:py-28 bg-[#F5F0E8]">
+    <section id="book-section" className="py-20 md:py-28 bg-[#F5F0E8]">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -95,6 +124,66 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-8 md:p-10 shadow-sm space-y-5">
+
+            {/* ── Selected Duration Banner (pre-filled from treatment page) ── */}
+            {selectedDuration && (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(45,80,22,0.06), rgba(45,80,22,0.03))',
+                border: '1px solid rgba(45,80,22,0.15)',
+                borderRadius: 14,
+                padding: '14px 18px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 12,
+                alignItems: 'center',
+              }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#2D5016', letterSpacing: '0.04em' }}>
+                  📋 Selected Treatment
+                </span>
+                {bookService && (
+                  <span style={{
+                    background: 'rgba(45,80,22,0.10)',
+                    color: '#1F3A10',
+                    borderRadius: 100,
+                    padding: '4px 12px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                  }}>
+                    {bookService}
+                  </span>
+                )}
+                <span style={{
+                  background: 'rgba(201,168,76,0.15)',
+                  color: '#8a6b1a',
+                  borderRadius: 100,
+                  padding: '4px 12px',
+                  fontSize: 12,
+                  fontWeight: 600,
+                }}>
+                  ⏱ {selectedDuration}
+                </span>
+                {selectedPrice && (
+                  <span style={{
+                    background: 'rgba(201,168,76,0.15)',
+                    color: '#8a6b1a',
+                    borderRadius: 100,
+                    padding: '4px 12px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                  }}>
+                    {selectedPrice}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => { setSelectedDuration(''); setSelectedPrice(''); setBookService('') }}
+                  style={{ marginLeft: 'auto', fontSize: 11, color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  ✕ clear
+                </button>
+              </div>
+            )}
+
             {/* Row 1 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>

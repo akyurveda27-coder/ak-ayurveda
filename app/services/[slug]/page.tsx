@@ -207,9 +207,9 @@ section.block:last-child{margin-bottom:0;}
 .pricing-section{margin-bottom:28px;}
 .pricing-label{font-size:11.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6B7B4F;margin-bottom:10px;}
 .pricing-options{display:flex;gap:10px;flex-wrap:wrap;}
-.pricing-card{background:#fff;border:2px solid rgba(45,80,22,0.12);border-radius:14px;padding:14px 22px;text-align:center;min-width:100px;cursor:pointer;transition:border-color .2s,box-shadow .2s;}
+.pricing-card{background:#fff;border:2px solid rgba(45,80,22,0.12);border-radius:14px;padding:14px 22px;text-align:center;min-width:100px;cursor:pointer;transition:border-color .2s,box-shadow .2s,background .2s;}
 .pricing-card:hover{border-color:#2D5016;box-shadow:0 4px 16px rgba(45,80,22,0.12);}
-.pricing-card.selected{border-color:#2D5016;background:rgba(45,80,22,0.04);}
+.pricing-card.selected{border-color:#2D5016;background:rgba(45,80,22,0.04);box-shadow:0 4px 16px rgba(45,80,22,0.10);}
 .pricing-duration{font-size:13px;font-weight:600;color:#6B7B4F;margin-bottom:4px;}
 .pricing-price{font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:#1F3A10;}
 
@@ -249,6 +249,7 @@ export default function ServicePage() {
   const [reviewSubmitting, setReviewSubmitting] = useState(false)
   const [reviewDone, setReviewDone] = useState(false)
   const [approvedReviews, setApprovedReviews] = useState<{id:string;name:string;location?:string;quote:string;stars:number}[]>([])
+  const [selectedPricingIndex, setSelectedPricingIndex] = useState(0)
 
   useEffect(() => {
     supabase.from('services').select('*').order('sort_order').then(({ data }) => {
@@ -350,13 +351,17 @@ export default function ServicePage() {
               <h1 className="fade-up d2">{service.name}</h1>
               <p className="lead fade-up d3">{service.description}</p>
 
-              {/* Pricing Options — shown when pricing array is available */}
+              {/* Pricing Options — interactive cards */}
               {service.pricing && service.pricing.length > 0 ? (
                 <div className="pricing-section fade-up d4">
                   <div className="pricing-label">Choose Duration</div>
                   <div className="pricing-options">
                     {service.pricing.map((opt, i) => (
-                      <div key={i} className={`pricing-card${i === 0 ? ' selected' : ''}`}>
+                      <div
+                        key={i}
+                        className={`pricing-card${selectedPricingIndex === i ? ' selected' : ''}`}
+                        onClick={() => setSelectedPricingIndex(i)}
+                      >
                         <div className="pricing-duration">{opt.d}</div>
                         <div className="pricing-price">{opt.p}</div>
                       </div>
@@ -366,7 +371,24 @@ export default function ServicePage() {
               ) : null}
 
               <div className="hero-actions fade-up d4">
-                <Link href="/#book-appointment" className="btn-gold">Book This Treatment</Link>
+                <button
+                  className="btn-gold"
+                  onClick={() => {
+                    if (service.pricing && service.pricing.length > 0) {
+                      const opt = service.pricing[selectedPricingIndex]
+                      sessionStorage.setItem('book_service', service.name)
+                      sessionStorage.setItem('book_duration', opt.d)
+                      sessionStorage.setItem('book_price', opt.p)
+                    } else {
+                      sessionStorage.setItem('book_service', service.name)
+                      sessionStorage.removeItem('book_duration')
+                      sessionStorage.removeItem('book_price')
+                    }
+                    document.getElementById('book-section')?.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                >
+                  Book This Treatment
+                </button>
                 <Link href="/#services" className="btn-outline">View All Treatments</Link>
               </div>
               <div className="meta-chips fade-up d5">
@@ -643,11 +665,28 @@ export default function ServicePage() {
         {/* ── SIDEBAR ── */}
         <aside className="sidebar">
           {/* CTA Card */}
-          <div className="cta-card">
+          <div className="cta-card" id="book-section">
             <div className="cta-icon">{service.icon}</div>
             <h3>{service.name.split('–')[0].trim()}</h3>
             <p className="cta-sub">Ready to begin your healing journey? Reserve your appointment today.</p>
-            <Link href="/#book-appointment" className="btn-gold">Book Appointment</Link>
+            <button
+              className="btn-gold"
+              onClick={() => {
+                if (service.pricing && service.pricing.length > 0) {
+                  const opt = service.pricing[selectedPricingIndex]
+                  sessionStorage.setItem('book_service', service.name)
+                  sessionStorage.setItem('book_duration', opt.d)
+                  sessionStorage.setItem('book_price', opt.p)
+                } else {
+                  sessionStorage.setItem('book_service', service.name)
+                  sessionStorage.removeItem('book_duration')
+                  sessionStorage.removeItem('book_price')
+                }
+                document.getElementById('book-section')?.scrollIntoView({ behavior: 'smooth' })
+              }}
+            >
+              Book Appointment
+            </button>
             <div className="cta-divider" />
             {(service.pricing && service.pricing.length > 0) ? (
               <>
@@ -750,9 +789,25 @@ export default function ServicePage() {
           <h2>Ready to Begin Your Healing Journey?</h2>
           <p>Experience the transformative power of authentic Ayurvedic care. Our practitioners are here to guide you toward lasting wellness.</p>
           <div className="book-banner-actions">
-            <Link href="/#book-appointment" className="btn-gold" style={{ fontSize: 15, padding: '14px 36px' }}>
+            <button
+              className="btn-gold"
+              style={{ fontSize: 15, padding: '14px 36px' }}
+              onClick={() => {
+                if (service.pricing && service.pricing.length > 0) {
+                  const opt = service.pricing[selectedPricingIndex]
+                  sessionStorage.setItem('book_service', service.name)
+                  sessionStorage.setItem('book_duration', opt.d)
+                  sessionStorage.setItem('book_price', opt.p)
+                } else {
+                  sessionStorage.setItem('book_service', service.name)
+                  sessionStorage.removeItem('book_duration')
+                  sessionStorage.removeItem('book_price')
+                }
+                document.getElementById('book-section')?.scrollIntoView({ behavior: 'smooth' })
+              }}
+            >
               Book Appointment
-            </Link>
+            </button>
             <Link href="/#services" className="btn-outline" style={{ color: 'rgba(255,255,255,0.85)', borderColor: 'rgba(255,255,255,0.3)', fontSize: 15, padding: '14px 36px' }}>
               Explore All Treatments
             </Link>

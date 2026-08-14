@@ -313,6 +313,7 @@ function ServicesEditor() {
       testimonial_location: service.testimonial_location ?? null,
       testimonial_stars: service.testimonial_stars ?? 5,
       testimonials: service.testimonials ?? [],
+      pricing: service.pricing ?? [],
     }).eq('id', service.id)
     setSaving(null); setSaved(true); setTimeout(() => setSaved(false), 2000)
   }
@@ -390,7 +391,11 @@ function ServicesEditor() {
               <span className="text-2xl">{s.icon}</span>
               <div>
                 <p className="font-display font-semibold text-primary text-base">{s.name}</p>
-                <p className="text-xs text-sage">{s.duration ?? 'Duration not set'} · {s.price_from ?? 'Price not set'}</p>
+                <p className="text-xs text-sage">
+                  {s.pricing && s.pricing.length > 0
+                    ? `${s.pricing.length} pricing option${s.pricing.length > 1 ? 's' : ''} · from ${s.pricing[0].p}`
+                    : (s.duration ?? 'Duration not set') + ' · ' + (s.price_from ?? 'Price not set')}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -435,11 +440,61 @@ function ServicesEditor() {
                   <label className={labelClass}>Description</label>
                   <textarea value={s.description} onChange={e => upd(s.id, { description: e.target.value })} rows={3} className={`${inputClass} resize-none`} />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div><label className={labelClass}>Duration</label>
-                    <input value={s.duration ?? ''} onChange={e => upd(s.id, { duration: e.target.value })} placeholder="e.g. 60–90 minutes" className={inputClass} /></div>
-                  <div><label className={labelClass}>Price From</label>
-                    <input value={s.price_from ?? ''} onChange={e => upd(s.id, { price_from: e.target.value })} placeholder="e.g. ₹2,500 per session" className={inputClass} /></div>
+                {/* ── PRICING OPTIONS EDITOR ── */}
+                <div>
+                  <label className={labelClass}>Pricing Options</label>
+                  <p className="text-xs text-gray-400 mb-2">Each option is a duration + price pair shown as selectable cards on the treatment page.</p>
+                  <div className="space-y-2">
+                    {((s.pricing ?? []) as {d:string;p:string}[]).map((opt, i) => (
+                      <div key={i} className="flex gap-2 items-center">
+                        <select
+                          value={opt.d}
+                          onChange={e => {
+                            const n = [...((s.pricing ?? []) as {d:string;p:string}[])]
+                            n[i] = { ...n[i], d: e.target.value }
+                            upd(s.id, { pricing: n })
+                          }}
+                          className={`${inputClass} flex-1`}
+                        >
+                          <option value="">Select duration</option>
+                          {['30 min','45 min','60 min','75 min','90 min'].map(d => (
+                            <option key={d} value={d}>{d}</option>
+                          ))}
+                        </select>
+                        <input
+                          value={opt.p}
+                          onChange={e => {
+                            const n = [...((s.pricing ?? []) as {d:string;p:string}[])]
+                            n[i] = { ...n[i], p: e.target.value }
+                            upd(s.id, { pricing: n })
+                          }}
+                          placeholder="£40"
+                          className={`${inputClass} w-28`}
+                        />
+                        <button
+                          onClick={() => {
+                            const n = [...((s.pricing ?? []) as {d:string;p:string}[])]
+                            n.splice(i, 1)
+                            upd(s.id, { pricing: n })
+                          }}
+                          className="px-2 py-1.5 text-xs bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors shrink-0"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                    {((s.pricing ?? []) as {d:string;p:string}[]).length < 3 && (
+                      <button
+                        onClick={() => upd(s.id, { pricing: [...((s.pricing ?? []) as {d:string;p:string}[]), { d: '', p: '' }] })}
+                        className="w-full py-2 border-2 border-dashed border-green-200 text-primary text-xs rounded-xl hover:bg-green-50 transition-colors"
+                      >
+                        + Add Duration Option
+                      </button>
+                    )}
+                    {((s.pricing ?? []) as {d:string;p:string}[]).length >= 3 && (
+                      <p className="text-xs text-sage text-center py-1">Maximum 3 options reached</p>
+                    )}
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div><label className={labelClass}>Location</label>
@@ -910,14 +965,28 @@ function AppointmentsViewer() {
       {appointments.map((a) => (
         <div key={a.id} className="bg-white rounded-xl border border-green-100 p-4 space-y-2">
           <div className="flex items-start justify-between gap-4">
-            <div>
+            <div className="flex-1 min-w-0">
               <p className="font-body font-semibold text-textMain text-sm">{a.name}</p>
-              <p className="font-body text-sage text-xs">{a.service} · {a.preferred_date ?? 'Date TBD'}</p>
+              <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                <span className="font-body text-sage text-xs">{a.service}</span>
+                {/* Duration & Price badges — only shown when set */}
+                {a.selected_duration && (
+                  <span className="inline-flex items-center gap-1 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                    ⏱ {a.selected_duration}
+                  </span>
+                )}
+                {a.selected_price && (
+                  <span className="inline-flex items-center gap-1 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                    {a.selected_price}
+                  </span>
+                )}
+                <span className="text-sage text-xs">· {a.preferred_date ?? 'Date TBD'}</span>
+              </div>
             </div>
             <select
               value={a.status}
               onChange={(e) => updateStatus(a.id, e.target.value)}
-              className={`text-xs font-body font-medium px-2 py-1 rounded-full border-0 focus:outline-none cursor-pointer ${statusColors[a.status] ?? 'bg-gray-100 text-gray-600'}`}
+              className={`text-xs font-body font-medium px-2 py-1 rounded-full border-0 focus:outline-none cursor-pointer shrink-0 ${statusColors[a.status] ?? 'bg-gray-100 text-gray-600'}`}
             >
               <option value="pending">Pending</option>
               <option value="confirmed">Confirmed</option>

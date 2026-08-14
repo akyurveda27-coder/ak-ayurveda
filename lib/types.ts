@@ -99,6 +99,8 @@ export interface Appointment {
   message: string
   status: string
   created_at: string
+  selected_duration?: string | null
+  selected_price?: string | null
 }
 
 export interface SiteContent {
