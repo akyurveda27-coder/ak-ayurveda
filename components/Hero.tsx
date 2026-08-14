@@ -62,7 +62,7 @@ export default function Hero({ content }: HeroProps) {
         </div>
 
         {/* Main heading */}
-        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-primary leading-[1.1] mb-6 animate-fadeInUp">
+        <h1 className="font-display text-[32px] md:text-6xl lg:text-7xl font-bold text-primary leading-[1.1] mb-6 animate-fadeInUp">
           {data.heading}
         </h1>
 

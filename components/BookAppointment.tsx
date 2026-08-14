@@ -90,7 +90,7 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
     }
   }
 
-  const inputClass = 'w-full px-4 py-3 rounded-xl border border-green-100 bg-white font-body text-sm text-textMain placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200'
+  const inputClass = 'w-full px-4 py-3 rounded-xl border border-green-100 bg-white font-body text-base text-textMain placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200'
 
   return (
     <section id="book-section" className="py-20 md:py-28 bg-[#F5F0E8]">

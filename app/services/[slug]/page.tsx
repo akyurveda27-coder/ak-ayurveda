@@ -191,6 +191,11 @@ section.block:last-child{margin-bottom:0;}
 .book-banner p{color:rgba(253,251,245,0.72);font-size:17px;max-width:480px;margin:0 auto 36px;line-height:1.6;}
 .book-banner-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
 
+/* ── MOBILE INLINE CTA (hidden on desktop, shown on mobile) ── */
+.mobile-inline-cta{display:none;background:linear-gradient(160deg,#2D5016 0%,#1F3A10 100%);border-radius:20px;padding:28px 24px;color:#fff;margin-bottom:40px;}
+.mobile-inline-cta h3{color:#fff;font-size:20px;margin-bottom:6px;}
+.mobile-inline-cta p{color:rgba(253,251,245,0.72);font-size:13.5px;margin-bottom:20px;line-height:1.6;}
+
 /* ── REVIEW FORM ── */
 .review-wrap{background:#fff;border-radius:20px;padding:36px;box-shadow:var(--shadow);border:1px solid rgba(45,80,22,0.06);}
 .review-success{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:16px;padding:28px 32px;text-align:center;}
@@ -235,6 +240,12 @@ section.block:last-child{margin-bottom:0;}
   .benefits-grid{grid-template-columns:1fr;}
   .book-banner-actions{flex-direction:column;align-items:center;}
   .hero-actions{flex-direction:column;align-items:flex-start;}
+  .pricing-options{flex-direction:column;}
+  .pricing-card{min-width:unset;width:100%;}
+  .sidebar{display:none;}
+  .mobile-inline-cta{display:block!important;}
+  .btn-gold,.btn-outline{width:100%;text-align:center;}
+  .hero h1{font-size:clamp(26px,6vw,36px);}
 }
 `
 
@@ -416,7 +427,7 @@ export default function ServicePage() {
             {service.hero_image && (
               <div className="hero-image-wrap fade-up d3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={service.hero_image} alt={service.name} />
+                <img src={service.hero_image} alt={service.name} loading="eager" width={880} height={660} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             )}
           </div>
@@ -659,6 +670,32 @@ export default function ServicePage() {
               </div>
             )}
           </section>
+
+          {/* Mobile-only inline CTA (hidden on desktop where sidebar shows) */}
+          <div className="mobile-inline-cta">
+            <div style={{ fontSize: 28, marginBottom: 12 }}>{service.icon}</div>
+            <h3>{service.name.split('–')[0].trim()}</h3>
+            <p>Ready to begin your wellness journey? Reserve your appointment today.</p>
+            <button
+              className="btn-gold"
+              style={{ width: '100%', marginBottom: 12 }}
+              onClick={() => {
+                if (service.pricing && service.pricing.length > 0) {
+                  const opt = service.pricing[selectedPricingIndex]
+                  sessionStorage.setItem('book_service', service.name)
+                  sessionStorage.setItem('book_duration', opt.d)
+                  sessionStorage.setItem('book_price', opt.p)
+                } else {
+                  sessionStorage.setItem('book_service', service.name)
+                  sessionStorage.removeItem('book_duration')
+                  sessionStorage.removeItem('book_price')
+                }
+                document.getElementById('book-section')?.scrollIntoView({ behavior: 'smooth' })
+              }}
+            >
+              Book This Treatment
+            </button>
+          </div>
 
         </main>
 

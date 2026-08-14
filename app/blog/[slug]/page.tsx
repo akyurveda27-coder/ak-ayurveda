@@ -193,7 +193,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           {blog.content ? (
             <div
               className="
-                prose prose-lg max-w-none
+                prose prose-base md:prose-lg max-w-none
                 prose-headings:font-display prose-headings:text-primary prose-headings:leading-snug
                 prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:border-b prose-h2:border-green-100
                 prose-p:font-body prose-p:text-[#4a4a4a] prose-p:leading-relaxed prose-p:mb-4

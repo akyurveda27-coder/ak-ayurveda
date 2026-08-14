@@ -21,6 +21,7 @@ body {
   background-color: var(--color-background);
   color: var(--color-text);
   font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  overflow-x: hidden;
 }
 
 @layer base {
