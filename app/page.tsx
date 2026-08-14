@@ -4,7 +4,7 @@ import { HeroContent, StatsContent, DoctorContent, ContactContent, Service, Cond
 
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
-import Stats from '@/components/Stats'
+// import Stats from '@/components/Stats'
 import Services from '@/components/Services'
 import Doctor from '@/components/Doctor'
 import Conditions from '@/components/Conditions'
@@ -98,7 +98,7 @@ export default async function HomePage() {
     <main>
       <Navbar />
       <Hero content={hero} />
-      <Stats content={stats} />
+
       <Services services={services} />
       <Doctor content={doctor} />
       <Conditions conditions={conditions} />
