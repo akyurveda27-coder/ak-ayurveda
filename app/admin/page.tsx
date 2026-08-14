@@ -279,7 +279,7 @@ function ServicesEditor() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState<string | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'basic'|'benefits'|'process'|'testimonial'|'trust'>('basic')
+  const [activeTab, setActiveTab] = useState<'basic'|'benefits'|'process'|'faqs'|'testimonial'|'trust'>('basic')
   const [saved, setSaved] = useState(false)
 
   const load = useCallback(async () => {
@@ -301,6 +301,7 @@ function ServicesEditor() {
     await supabase.from('services').update({
       name: service.name, description: service.description, icon: service.icon,
       duration: service.duration ?? null, price_from: service.price_from ?? null,
+      hero_image: service.hero_image ?? null,
       location: service.location ?? null, phone: service.phone ?? null,
       benefits: service.benefits ?? [], benefit_descriptions: service.benefit_descriptions ?? [],
       process: service.process ?? [], process_days: service.process_days ?? [],
@@ -337,6 +338,7 @@ function ServicesEditor() {
     { key: 'basic', label: '📝 Basic Info' },
     { key: 'benefits', label: '✅ Benefits' },
     { key: 'process', label: '🔄 Process' },
+    { key: 'faqs', label: '❓ FAQs' },
     { key: 'testimonial', label: '💬 Testimonial' },
     { key: 'trust', label: '📊 Trust Stats' },
   ] as const
@@ -446,6 +448,16 @@ function ServicesEditor() {
                     <input value={s.phone ?? ''} onChange={e => upd(s.id, { phone: e.target.value })} placeholder="+91 98765 43210" className={inputClass} /></div>
                 </div>
                 <div>
+                  <label className={labelClass}>Hero Image URL</label>
+                  <input value={s.hero_image ?? ''} onChange={e => upd(s.id, { hero_image: e.target.value })} placeholder="https://images.unsplash.com/photo-...?w=1200&q=80" className={inputClass} />
+                  {s.hero_image && (
+                    <div className="mt-2 rounded-xl overflow-hidden border border-green-100" style={{ height: 120 }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={s.hero_image} alt="Hero preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  )}
+                </div>
+                <div>
                   <label className={labelClass}>Ideal For (one condition per line)</label>
                   <textarea value={(s.ideal_for ?? []).join('\n')} onChange={e => upd(s.id, { ideal_for: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) })} rows={3} placeholder="Stress & anxiety&#10;Insomnia&#10;Chronic fatigue" className={`${inputClass}`} style={{resize:'vertical'}} />
                 </div>
@@ -507,6 +519,48 @@ function ServicesEditor() {
                 <button onClick={() => upd(s.id, { process: [...(s.process ?? []), ''], process_days: [...(s.process_days ?? []), ''], process_descriptions: [...(s.process_descriptions ?? []), ''] })}
                   className="w-full py-2.5 border-2 border-dashed border-green-200 text-primary text-sm rounded-xl hover:bg-green-50 transition-colors">
                   + Add Step
+                </button>
+              </div>
+            )}
+
+            {/* ── FAQs (per-service) ── */}
+            {activeTab === 'faqs' && (
+              <div className="space-y-3">
+                <p className="text-xs text-sage">Add frequently asked questions specific to this treatment. These appear in an accordion on the service detail page.</p>
+                {((s.faqs ?? []) as {q:string;a:string}[]).map((faq, i) => {
+                  const faqList = (s.faqs ?? []) as {q:string;a:string}[]
+                  const updFaq = (patch: Partial<{q:string;a:string}>) => {
+                    const n = [...faqList]; n[i] = { ...n[i], ...patch }; upd(s.id, { faqs: n })
+                  }
+                  return (
+                    <div key={i} className="bg-green-50/60 rounded-xl border border-green-100 overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-2 bg-green-100/50">
+                        <span className="text-xs font-semibold text-primary">FAQ {i + 1}</span>
+                        <button
+                          onClick={() => { const n = [...faqList]; n.splice(i, 1); upd(s.id, { faqs: n }) }}
+                          className="text-xs text-red-400 hover:text-red-600 font-medium">✕ Remove</button>
+                      </div>
+                      <div className="p-4 space-y-2">
+                        <div>
+                          <label className={labelClass}>Question</label>
+                          <input value={faq.q} onChange={e => updFaq({ q: e.target.value })}
+                            placeholder="What should I expect during the session?"
+                            className={inputClass} />
+                        </div>
+                        <div>
+                          <label className={labelClass}>Answer</label>
+                          <textarea value={faq.a} onChange={e => updFaq({ a: e.target.value })}
+                            rows={3} placeholder="Describe the answer in detail..."
+                            className={`${inputClass} resize-none`} />
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+                <button
+                  onClick={() => upd(s.id, { faqs: [...((s.faqs ?? []) as {q:string;a:string}[]), { q: '', a: '' }] })}
+                  className="w-full py-2.5 border-2 border-dashed border-green-200 text-primary text-sm rounded-xl hover:bg-green-50 transition-colors">
+                  + Add FAQ
                 </button>
               </div>
             )}
