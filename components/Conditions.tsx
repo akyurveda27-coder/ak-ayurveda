@@ -75,11 +75,11 @@ export default function Conditions({ conditions = defaultConditions }: { conditi
 
       {/* Emoji Chips — items without image_url */}
       {chipItems.length > 0 && (
-        <div className={`flex flex-wrap justify-center gap-3 ${cardItems.length > 0 ? 'mt-6' : 'mt-10'}`}>
+        <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 ${cardItems.length > 0 ? 'mt-6' : 'mt-10'}`}>
           {chipItems.map((c) => (
             <span
               key={c.label}
-              className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm shadow-sm"
+              className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm shadow-sm w-full justify-center"
               style={{ color: '#0F3D34' }}
             >
               <span>{c.emoji}</span>
