@@ -16,6 +16,8 @@ function slugify(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
+const toSlug = slugify
+
 interface Service {
   id: string
   name: string

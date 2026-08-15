@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Navbar from '@/components/Navbar'
 import Services from '@/components/Services'
 import Conditions, { defaultConditions } from '@/components/Conditions'
@@ -93,13 +94,14 @@ export default async function HomePage() {
           {/* Right — 40%, hidden on mobile */}
           <div className="relative hidden md:col-span-2 md:block">
             <div className="overflow-hidden rounded-2xl shadow-[0_20px_60px_rgba(27,110,92,0.2)]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80"
+              <Image
+                src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1200&q=80&auto=format&fit=crop"
                 alt="Ayurvedic wellness practice"
+                width={800}
+                height={560}
                 className="h-[560px] w-full object-cover"
-                loading="eager"
-                fetchPriority="high"
+                priority={true}
+                sizes="(max-width: 768px) 0vw, 40vw"
               />
             </div>
           </div>

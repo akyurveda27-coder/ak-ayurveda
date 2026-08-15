@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface Blog {
   id: string
@@ -46,6 +47,14 @@ function formatDate(dateStr: string | null): string {
     month: 'short',
     year: 'numeric',
   })
+}
+
+function optimizeUrl(url: string, w: number): string {
+  if (!url) return url
+  if (url.includes('unsplash.com')) {
+    return `${url.split('?')[0]}?w=${w}&q=75&auto=format&fit=crop`
+  }
+  return url
 }
 
 export default function BlogList({ blogs }: { blogs: Blog[] }) {
@@ -151,11 +160,14 @@ export default function BlogList({ blogs }: { blogs: Blog[] }) {
                   {/* Mobile image (top) */}
                   <div className="md:hidden h-56 overflow-hidden">
                     {featured.image_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={featured.image_url}
+                      <Image
+                        src={optimizeUrl(featured.image_url, 600)}
                         alt={featured.title}
+                        width={600}
+                        height={224}
                         className="w-full h-full object-cover"
+                        priority={true}
+                        sizes="100vw"
                       />
                     ) : (
                       <div
@@ -204,11 +216,14 @@ export default function BlogList({ blogs }: { blogs: Blog[] }) {
                   {/* Desktop image — 40%, right corners rounded */}
                   <div className="hidden md:block md:w-2/5 overflow-hidden rounded-r-2xl">
                     {featured.image_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={featured.image_url}
+                      <Image
+                        src={optimizeUrl(featured.image_url, 600)}
                         alt={featured.title}
+                        width={600}
+                        height={400}
                         className="w-full h-full object-cover"
+                        priority={true}
+                        sizes="(max-width: 768px) 100vw, 40vw"
                       />
                     ) : (
                       <div
@@ -241,11 +256,14 @@ export default function BlogList({ blogs }: { blogs: Blog[] }) {
                         {/* Image area */}
                         <div className="relative h-52 overflow-hidden">
                           {blog.image_url ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={blog.image_url}
+                            <Image
+                              src={optimizeUrl(blog.image_url, 400)}
                               alt={blog.title}
+                              width={400}
+                              height={208}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              loading="lazy"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />
                           ) : (
                             <div

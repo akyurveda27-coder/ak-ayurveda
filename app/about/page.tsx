@@ -1,7 +1,16 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { supabase } from '@/lib/supabase'
+
+function optimizeUrl(url: string, w: number): string {
+  if (!url) return url
+  if (url.includes('unsplash.com')) {
+    return `${url.split('?')[0]}?w=${w}&q=75&auto=format&fit=crop`
+  }
+  return url
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -115,11 +124,14 @@ export default async function AboutPage() {
 
             {/* Right — Image */}
             <div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={c.story_image}
+              <Image
+                src={optimizeUrl(c.story_image, 800)}
                 alt="Ayurvedic wellness practice"
+                width={800}
+                height={384}
                 className="h-80 w-full rounded-2xl object-cover shadow-lg md:h-96"
+                loading="lazy"
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>
           </div>
@@ -201,11 +213,14 @@ export default async function AboutPage() {
 
             {/* Right — Image */}
             <div className="flex justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={c.practitioner_image}
+              <Image
+                src={optimizeUrl(c.practitioner_image, 400)}
                 alt={c.practitioner_name}
+                width={256}
+                height={256}
                 className="h-64 w-64 rounded-full object-cover shadow-xl mx-auto"
+                loading="lazy"
+                sizes="256px"
               />
             </div>
           </div>

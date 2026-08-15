@@ -27,6 +27,8 @@ export const metadata: Metadata = {
     siteName: 'AK Ayurveda London',
     type: 'website',
   },
+  viewport: 'width=device-width, initial-scale=1',
+  themeColor: '#1B6E5C',
 }
 
 export default function RootLayout({
@@ -38,6 +40,8 @@ export default function RootLayout({
     <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="preconnect" href="https://dgppbgbawwzkofwbjzsg.supabase.co" />
         <link rel="dns-prefetch" href="https://dgppbgbawwzkofwbjzsg.supabase.co" />
       </head>
       <body className="antialiased font-body">{children}</body>

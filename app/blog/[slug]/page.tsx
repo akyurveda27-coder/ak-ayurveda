@@ -2,6 +2,14 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
+
+function optimizeUrl(url: string, w: number): string {
+  if (!url) return url
+  if (url.includes('unsplash.com')) {
+    return `${url.split('?')[0]}?w=${w}&q=75&auto=format&fit=crop`
+  }
+  return url
+}
 import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -184,11 +192,14 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         {blog.image_url && (
           <div className="max-w-4xl mx-auto px-4 -mt-10 mb-10">
             <div className="relative h-72 md:h-96 rounded-2xl overflow-hidden shadow-2xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={blog.image_url}
+              <Image
+                src={optimizeUrl(blog.image_url, 896)}
                 alt={blog.title}
+                width={896}
+                height={384}
                 className="w-full h-full object-cover"
+                priority={true}
+                sizes="(max-width: 1200px) 100vw, 896px"
               />
             </div>
           </div>
@@ -270,11 +281,14 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                     >
                       <div className="relative h-40 overflow-hidden">
                         {rel.image_url ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={rel.image_url}
+                          <Image
+                            src={optimizeUrl(rel.image_url, 400)}
                             alt={rel.title}
+                            width={400}
+                            height={160}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy"
+                            sizes="(max-width: 768px) 100vw, 33vw"
                           />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">

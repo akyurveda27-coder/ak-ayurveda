@@ -96,6 +96,11 @@ details > summary::-webkit-details-marker { display: none; }
 details[open] .chev { transform: rotate(180deg); }
 .chev { transition: transform 0.2s ease; }
 
+/* Performance: hint GPU layer for animated images */
+.group:hover img {
+  will-change: transform;
+}
+
 .eyebrow { letter-spacing: 0.14em; }
 
 /* Anti-blink: prevent flash of unstyled content */
