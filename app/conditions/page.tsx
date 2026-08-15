@@ -49,7 +49,7 @@ export default async function ConditionsPage() {
       {/* ============================================================ */}
       {/* 1. HERO */}
       {/* ============================================================ */}
-      <section className="w-full bg-[#0F3D34] pt-24 pb-12">
+      <section className="w-full bg-[#0F3D34] pt-10 pb-8">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="text-sm font-semibold uppercase tracking-widest" style={{ color: '#D4A853' }}>
             ✦ {p.hero_eyebrow} ✦
@@ -80,7 +80,7 @@ export default async function ConditionsPage() {
       {/* ============================================================ */}
       <section className="w-full bg-white pb-0 pt-0">
         <div className="mx-auto max-w-4xl px-6 pb-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-6">
             {[
               { num: '18+', label: 'Therapies Offered' },
               { num: '50+', label: 'Conditions Supported' },
@@ -161,7 +161,7 @@ export default async function ConditionsPage() {
       {/* ============================================================ */}
       {/* 4. DISCLAIMER NOTE */}
       {/* ============================================================ */}
-      <section className="w-full bg-white py-12">
+      <section className="w-full bg-white py-8">
         <div className="mx-auto max-w-3xl px-6">
           <div className="rounded-2xl border border-[#D0EDE6] p-8">
             <p className="flex gap-3 text-[15px] leading-relaxed text-gray-600">
@@ -180,7 +180,7 @@ export default async function ConditionsPage() {
       {/* ============================================================ */}
       {/* 5. BOOK CTA */}
       {/* ============================================================ */}
-      <section className="w-full bg-[#0F3D34] py-16">
+      <section className="w-full bg-[#0F3D34] py-10">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="font-display text-3xl font-semibold text-white md:text-4xl">
             Ready to Address Your Wellness Concerns?

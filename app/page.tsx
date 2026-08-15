@@ -157,28 +157,28 @@ export default async function HomePage() {
       {/* ============================================================ */}
       {/* 4. WHY CHOOSE US — dark */}
       {/* ============================================================ */}
-      <section id="about" className="w-full py-12 md:py-16" style={{ background: '#0F3D34' }}>
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mx-auto max-w-2xl text-center">
-            <span className="text-sm font-semibold uppercase tracking-wider text-accent">Why AK Ayurveda</span>
-            <h2 className="mt-3 font-display text-4xl font-semibold text-white md:text-5xl">Why Choose AK Ayurveda</h2>
+      <section id="about" className="w-full py-10" style={{ background: '#0F3D34' }}>
+        <div className="mx-auto max-w-7xl px-4 md:px-6">
+          <div className="mx-auto max-w-2xl text-center mb-6">
+            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#D4A853' }}>Why AK Ayurveda</span>
+            <h2 className="mt-2 font-display text-3xl font-semibold text-white md:text-4xl">Why Choose AK Ayurveda</h2>
           </div>
 
-          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             {[
-              { icon: '🎓', title: 'Qualified Therapists', desc: 'Our practitioners hold advanced qualifications and bring decades of combined clinical expertise to every consultation.' },
-              { icon: '🌿', title: 'Authentic Techniques', desc: 'Every therapy follows classical Ayurvedic protocols passed down through generations — no shortcuts, no compromises.' },
-              { icon: '💊', title: 'No Harsh Chemicals', desc: 'We use pure, natural herbal formulations and oils, free from synthetic additives or harsh chemical ingredients.' },
-              { icon: '🤝', title: 'Personalised Care', desc: 'We begin with a thorough assessment to craft a wellness plan uniquely tailored to your constitution and needs.' },
+              { icon: '🎓', title: 'Qualified Therapists', desc: 'Advanced qualifications and decades of clinical expertise.' },
+              { icon: '🌿', title: 'Authentic Techniques', desc: 'Classical Ayurvedic protocols — no shortcuts, no compromises.' },
+              { icon: '💊', title: 'No Harsh Chemicals', desc: 'Pure herbal formulations and oils, free from synthetic additives.' },
+              { icon: '🤝', title: 'Personalised Care', desc: 'Thorough assessment to craft a plan tailored to your constitution.' },
             ].map((card) => (
               <div
                 key={card.title}
-                className="rounded-2xl border p-8 transition hover:bg-white/[0.1]"
-                style={{ backgroundColor: 'rgba(255,255,255,0.07)', borderColor: 'rgba(255,255,255,0.12)' }}
+                className="rounded-xl border p-4 transition"
+                style={{ backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.12)' }}
               >
-                <div className="text-3xl text-accent">{card.icon}</div>
-                <h3 className="mt-4 font-display text-2xl font-semibold text-white">{card.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-white/70">{card.desc}</p>
+                <div className="text-2xl mb-2">{card.icon}</div>
+                <h3 className="font-display text-base font-semibold text-white leading-snug">{card.title}</h3>
+                <p className="mt-1 text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>{card.desc}</p>
               </div>
             ))}
           </div>

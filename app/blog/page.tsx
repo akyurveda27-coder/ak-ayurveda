@@ -27,7 +27,7 @@ export default async function BlogPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="pt-28 pb-16 px-4 text-center" style={{ background: '#1B6E5C' }}>
+      <section className="pt-10 pb-8 px-4 text-center" style={{ background: '#1B6E5C' }}>
         <span className="inline-block text-xs font-body font-semibold tracking-widest uppercase mb-3" style={{ color: '#D4A853' }}>
           Our Journal
         </span>

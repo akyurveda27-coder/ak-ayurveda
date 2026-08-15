@@ -40,7 +40,7 @@ export default async function ServicesPage() {
       <Navbar />
 
       {/* Hero Banner */}
-      <section className="w-full py-16 text-center" style={{ backgroundColor: '#0F3D34' }}>
+      <section className="w-full pt-10 pb-8 text-center" style={{ backgroundColor: '#0F3D34' }}>
         <span className="text-sm font-semibold uppercase tracking-wider text-accent">Our Treatments</span>
         <h1 className="mt-3 font-display text-4xl font-semibold text-white md:text-5xl">
           Ayurvedic Treatments in London
@@ -51,7 +51,7 @@ export default async function ServicesPage() {
       </section>
 
       {/* Services Grid */}
-      <section className="w-full bg-white py-16">
+      <section className="w-full bg-white py-10">
         <div className="mx-auto max-w-7xl px-6">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((service) => (
@@ -107,7 +107,7 @@ export default async function ServicesPage() {
       </section>
 
       {/* CTA Banner */}
-      <section className="w-full bg-mint py-14 text-center">
+      <section className="w-full bg-mint py-10 text-center">
         <h2 className="font-display text-3xl font-semibold md:text-4xl" style={{ color: '#1B6E5C' }}>
           Not sure which therapy is right for you?
         </h2>

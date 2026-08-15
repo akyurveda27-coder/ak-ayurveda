@@ -65,7 +65,7 @@ export default async function ContactPage() {
       <Navbar />
 
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <section className="bg-[#0F3D34] pt-24 pb-12 text-center px-6">
+      <section className="bg-[#0F3D34] pt-10 pb-8 text-center px-6">
         <p
           className="font-display text-sm tracking-[0.25em] uppercase mb-4"
           style={{ color: '#D4A853' }}

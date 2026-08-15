@@ -66,7 +66,7 @@ export default async function AboutPage() {
       {/* ============================================================ */}
       {/* 1. HERO */}
       {/* ============================================================ */}
-      <section className="w-full bg-[#0F3D34] pt-24 pb-14">
+      <section className="w-full bg-[#0F3D34] pt-10 pb-8">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="text-sm font-semibold uppercase tracking-widest" style={{ color: '#D4A853' }}>
             ✦ {c.hero_eyebrow} ✦
@@ -81,7 +81,7 @@ export default async function AboutPage() {
       {/* ============================================================ */}
       {/* 2. MISSION STRIP */}
       {/* ============================================================ */}
-      <section className="w-full bg-white py-16">
+      <section className="w-full bg-white py-10">
         <div className="mx-auto max-w-5xl px-6">
           <div className="grid grid-cols-1 gap-10 text-center md:grid-cols-3">
             {[
@@ -104,7 +104,7 @@ export default async function AboutPage() {
       {/* ============================================================ */}
       {/* 3. STORY SECTION */}
       {/* ============================================================ */}
-      <section className="w-full bg-mint py-16">
+      <section className="w-full bg-mint py-10">
         <div className="mx-auto max-w-7xl px-6">
           <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2">
             {/* Left — Text */}
@@ -141,7 +141,7 @@ export default async function AboutPage() {
       {/* ============================================================ */}
       {/* 4. VALUES SECTION (static) */}
       {/* ============================================================ */}
-      <section className="w-full bg-white py-16">
+      <section className="w-full bg-white py-10">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-4xl font-semibold md:text-5xl" style={{ color: '#0F3D34' }}>
@@ -152,7 +152,7 @@ export default async function AboutPage() {
             </p>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {[
               {
                 icon: '🙏',
@@ -193,7 +193,7 @@ export default async function AboutPage() {
       {/* ============================================================ */}
       {/* 5. PRACTITIONER SECTION */}
       {/* ============================================================ */}
-      <section className="w-full bg-mint py-16">
+      <section className="w-full bg-mint py-10">
         <div className="mx-auto max-w-5xl px-6">
           <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2">
             {/* Left — Text */}
@@ -241,7 +241,7 @@ export default async function AboutPage() {
       {/* ============================================================ */}
       {/* 6. BOOK CTA BANNER */}
       {/* ============================================================ */}
-      <section className="w-full bg-[#0F3D34] py-16">
+      <section className="w-full bg-[#0F3D34] py-10">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="font-display text-3xl font-semibold text-white md:text-4xl">
             Begin Your Wellness Journey
