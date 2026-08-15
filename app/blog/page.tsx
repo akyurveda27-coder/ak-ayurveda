@@ -249,7 +249,7 @@ export default function BlogPage() {
         </div>
       </section>
 
-      <Footer contact={contact} />
+      <Footer />
     </main>
   )
 }

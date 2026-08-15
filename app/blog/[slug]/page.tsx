@@ -319,7 +319,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         )}
       </article>
 
-      <Footer contact={contact ?? undefined} />
+      <Footer />
     </main>
   )
 }
