@@ -343,13 +343,10 @@ export default async function TreatmentPage({ params }: { params: { slug: string
             </h2>
           </div>
 
-          {/* Glass cards grid — dynamic columns based on item count */}
-          <div
-            className="grid gap-6"
-            style={{ gridTemplateColumns: `repeat(${Math.min((idealFor as string[]).length, 5)}, 1fr)` }}
-          >
+          {/* Glass cards grid — 1 col mobile, 2 tablet, up to 5 desktop */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             {(idealFor as string[]).map((item: string, i: number) => (
-              <div key={i} className="glass-card rounded-2xl p-7">
+              <div key={i} className="glass-card rounded-2xl p-6">
                 <span className="text-3xl block mb-4">{getIdealForEmoji(item)}</span>
                 <h3 className="font-semibold text-white mb-1">{item}</h3>
                 <p className="text-sm text-white/60 leading-relaxed">
