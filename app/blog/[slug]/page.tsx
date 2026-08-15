@@ -123,7 +123,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
       <article className="bg-white min-h-screen">
         {/* Hero */}
-        <div className="bg-primary pt-28 pb-16 px-4">
+        <div className="pt-20 pb-10 px-4" style={{ background: '#1B6E5C' }}>
           <div className="max-w-3xl mx-auto">
             {/* Back link */}
             <Link
