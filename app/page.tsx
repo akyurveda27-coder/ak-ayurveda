@@ -199,7 +199,7 @@ export default async function HomePage() {
             { src: 'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=500&q=80&auto=format&fit=crop', label: 'Wellness' },
             { src: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=500&q=80&auto=format&fit=crop', label: 'Consultation' },
           ].map((item, i) => (
-            <div key={i} className="relative snap-start overflow-hidden group" style={{ flex: '0 0 72vw', minWidth: '72vw' }}>
+            <div key={i} className="relative snap-start overflow-hidden group flex-none md:flex-1" style={{ width: '72vw' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={item.src} alt={`AK Ayurveda ${item.label}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end justify-center pb-3">
