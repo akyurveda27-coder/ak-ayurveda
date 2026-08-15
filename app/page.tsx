@@ -12,12 +12,14 @@ export const revalidate = 60 // revalidate every 60 seconds
 
 export default async function HomePage() {
   // Fetch hero + stats from admin (site_content table)
-  const [heroRow, statsRow] = await Promise.all([
+  const [heroRow, statsRow, servicesRow] = await Promise.all([
     supabase.from('site_content').select('value').eq('key', 'hero').single(),
     supabase.from('site_content').select('value').eq('key', 'stats').single(),
+    supabase.from('services').select('id, name, description, icon').order('sort_order', { ascending: true }).limit(6),
   ])
   const hero: HeroContent = (heroRow.data?.value as HeroContent) ?? defaultHero
   const stats: StatsContent = (statsRow.data?.value as StatsContent) ?? defaultStats
+  const services = servicesRow.data ?? []
 
   return (
     <main className="w-full overflow-x-hidden bg-white">
@@ -117,7 +119,7 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="mt-10">
-            <Services />
+            <Services services={services} />
           </div>
           <div className="mt-10 text-center">
             <a
