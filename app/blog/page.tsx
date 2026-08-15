@@ -1,3 +1,5 @@
+export const revalidate = 3600
+
 'use client'
 
 import Link from 'next/link'

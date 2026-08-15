@@ -1,3 +1,5 @@
+export const revalidate = 3600
+
 import Navbar from '@/components/Navbar'
 import BookAppointment from '@/components/BookAppointment'
 import Footer from '@/components/Footer'

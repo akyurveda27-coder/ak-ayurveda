@@ -34,10 +34,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
       <head>
-        <link rel="preconnect" href="https://images.unsplash.com" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://dgppbgbawwzkofwbjzsg.supabase.co" />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased font-body">{children}</body>
     </html>
   )
 }

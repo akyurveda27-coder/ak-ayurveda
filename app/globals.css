@@ -97,3 +97,9 @@ details[open] .chev { transform: rotate(180deg); }
 .chev { transition: transform 0.2s ease; }
 
 .eyebrow { letter-spacing: 0.14em; }
+
+/* Anti-blink: prevent flash of unstyled content */
+html { 
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

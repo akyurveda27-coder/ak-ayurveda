@@ -81,6 +81,8 @@ export default async function HomePage() {
                 src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80"
                 alt="Ayurvedic wellness practice"
                 className="h-[560px] w-full object-cover"
+                loading="eager"
+                fetchPriority="high"
               />
             </div>
           </div>
