@@ -1,10 +1,10 @@
 import { HeroContent, StatsContent, DoctorContent, ContactContent, Service, Condition, FAQ } from './types'
 
 export const defaultHero: HeroContent = {
-  heading: 'Ancient Wisdom, Modern Healing',
-  subheading: 'Experience authentic Ayurvedic therapies rooted in 5,000 years of Vedic tradition. Personalised wellness treatments for your unique constitution.',
-  cta1_text: 'Book Appointment',
-  cta1_link: '#book-appointment',
+  heading: 'Restore Balance. Reconnect with Ancient Wellness.',
+  subheading: 'Experience personalised Ayurvedic therapies rooted in 5,000 years of tradition — designed to support your body, mind, and spirit.',
+  cta1_text: 'Book a Consultation',
+  cta1_link: '/book',
   cta2_text: 'Explore Treatments',
   cta2_link: '#services',
 }
