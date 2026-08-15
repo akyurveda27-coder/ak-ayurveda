@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AK Ayurveda — Theme Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f0f0f0;padding:30px 16px}
+h1{text-align:center;font-family:'Fraunces',serif;font-size:28px;color:#333;margin-bottom:8px}
+.subtitle{text-align:center;color:#888;font-size:14px;margin-bottom:40px}
+.theme-wrapper{display:flex;flex-direction:column;gap:60px;max-width:1100px;margin:0 auto}
+.theme-block{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.12)}
+.theme-label{text-align:center;padding:16px;font-weight:700;font-size:18px;letter-spacing:0.05em;border-bottom:1px solid rgba(0,0,0,0.06)}
+
+/* ── NAVBAR ── */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px}
+.nav-logo{font-family:'Fraunces',serif;font-size:20px;font-weight:600}
+.nav-logo span{font-size:12px;display:block;font-family:'Inter',sans-serif;font-weight:400;letter-spacing:0.08em;opacity:0.7}
+.nav-links{display:flex;gap:28px;font-size:14px;font-weight:500}
+.nav-btn{padding:10px 22px;border-radius:100px;font-size:13px;font-weight:600;border:none;cursor:pointer}
+
+/* ── HERO ── */
+.hero{padding:60px 32px;text-align:center}
+.hero-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:6px 18px;border-radius:100px;margin-bottom:20px}
+.hero h2{font-family:'Fraunces',serif;font-size:42px;font-weight:500;line-height:1.15;margin-bottom:16px;max-width:600px;margin-left:auto;margin-right:auto}
+.hero p{font-size:16px;opacity:0.7;max-width:480px;margin:0 auto 32px;line-height:1.6}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-primary{padding:14px 32px;border-radius:100px;font-size:14px;font-weight:700;border:none;cursor:pointer}
+.btn-outline{padding:13px 30px;border-radius:100px;font-size:14px;font-weight:600;cursor:pointer;background:transparent}
+
+/* ── CARDS STRIP ── */
+.cards-strip{padding:40px 32px}
+.cards-strip h3{font-family:'Fraunces',serif;font-size:24px;margin-bottom:24px}
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{border-radius:16px;padding:24px;border:1px solid rgba(0,0,0,0.06)}
+.card-icon{font-size:28px;margin-bottom:12px}
+.card h4{font-size:15px;font-weight:700;margin-bottom:8px}
+.card p{font-size:13px;opacity:0.65;line-height:1.5}
+
+/* ── SWATCHES ── */
+.swatches{display:flex;gap:0;height:44px}
+.swatch{flex:1;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;letter-spacing:0.05em}
+.swatch.dark{color:rgba(255,255,255,0.8)}
+
+/* ════════════════════════════════════
+   THEME A — White + Deep Teal
+═════════════════════════════════════*/
+.a-bg   { background:#FFFFFF; color:#1A1A1A }
+.a-nav  { background:#FFFFFF; border-bottom:1px solid #E8F5F1; color:#1A1A1A }
+.a-logo { color:#1B6E5C }
+.a-link { color:#444 }
+.a-btn  { background:#1B6E5C; color:#fff }
+.a-hero { background:linear-gradient(160deg,#F0FAF7 0%,#FFFFFF 60%) }
+.a-badge{ background:rgba(27,110,92,0.1); color:#1B6E5C }
+.a-h2   { color:#1A1A1A }
+.a-btn-primary { background:#1B6E5C; color:#fff }
+.a-btn-outline { border:2px solid #1B6E5C; color:#1B6E5C }
+.a-cards{ background:#F8FDFB }
+.a-card { background:#fff; border-color:#E0F0EB }
+.a-card-icon { color:#1B6E5C }
+.a-gold { color:#D4A853 }
+
+/* ════════════════════════════════════
+   THEME B — White + Earthy Brown
+═════════════════════════════════════*/
+.b-bg   { background:#FFFFFF; color:#2C1A0E }
+.b-nav  { background:#FFFFFF; border-bottom:1px solid #F0E8DC; color:#2C1A0E }
+.b-logo { color:#7C4A1E }
+.b-link { color:#555 }
+.b-btn  { background:#7C4A1E; color:#fff }
+.b-hero { background:linear-gradient(160deg,#FDF6EE 0%,#FFFFFF 60%) }
+.b-badge{ background:rgba(124,74,30,0.1); color:#7C4A1E }
+.b-h2   { color:#2C1A0E }
+.b-btn-primary { background:#7C4A1E; color:#fff }
+.b-btn-outline { border:2px solid #7C4A1E; color:#7C4A1E }
+.b-cards{ background:#FDF8F2 }
+.b-card { background:#fff; border-color:#EEE0D0 }
+.b-card-icon { color:#7C4A1E }
+.b-gold { color:#E8A430 }
+
+/* ════════════════════════════════════
+   THEME C — White + Forest Green (Lighter)
+═════════════════════════════════════*/
+.c-bg   { background:#FFFFFF; color:#1A2E1A }
+.c-nav  { background:#FFFFFF; border-bottom:1px solid #E6F0E6; color:#1A2E1A }
+.c-logo { color:#1F5C2E }
+.c-link { color:#444 }
+.c-btn  { background:#1F5C2E; color:#fff }
+.c-hero { background:linear-gradient(160deg,#F4FAF5 0%,#FFFFFF 60%) }
+.c-badge{ background:rgba(31,92,46,0.1); color:#1F5C2E }
+.c-h2   { color:#1A2E1A }
+.c-btn-primary { background:#1F5C2E; color:#fff }
+.c-btn-outline { border:2px solid #1F5C2E; color:#1F5C2E }
+.c-cards{ background:#F6FBF6 }
+.c-card { background:#fff; border-color:#D8EDD8 }
+.c-card-icon { color:#1F5C2E }
+.c-gold { color:#C9A84C }
+
+@media(max-width:600px){
+  .cards-grid{grid-template-columns:1fr}
+  .hero h2{font-size:28px}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<h1>🌿 AK Ayurveda — Theme Options</h1>
+<p class="subtitle">Teeno dekho — jo pasand aaye bol do, poori website update ho jayegi!</p>
+
+<div class="theme-wrapper">
+
+<!-- ══ THEME A ══ -->
+<div class="theme-block">
+  <div class="theme-label" style="background:#F0FAF7;color:#1B6E5C">⭐ Option A — White + Deep Teal (Recommended)</div>
+  <div class="swatches">
+    <div class="swatch" style="background:#1B6E5C">#1B6E5C<br>Primary</div>
+    <div class="swatch" style="background:#D4A853">#D4A853<br>Gold</div>
+    <div class="swatch" style="background:#F0FAF7;color:#1B6E5C">#F0FAF7<br>Section</div>
+    <div class="swatch" style="background:#FFFFFF;color:#999;border:1px solid #eee">#FFFFFF<br>White</div>
+    <div class="swatch" style="background:#1A1A1A">#1A1A1A<br>Text</div>
+  </div>
+  <div class="a-bg">
+    <div class="nav a-nav">
+      <div class="nav-logo a-logo">AK Ayurveda<span>Ancient Wisdom · Modern Wellbeing</span></div>
+      <div class="nav-links a-link">
+        <span>Services</span><span>About</span><span>Blog</span><span>Contact</span>
+      </div>
+      <button class="nav-btn a-btn">Book Now</button>
+    </div>
+    <div class="hero a-hero">
+      <div class="hero-badge a-badge">Traditional Ayurvedic Clinic · London, UK</div>
+      <h2 class="a-h2">Restore Balance.<br>Reconnect with <span class="a-gold">Ancient Wellness.</span></h2>
+      <p>Experience authentic Ayurvedic therapies in the heart of the UK. Personalised treatments rooted in 5,000 years of tradition.</p>
+      <div class="hero-btns">
+        <button class="btn-primary a-btn-primary">Book a Consultation</button>
+        <button class="btn-outline a-btn-outline">Explore Treatments</button>
+      </div>
+    </div>
+    <div class="cards-strip a-cards">
+      <h3>Our Treatments</h3>
+      <div class="cards-grid">
+        <div class="card a-card"><div class="card-icon a-card-icon">🤲</div><h4>Abhyanga Massage</h4><p>Full-body warm oil massage to relax muscles and support wellbeing.</p></div>
+        <div class="card a-card"><div class="card-icon a-card-icon">💧</div><h4>Shirodhara</h4><p>Gentle oil flow therapy for deep relaxation and mental calm.</p></div>
+        <div class="card a-card"><div class="card-icon a-card-icon">🌿</div><h4>Consultation</h4><p>Personalised Ayurvedic wellness guidance with Nadi Pariksha.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THEME B ══ -->
+<div class="theme-block">
+  <div class="theme-label" style="background:#FDF6EE;color:#7C4A1E">Option B — White + Earthy Brown (Heritage)</div>
+  <div class="swatches">
+    <div class="swatch" style="background:#7C4A1E">#7C4A1E<br>Primary</div>
+    <div class="swatch" style="background:#E8A430">#E8A430<br>Saffron</div>
+    <div class="swatch" style="background:#FDF6EE;color:#7C4A1E">#FDF6EE<br>Section</div>
+    <div class="swatch" style="background:#FFFFFF;color:#999;border:1px solid #eee">#FFFFFF<br>White</div>
+    <div class="swatch" style="background:#2C1A0E">#2C1A0E<br>Text</div>
+  </div>
+  <div class="b-bg">
+    <div class="nav b-nav">
+      <div class="nav-logo b-logo">AK Ayurveda<span>Ancient Wisdom · Modern Wellbeing</span></div>
+      <div class="nav-links b-link">
+        <span>Services</span><span>About</span><span>Blog</span><span>Contact</span>
+      </div>
+      <button class="nav-btn b-btn">Book Now</button>
+    </div>
+    <div class="hero b-hero">
+      <div class="hero-badge b-badge">Traditional Ayurvedic Clinic · London, UK</div>
+      <h2 class="b-h2">Restore Balance.<br>Reconnect with <span class="b-gold">Ancient Wellness.</span></h2>
+      <p>Experience authentic Ayurvedic therapies in the heart of the UK. Personalised treatments rooted in 5,000 years of tradition.</p>
+      <div class="hero-btns">
+        <button class="btn-primary b-btn-primary">Book a Consultation</button>
+        <button class="btn-outline b-btn-outline">Explore Treatments</button>
+      </div>
+    </div>
+    <div class="cards-strip b-cards">
+      <h3>Our Treatments</h3>
+      <div class="cards-grid">
+        <div class="card b-card"><div class="card-icon b-card-icon">🤲</div><h4>Abhyanga Massage</h4><p>Full-body warm oil massage to relax muscles and support wellbeing.</p></div>
+        <div class="card b-card"><div class="card-icon b-card-icon">💧</div><h4>Shirodhara</h4><p>Gentle oil flow therapy for deep relaxation and mental calm.</p></div>
+        <div class="card b-card"><div class="card-icon b-card-icon">🌿</div><h4>Consultation</h4><p>Personalised Ayurvedic wellness guidance with Nadi Pariksha.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THEME C ══ -->
+<div class="theme-block">
+  <div class="theme-label" style="background:#F4FAF5;color:#1F5C2E">Option C — White + Forest Green (Lighter/Fresher)</div>
+  <div class="swatches">
+    <div class="swatch" style="background:#1F5C2E">#1F5C2E<br>Primary</div>
+    <div class="swatch" style="background:#C9A84C">#C9A84C<br>Gold</div>
+    <div class="swatch" style="background:#F4FAF5;color:#1F5C2E">#F4FAF5<br>Section</div>
+    <div class="swatch" style="background:#FFFFFF;color:#999;border:1px solid #eee">#FFFFFF<br>White</div>
+    <div class="swatch" style="background:#1A2E1A">#1A2E1A<br>Text</div>
+  </div>
+  <div class="c-bg">
+    <div class="nav c-nav">
+      <div class="nav-logo c-logo">AK Ayurveda<span>Ancient Wisdom · Modern Wellbeing</span></div>
+      <div class="nav-links c-link">
+        <span>Services</span><span>About</span><span>Blog</span><span>Contact</span>
+      </div>
+      <button class="nav-btn c-btn">Book Now</button>
+    </div>
+    <div class="hero c-hero">
+      <div class="hero-badge c-badge">Traditional Ayurvedic Clinic · London, UK</div>
+      <h2 class="c-h2">Restore Balance.<br>Reconnect with <span class="c-gold">Ancient Wellness.</span></h2>
+      <p>Experience authentic Ayurvedic therapies in the heart of the UK. Personalised treatments rooted in 5,000 years of tradition.</p>
+      <div class="hero-btns">
+        <button class="btn-primary c-btn-primary">Book a Consultation</button>
+        <button class="btn-outline c-btn-outline">Explore Treatments</button>
+      </div>
+    </div>
+    <div class="cards-strip c-cards">
+      <h3>Our Treatments</h3>
+      <div class="cards-grid">
+        <div class="card c-card"><div class="card-icon c-card-icon">🤲</div><h4>Abhyanga Massage</h4><p>Full-body warm oil massage to relax muscles and support wellbeing.</p></div>
+        <div class="card c-card"><div class="card-icon c-card-icon">💧</div><h4>Shirodhara</h4><p>Gentle oil flow therapy for deep relaxation and mental calm.</p></div>
+        <div class="card c-card"><div class="card-icon c-card-icon">🌿</div><h4>Consultation</h4><p>Personalised Ayurvedic wellness guidance with Nadi Pariksha.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<p style="text-align:center;margin-top:40px;color:#888;font-size:13px">Konsa pasand aaya? A, B ya C bolo → poori website 10 min mein update! 🎨</p>
+
+</body>
+</html>
