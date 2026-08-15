@@ -93,7 +93,7 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
   const inputClass = 'w-full px-4 py-3 rounded-xl border border-green-100 bg-white font-body text-base text-textMain placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200'
 
   return (
-    <section id="book-section" className="py-20 md:py-28 bg-[#F0FAF7]">
+    <section id="book-appointment" className="py-20 md:py-28 bg-[#F0FAF7]">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
