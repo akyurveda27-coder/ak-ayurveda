@@ -3,6 +3,7 @@ export const revalidate = 3600
 import Navbar from '@/components/Navbar'
 import BookAppointment from '@/components/BookAppointment'
 import Footer from '@/components/Footer'
+import { supabase } from '@/lib/supabase'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -10,7 +11,10 @@ export const metadata: Metadata = {
   description: 'Book your personalised Ayurvedic wellness consultation at AK Ayurveda, London. Choose your treatment and preferred date.',
 }
 
-export default function BookPage() {
+export default async function BookPage() {
+  const { data: servicesData } = await supabase.from('services').select('name').order('id')
+  const serviceNames = servicesData?.map((s: { name: string }) => s.name) ?? []
+
   return (
     <main className="w-full overflow-x-hidden bg-white">
       <Navbar />
@@ -26,8 +30,8 @@ export default function BookPage() {
         </p>
       </section>
 
-      {/* Booking Form */}
-      <BookAppointment />
+      {/* Booking Form — passes real service names from DB */}
+      <BookAppointment services={serviceNames} />
 
       <Footer />
     </main>
