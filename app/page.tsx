@@ -157,7 +157,7 @@ export default async function HomePage() {
       {/* ============================================================ */}
       {/* 4. WHY CHOOSE US — dark */}
       {/* ============================================================ */}
-      <section id="about" className="w-full bg-primaryDark py-12 md:py-16">
+      <section id="about" className="w-full py-12 md:py-16" style={{ background: '#0F3D34' }}>
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
             <span className="text-sm font-semibold uppercase tracking-wider text-accent">Why AK Ayurveda</span>
@@ -215,9 +215,9 @@ export default async function HomePage() {
       {/* ============================================================ */}
       {/* 7. TESTIMONIALS */}
       {/* ============================================================ */}
-      <section className="w-full bg-white py-16 px-4">
+      <section className="w-full bg-white py-12 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: '#D4A853' }}>✦ What Our Clients Say ✦</p>
             <h2 className="font-display text-3xl md:text-4xl font-semibold" style={{ color: '#0F3D34' }}>Stories of Transformation</h2>
           </div>
@@ -246,14 +246,14 @@ export default async function HomePage() {
       {/* ============================================================ */}
       {/* 8. BLOG PREVIEW */}
       {/* ============================================================ */}
-      <section id="journal" className="w-full border-t border-sectionBorder bg-white py-12 md:py-16">
+      <section id="journal" className="w-full bg-white py-10">
         <BlogPreview />
       </section>
 
       {/* ============================================================ */}
       {/* 7. BOOK BANNER */}
       {/* ============================================================ */}
-      <section className="w-full bg-primaryDark py-12">
+      <section className="w-full py-12" style={{ background: '#0F3D34' }}>
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="font-display text-[32px] font-semibold text-white md:text-[42px]">
             Ready to Begin Your Wellness Journey?
