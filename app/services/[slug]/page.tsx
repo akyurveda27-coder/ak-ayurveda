@@ -3,6 +3,8 @@ import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
+export const revalidate = 60
+
 function toSlug(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
@@ -55,10 +57,20 @@ export default async function TreatmentPage({ params }: { params: { slug: string
     return (
       <main>
         <Navbar />
-        <div className="text-center py-40">
-          <h1 className="font-display text-3xl text-primaryDark mb-4">Treatment not found</h1>
-          <Link href="/services" className="text-primary hover:underline">← Back to Services</Link>
-        </div>
+        <section className="w-full bg-mint py-32 text-center">
+          <div className="text-4xl mb-6">🌿</div>
+          <h1 className="font-display text-4xl font-semibold mb-4" style={{ color: '#0F3D34' }}>
+            Treatment Not Found
+          </h1>
+          <p className="text-gray-500 mb-8">This treatment page doesn&apos;t exist or may have moved.</p>
+          <Link
+            href="/services"
+            className="inline-block rounded-full px-8 py-3 font-medium text-white transition"
+            style={{ background: '#1B6E5C' }}
+          >
+            ← View All Treatments
+          </Link>
+        </section>
         <Footer />
       </main>
     )
