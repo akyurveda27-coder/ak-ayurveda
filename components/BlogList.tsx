@@ -115,7 +115,7 @@ export default function BlogList({ blogs }: { blogs: Blog[] }) {
       </section>
 
       {/* ── Main Content ──────────────────────────────────────────────────── */}
-      <section className="bg-white py-16 px-4">
+      <section className="bg-white py-8 px-4">
         <div className="max-w-6xl mx-auto">
 
           {/* Empty state for filtered category */}
@@ -135,7 +135,7 @@ export default function BlogList({ blogs }: { blogs: Blog[] }) {
           ) : (
             <>
               {/* Result count */}
-              <p className="font-body text-gray-400 text-sm mb-8">
+              <p className="font-body text-gray-400 text-sm mb-4">
                 Showing{' '}
                 <strong style={{ color: '#0F3D34' }}>{filtered.length}</strong>{' '}
                 {filtered.length === 1 ? 'article' : 'articles'}
@@ -212,12 +212,12 @@ export default function BlogList({ blogs }: { blogs: Blog[] }) {
                       />
                     ) : (
                       <div
-                        className="w-full h-full flex items-center justify-center"
+                        className="w-full h-full min-h-[280px]"
                         style={{
-                          background: 'radial-gradient(circle, #1B6E5C, #0F3D34)',
+                          background: 'linear-gradient(135deg, #1B6E5C 0%, #0F3D34 60%, #0a2820 100%)',
                         }}
                       >
-                        <span className="text-9xl opacity-30">🌿</span>
+                        <span className="hidden">🌿</span>
                       </div>
                     )}
                   </div>
