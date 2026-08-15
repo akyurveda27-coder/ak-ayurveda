@@ -60,7 +60,8 @@ export default async function HomePage() {
               </a>
               <a
                 href="/services"
-                className="w-full rounded-full border-2 border-primary px-8 py-3.5 text-center font-medium text-primary transition hover:bg-primary/5 sm:w-auto"
+                className="w-full rounded-full border-2 px-8 py-3.5 text-center font-medium transition sm:w-auto"
+                style={{ color: '#1B6E5C', borderColor: '#1B6E5C' }}
               >
                 {hero.cta2_text || 'Explore Treatments'}
               </a>
@@ -126,7 +127,8 @@ export default async function HomePage() {
           <div className="mt-10 text-center">
             <a
               href="/services"
-              className="inline-block rounded-full border-2 border-primary px-8 py-3 font-medium text-primary transition hover:bg-primary hover:text-white"
+              className="inline-block rounded-full border-2 px-8 py-3 font-medium transition"
+              style={{ color: '#1B6E5C', borderColor: '#1B6E5C' }}
             >
               View All Treatments →
             </a>
