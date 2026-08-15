@@ -79,3 +79,21 @@ body {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Treatment page custom classes */
+.glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(6px);
+}
+
+.step-line-h {
+  background: linear-gradient(90deg, rgba(27,110,92,0.35), rgba(27,110,92,0.08));
+}
+
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details[open] .chev { transform: rotate(180deg); }
+.chev { transition: transform 0.2s ease; }
+
+.eyebrow { letter-spacing: 0.14em; }

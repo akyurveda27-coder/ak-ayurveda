@@ -64,10 +64,10 @@ export default async function TreatmentPage({ params }: { params: { slug: string
     )
   }
 
-  const benefits = service.benefits ?? ['Deep muscle relaxation', 'Improves circulation', 'Calms the nervous system', 'Nourishes skin']
-  const benefitDescs = service.benefit_descriptions ?? ['Rhythmic strokes ease tension.', 'Encourages healthy blood flow.', 'Quiets an overactive mind.', 'Leaves skin soft and hydrated.']
-  const steps = service.process ?? ['Consultation', 'Oil Selection', 'Treatment', 'Aftercare']
-  const stepDescs = service.process_descriptions ?? ['Brief health consultation.', 'Warm herbal oil chosen for your dosha.', 'Full treatment session.', 'Rest and aftercare guidance.']
+  const benefits = (Array.isArray(service.benefits) && service.benefits.length > 0) ? service.benefits : ['Deep muscle relaxation', 'Improves circulation', 'Calms the nervous system', 'Nourishes skin']
+  const benefitDescs = (Array.isArray(service.benefit_descriptions) && service.benefit_descriptions.length > 0) ? service.benefit_descriptions : ['Rhythmic strokes ease tension.', 'Encourages healthy blood flow.', 'Quiets an overactive mind.', 'Leaves skin soft and hydrated.']
+  const steps = (Array.isArray(service.process) && service.process.length > 0) ? service.process : ['Welcome & Consultation', 'Oil Selection', 'Full Body Treatment', 'Rest & Aftercare']
+  const stepDescs = (Array.isArray(service.process_descriptions) && service.process_descriptions.length > 0) ? service.process_descriptions : ['A brief conversation about your current health and areas of tension.', 'A warm herbal oil is chosen to suit your dosha and current imbalance.', 'The full treatment session using traditional Ayurvedic techniques.', 'A short rest period followed by aftercare guidance for the rest of your day.']
   const idealFor = service.ideal_for ?? ['Muscle tension', 'Poor sleep', 'Stress & anxiety', 'New to Ayurveda']
   const faqs: { question?: string; q?: string; answer?: string; a?: string }[] = service.faqs ?? []
 
