@@ -188,7 +188,7 @@ export default async function TreatmentPage({ params }: { params: { slug: string
             <div>
               <p className="text-xs tracking-wide text-black/40 uppercase">Price</p>
               <p className="font-display text-2xl font-semibold" style={{ color: '#0F3D34' }}>
-                {service.price_from ? `From £${service.price_from}` : 'From £30'}
+                {service.price_from ? `From ${String(service.price_from).replace(/^£+/, '£')}` : 'From £30'}
               </p>
             </div>
           </div>

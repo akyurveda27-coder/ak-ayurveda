@@ -67,7 +67,7 @@ export default async function ServicesPage() {
                     {service.description}
                   </p>
                   {service.price_from && (
-                    <p className="mt-3 text-sm font-semibold text-accent">From £{service.price_from}</p>
+                    <p className="mt-3 text-sm font-semibold text-accent">From {String(service.price_from).replace(/^£+/, '£')}</p>
                   )}
                   <div className="mt-5 flex items-center gap-4 text-sm font-medium text-primary">
                     <Link href={`/services/${slug}`} className="hover:underline">
