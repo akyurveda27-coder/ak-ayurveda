@@ -243,7 +243,7 @@ export default async function TreatmentPage({ params }: { params: { slug: string
 
           {/* Right: benefit cards grid */}
           <div className="grid sm:grid-cols-2 gap-5">
-            {benefits.map((benefit, i) => (
+            {(benefits as string[]).map((benefit: string, i: number) => (
               <div key={i} className="bg-white rounded-2xl p-6 shadow-sm">
                 <span
                   className="inline-flex items-center justify-center w-9 h-9 rounded-full mb-4"
@@ -290,7 +290,7 @@ export default async function TreatmentPage({ params }: { params: { slug: string
               style={{ margin: '0 12.5%' }}
             />
 
-            {steps.map((step, i) => (
+            {(steps as string[]).map((step: string, i: number) => (
               <div key={i} className="relative text-center md:text-left">
                 <div
                   className="w-12 h-12 rounded-full flex items-center justify-center font-display text-xl font-semibold text-white mx-auto md:mx-0 mb-5 relative z-10"
@@ -338,7 +338,7 @@ export default async function TreatmentPage({ params }: { params: { slug: string
 
           {/* Glass cards grid */}
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {idealFor.map((item, i) => (
+            {(idealFor as string[]).map((item: string, i: number) => (
               <div key={i} className="glass-card rounded-2xl p-7">
                 <span className="text-3xl block mb-4">{getIdealForEmoji(item)}</span>
                 <h3 className="font-semibold text-white mb-1">{item}</h3>
@@ -369,7 +369,7 @@ export default async function TreatmentPage({ params }: { params: { slug: string
 
           {/* Native accordion */}
           <div className="space-y-4">
-            {faqList.map((faq, i) => (
+            {(faqList as Array<{question:string;answer:string}>).map((faq: {question:string;answer:string}, i: number) => (
               <details key={i} className="bg-white rounded-2xl px-6 py-5 shadow-sm">
                 <summary
                   className="flex items-center justify-between cursor-pointer font-semibold"
@@ -408,7 +408,7 @@ export default async function TreatmentPage({ params }: { params: { slug: string
 
             {/* 3-col grid */}
             <div className="grid md:grid-cols-3 gap-6">
-              {related.map((r) => (
+              {(related as Array<{id:string;name:string;description:string;icon:string}>).map((r: {id:string;name:string;description:string;icon:string}) => (
                 <div
                   key={r.id}
                   className="border border-black/10 rounded-2xl p-7 hover:shadow-lg transition"
