@@ -176,13 +176,11 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         {blog.image_url && (
           <div className="max-w-4xl mx-auto px-4 -mt-10 mb-10">
             <div className="relative h-72 md:h-96 rounded-2xl overflow-hidden shadow-2xl">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={blog.image_url}
                 alt={blog.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1200px) 100vw, 896px"
-                priority
+                className="w-full h-full object-cover"
               />
             </div>
           </div>
@@ -264,12 +262,11 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                     >
                       <div className="relative h-40 overflow-hidden">
                         {rel.image_url ? (
-                          <Image
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
                             src={rel.image_url}
                             alt={rel.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                            sizes="(max-width: 768px) 100vw, 33vw"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
