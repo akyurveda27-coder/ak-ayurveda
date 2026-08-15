@@ -1,11 +1,13 @@
 'use client'
+import Link from 'next/link'
 
 const quickLinks = [
-  { label: 'Services', href: '#services' },
-  { label: 'About', href: '#about' },
-  { label: 'Conditions', href: '#conditions' },
-  { label: 'FAQ', href: '#faq' },
-  { label: 'Book Appointment', href: '#book-appointment' },
+  { label: 'Services', href: '/services' },
+  { label: 'About', href: '/about' },
+  { label: 'Conditions', href: '/conditions' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Contact', href: '/contact' },
+  { label: 'Book Appointment', href: '/book' },
 ]
 
 const contact = [
@@ -41,9 +43,9 @@ export default function Footer() {
           <ul className="mt-4 space-y-2 text-sm text-white/60">
             {quickLinks.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className="transition hover:text-accent">
+                <Link href={link.href} className="transition hover:text-accent">
                   {link.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
