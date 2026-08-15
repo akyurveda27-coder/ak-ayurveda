@@ -246,7 +246,7 @@ export default async function HomePage() {
       {/* ============================================================ */}
       {/* 8. BLOG PREVIEW */}
       {/* ============================================================ */}
-      <section id="journal" className="w-full bg-white py-10">
+      <section id="journal" className="w-full bg-white">
         <BlogPreview />
       </section>
 

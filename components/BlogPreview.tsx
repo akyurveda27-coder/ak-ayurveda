@@ -80,7 +80,7 @@ export default function BlogPreview() {
     <section className="bg-background py-10 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
           <div>
             <span className="inline-block text-xs font-body font-semibold tracking-widest text-accent uppercase mb-3">
               Our Journal
