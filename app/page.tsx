@@ -52,11 +52,11 @@ export default async function HomePage() {
           style={{ background: 'radial-gradient(circle, rgba(27,110,92,0.15) 0%, rgba(240,250,247,0.4) 60%, transparent 80%)' }}
         />
 
-        <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-6 pt-20 pb-12 md:grid-cols-5 md:px-10">
+        <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-6 px-6 pt-16 pb-10 md:grid-cols-5 md:px-10 md:pt-20 md:pb-12">
 
           {/* Left — 60% */}
           <div className="md:col-span-3">
-            <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
+            <span className="inline-block rounded-full px-4 py-1.5 text-sm font-medium" style={{ background: 'rgba(27,110,92,0.1)', color: '#1B6E5C' }}>
               London&rsquo;s Authentic Ayurvedic Clinic · London, UK
             </span>
 
