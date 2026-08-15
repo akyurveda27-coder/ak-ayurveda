@@ -34,7 +34,7 @@ export default function Conditions({ conditions = defaultConditions }: { conditi
           ✦ Conditions We Support ✦
         </p>
         <h2
-          className="mt-3 font-display text-4xl font-semibold md:text-5xl"
+          className="mt-3 font-display text-3xl font-semibold md:text-5xl"
           style={{ color: '#0F3D34' }}
         >
           Conditions We Support
