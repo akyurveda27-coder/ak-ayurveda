@@ -119,6 +119,14 @@ export default async function HomePage() {
           <div className="mt-10">
             <Services />
           </div>
+          <div className="mt-10 text-center">
+            <a
+              href="/services"
+              className="inline-block rounded-full border-2 border-primary px-8 py-3 font-medium text-primary transition hover:bg-primary hover:text-white"
+            >
+              View All Treatments →
+            </a>
+          </div>
         </div>
       </section>
 
