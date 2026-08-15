@@ -15,14 +15,14 @@ export default function HomePage() {
       {/* ============================================================ */}
       {/* 1. HERO */}
       {/* ============================================================ */}
-      <section className="relative flex min-h-[90vh] w-full items-center overflow-hidden bg-white">
+      <section className="relative w-full overflow-hidden bg-white">
         {/* Radial glow */}
         <div
           className="pointer-events-none absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full opacity-70 blur-3xl"
           style={{ background: 'radial-gradient(circle, rgba(27,110,92,0.15) 0%, rgba(240,250,247,0.4) 60%, transparent 80%)' }}
         />
 
-        <div className="relative mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 pt-20 pb-16 md:grid-cols-5 md:px-10 md:pt-24">
+        <div className="relative mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-6 pt-24 pb-20 md:grid-cols-5 md:px-10">
 
           {/* Left — 60% */}
           <div className="md:col-span-3">
