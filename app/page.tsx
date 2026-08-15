@@ -1,6 +1,6 @@
 import Navbar from '@/components/Navbar'
 import Services from '@/components/Services'
-import Conditions from '@/components/Conditions'
+import Conditions, { defaultConditions } from '@/components/Conditions'
 import BlogPreview from '@/components/BlogPreview'
 import FAQ from '@/components/FAQ'
 import Footer from '@/components/Footer'
@@ -11,15 +11,18 @@ import type { HeroContent, StatsContent } from '@/lib/types'
 export const revalidate = 60 // revalidate every 60 seconds
 
 export default async function HomePage() {
-  // Fetch hero + stats from admin (site_content table)
-  const [heroRow, statsRow, servicesRow] = await Promise.all([
+  // Fetch hero + stats + conditions from admin (site_content table)
+  const [heroRow, statsRow, servicesRow, conditionsRow] = await Promise.all([
     supabase.from('site_content').select('value').eq('key', 'hero').single(),
     supabase.from('site_content').select('value').eq('key', 'stats').single(),
     supabase.from('services').select('id, name, description, icon, hero_image, card_image').order('sort_order', { ascending: true }).limit(6),
+    supabase.from('site_content').select('content').eq('key', 'conditions').single(),
   ])
   const hero: HeroContent = (heroRow.data?.value as HeroContent) ?? defaultHero
   const stats: StatsContent = (statsRow.data?.value as StatsContent) ?? defaultStats
   const services = servicesRow.data ?? []
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const conditionsData = (conditionsRow.data?.content as any[]) ?? null
 
   return (
     <main className="w-full overflow-x-hidden bg-white">
@@ -170,8 +173,8 @@ export default async function HomePage() {
       {/* ============================================================ */}
       {/* 5. CONDITIONS */}
       {/* ============================================================ */}
-      <section id="conditions" className="w-full bg-mint py-12 md:py-16">
-        <Conditions />
+      <section id="conditions" className="w-full py-12 md:py-16" style={{ backgroundColor: '#F0FAF7' }}>
+        <Conditions conditions={conditionsData ?? defaultConditions} />
       </section>
 
       {/* ============================================================ */}

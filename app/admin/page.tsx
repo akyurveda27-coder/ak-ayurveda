@@ -721,60 +721,169 @@ function ServicesEditor() {
   )
 }
 
+interface ConditionItem {
+  emoji: string
+  label: string
+  image_url?: string | null
+}
+
+const defaultConditionItems: ConditionItem[] = [
+  { emoji: '😓', label: 'Stress & Anxiety' },
+  { emoji: '💤', label: 'Insomnia & Poor Sleep' },
+  { emoji: '🔥', label: 'Digestive Issues' },
+  { emoji: '🦴', label: 'Joint Pain & Stiffness' },
+  { emoji: '🧠', label: 'Mental Fatigue' },
+  { emoji: '💆', label: 'Chronic Headaches' },
+  { emoji: '⚡', label: 'Low Energy & Fatigue' },
+  { emoji: '🌸', label: 'Skin Conditions' },
+  { emoji: '⚖️', label: 'Weight Imbalance' },
+  { emoji: '🌬️', label: 'Respiratory Issues' },
+  { emoji: '💪', label: 'Muscle Tension' },
+  { emoji: '🩺', label: 'Hormonal Imbalance' },
+]
+
 function ConditionsEditor() {
-  const [conditions, setConditions] = useState<Condition[]>([])
-  const [newCond, setNewCond] = useState({ name: '', icon: '🌿' })
+  const [conditions, setConditions] = useState<ConditionItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState<string | null>(null)
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
 
   const load = useCallback(async () => {
     setLoading(true)
-    const { data } = await supabase.from('conditions').select('*').order('sort_order')
-    setConditions(data ?? [])
+    const { data } = await supabase.from('site_content').select('content').eq('key', 'conditions').single()
+    if (data?.content && Array.isArray(data.content)) {
+      setConditions(data.content as ConditionItem[])
+    } else {
+      setConditions(defaultConditionItems)
+    }
     setLoading(false)
   }, [])
 
   useEffect(() => { load() }, [load])
 
-  const handleUpdate = async (c: Condition) => {
-    setSaving(c.id)
-    await supabase.from('conditions').update({ name: c.name, icon: c.icon }).eq('id', c.id)
-    setSaving(null)
+  const updateItem = (index: number, patch: Partial<ConditionItem>) => {
+    setConditions(prev => prev.map((c, i) => i === index ? { ...c, ...patch } : c))
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this condition?')) return
-    await supabase.from('conditions').delete().eq('id', id)
-    load()
+  const deleteItem = (index: number) => {
+    setConditions(prev => prev.filter((_, i) => i !== index))
   }
 
-  const handleAdd = async () => {
-    if (!newCond.name) return
-    await supabase.from('conditions').insert({ ...newCond, sort_order: conditions.length + 1 })
-    setNewCond({ name: '', icon: '🌿' })
-    load()
+  const addItem = () => {
+    setConditions(prev => [...prev, { emoji: '🌿', label: '', image_url: '' }])
+  }
+
+  const handleSave = async () => {
+    setSaveStatus('saving')
+    const payload = conditions.map(c => ({
+      emoji: c.emoji,
+      label: c.label,
+      image_url: c.image_url || null,
+    }))
+    const { error } = await supabase.from('site_content').upsert(
+      { key: 'conditions', content: payload },
+      { onConflict: 'key' }
+    )
+    if (error) {
+      setSaveStatus('error')
+      setTimeout(() => setSaveStatus('idle'), 3000)
+    } else {
+      setSaveStatus('saved')
+      setTimeout(() => setSaveStatus('idle'), 2000)
+    }
   }
 
   if (loading) return <p className="text-sage font-body text-sm">Loading conditions...</p>
 
+  const saveBtnLabel = { idle: '💾 Save Conditions', saving: 'Saving...', saved: '✓ Saved!', error: '✗ Error — Retry' }[saveStatus]
+  const saveBtnClass = {
+    idle: 'bg-primary hover:bg-primaryDark text-white',
+    saving: 'opacity-60 cursor-not-allowed bg-primary text-white',
+    saved: 'bg-green-600 text-white',
+    error: 'bg-red-500 text-white',
+  }[saveStatus]
+
   return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {conditions.map((c) => (
-          <div key={c.id} className="bg-green-50/50 rounded-xl p-3 flex items-center gap-3">
-            <input value={c.icon} onChange={(e) => setConditions(prev => prev.map(x => x.id === c.id ? { ...x, icon: e.target.value } : x))} className="w-14 px-2 py-1.5 rounded-lg border border-green-100 font-body text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary/30" />
-            <input value={c.name} onChange={(e) => setConditions(prev => prev.map(x => x.id === c.id ? { ...x, name: e.target.value } : x))} className={`${inputClass} flex-1`} />
-            <button onClick={() => handleUpdate(c)} disabled={saving === c.id} className="px-3 py-1.5 bg-primary text-white rounded-lg font-body text-xs hover:bg-primaryDark transition-colors disabled:opacity-50">
-              {saving === c.id ? '...' : 'Save'}
-            </button>
-            <button onClick={() => handleDelete(c.id)} className="px-3 py-1.5 bg-red-100 text-red-600 rounded-lg font-body text-xs hover:bg-red-200 transition-colors">✕</button>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="font-body text-xs font-semibold text-sage uppercase tracking-wide">{conditions.length} Conditions</p>
+        <div className="flex gap-2">
+          <button
+            onClick={addItem}
+            className="px-4 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-xs font-medium hover:bg-amber-100 transition-colors"
+          >
+            + Add Condition
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saveStatus === 'saving'}
+            className={`px-5 py-1.5 rounded-lg font-body font-medium text-sm transition-all duration-200 ${saveBtnClass}`}
+          >
+            {saveBtnLabel}
+          </button>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        {conditions.map((c, i) => (
+          <div key={i} className="bg-green-50/50 rounded-xl border border-green-100 p-4 space-y-3">
+            <div className="flex items-center gap-3">
+              {/* Emoji */}
+              <div>
+                <label className={labelClass}>Emoji</label>
+                <input
+                  value={c.emoji}
+                  onChange={e => updateItem(i, { emoji: e.target.value })}
+                  className="px-2 py-1.5 rounded-lg border border-green-100 font-body text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  style={{ width: 52 }}
+                />
+              </div>
+              {/* Label */}
+              <div className="flex-1">
+                <label className={labelClass}>Label</label>
+                <input
+                  value={c.label}
+                  onChange={e => updateItem(i, { label: e.target.value })}
+                  placeholder="Condition name"
+                  className={inputClass}
+                />
+              </div>
+              {/* Delete */}
+              <button
+                onClick={() => deleteItem(i)}
+                className="mt-5 px-3 py-1.5 bg-red-100 text-red-600 rounded-lg font-body text-xs hover:bg-red-200 transition-colors shrink-0"
+              >
+                ✕
+              </button>
+            </div>
+            {/* Image URL */}
+            <div>
+              <label className={labelClass}>Image URL <span className="font-normal text-gray-400">(optional — shows image card instead of emoji chip)</span></label>
+              <input
+                value={c.image_url ?? ''}
+                onChange={e => updateItem(i, { image_url: e.target.value || null })}
+                placeholder="https://images.unsplash.com/..."
+                className={inputClass}
+              />
+              {c.image_url && (
+                <div className="mt-2 rounded-xl overflow-hidden border border-green-100" style={{ height: 50, width: 80 }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.image_url} alt={c.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
-      <div className="border-2 border-dashed border-green-200 rounded-xl p-3 flex items-center gap-3">
-        <input value={newCond.icon} onChange={(e) => setNewCond(p => ({ ...p, icon: e.target.value }))} className="w-14 px-2 py-1.5 rounded-lg border border-green-100 font-body text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="🌿" />
-        <input value={newCond.name} onChange={(e) => setNewCond(p => ({ ...p, name: e.target.value }))} placeholder="Condition name" className={`${inputClass} flex-1`} />
-        <button onClick={handleAdd} className="px-4 py-1.5 bg-accent text-white rounded-lg font-body text-xs font-medium hover:opacity-90 transition-colors">Add</button>
+
+      {/* Bottom save button */}
+      <div className="pt-2 flex justify-end">
+        <button
+          onClick={handleSave}
+          disabled={saveStatus === 'saving'}
+          className={`px-6 py-2.5 rounded-xl font-body font-medium text-sm transition-all duration-200 ${saveBtnClass}`}
+        >
+          {saveBtnLabel}
+        </button>
       </div>
     </div>
   )
