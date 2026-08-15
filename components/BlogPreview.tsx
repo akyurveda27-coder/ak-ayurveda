@@ -35,9 +35,9 @@ export default function BlogPreview() {
 
   if (loading) {
     return (
-      <section className="bg-background py-10 px-4">
+      <section className="bg-background py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="h-8 w-48 bg-green-100 rounded-lg animate-pulse mx-auto mb-10" />
+          <div className="h-8 w-48 bg-green-100 rounded-lg animate-pulse mx-auto mb-6" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
               <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
@@ -58,7 +58,7 @@ export default function BlogPreview() {
   // Empty state
   if (blogs.length === 0) {
     return (
-      <section className="bg-background py-10 px-4">
+      <section className="bg-background py-8 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <span className="inline-block text-xs font-body font-semibold tracking-widest text-accent uppercase mb-3">
             Our Journal
@@ -77,10 +77,10 @@ export default function BlogPreview() {
   }
 
   return (
-    <section className="bg-background py-10 px-4">
+    <section className="bg-background py-8 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-4">
           <div>
             <span className="inline-block text-xs font-body font-semibold tracking-widest text-accent uppercase mb-3">
               Our Journal

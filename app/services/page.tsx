@@ -96,7 +96,7 @@ export default async function ServicesPage() {
           </div>
 
           {list.length === 0 && (
-            <div className="py-20 text-center text-gray-400">
+            <div className="py-10 text-center text-gray-400">
               <p className="text-lg">Treatments coming soon...</p>
               <a href="/book" className="mt-6 inline-block rounded-full px-8 py-3 text-white" style={{ backgroundColor: '#1B6E5C' }}>
                 Book a Consultation

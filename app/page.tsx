@@ -111,7 +111,7 @@ export default async function HomePage() {
       {/* ============================================================ */}
       {/* 2. STATS STRIP — 4 columns */}
       {/* ============================================================ */}
-      <section className="w-full border-t border-b border-mintBorder bg-mint py-12">
+      <section className="w-full border-t border-b border-mintBorder bg-mint py-8">
         <div className="mx-auto grid max-w-5xl grid-cols-2 gap-8 px-6 text-center lg:grid-cols-4">
           {[
             { value: stats.stat1_value, label: stats.stat1_label },
@@ -130,7 +130,7 @@ export default async function HomePage() {
       {/* ============================================================ */}
       {/* 3. SERVICES */}
       {/* ============================================================ */}
-      <section id="services" className="w-full border-b border-sectionBorder bg-white py-12 md:py-16">
+      <section id="services" className="w-full border-b border-sectionBorder bg-white py-10">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
             <span className="text-sm font-semibold uppercase tracking-wider text-accent">Our Treatments</span>
@@ -259,7 +259,7 @@ export default async function HomePage() {
       {/* ============================================================ */}
       {/* 7. BOOK BANNER */}
       {/* ============================================================ */}
-      <section className="w-full py-12" style={{ background: '#0F3D34' }}>
+      <section className="w-full py-10" style={{ background: '#0F3D34' }}>
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="font-display text-[32px] font-semibold text-white md:text-[42px]">
             Ready to Begin Your Wellness Journey?

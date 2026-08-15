@@ -224,7 +224,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               dangerouslySetInnerHTML={{ __html: blog.content ?? '' }}
             />
           ) : (
-            <div className="text-center py-16">
+            <div className="text-center py-8">
               <p className="font-body text-sage text-lg">Full article content coming soon.</p>
             </div>
           )}
@@ -260,7 +260,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         {related.length > 0 && (
           <div className="bg-white border-t border-green-50 py-10 px-4">
             <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-10">
+              <div className="text-center mb-6">
                 <span className="inline-block text-xs font-body font-semibold tracking-widest text-accent uppercase mb-3">
                   Keep Reading
                 </span>
