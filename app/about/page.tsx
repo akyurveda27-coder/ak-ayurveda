@@ -1,9 +1,48 @@
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 
+const defaultAbout = {
+  hero_eyebrow: 'Our Story',
+  hero_heading: 'About AK Ayurveda',
+  hero_subtext: 'Rooted in 5,000 years of Vedic wisdom, practised in the heart of London.',
+  mission1_icon: '🌿',
+  mission1_title: 'Our Mission',
+  mission1_text: 'To restore balance and wellbeing through the timeless principles of Ayurveda, tailored to modern life.',
+  mission2_icon: '🏛️',
+  mission2_title: 'Our Heritage',
+  mission2_text: 'Drawing from over 5,000 years of Vedic wisdom, our treatments are rooted in authentic Ayurvedic tradition.',
+  mission3_icon: '🌍',
+  mission3_title: 'Our Reach',
+  mission3_text: 'Based in London, we serve clients from across the UK and beyond who seek genuine Ayurvedic care.',
+  story_heading: 'Our Journey',
+  story_para1:
+    'AK Ayurveda was founded with a single purpose: to bring authentic Ayurvedic healing to London. Frustrated by the lack of genuine, personalised Ayurvedic care in the UK, our founders set out to create a clinic that honours the full depth of this ancient science.',
+  story_para2:
+    'Every treatment at AK Ayurveda is rooted in classical Ayurvedic texts and delivered with modern sensitivity. We believe true healing addresses not just symptoms, but the root imbalances that cause them.',
+  story_para3:
+    'Today, AK Ayurveda serves hundreds of clients seeking relief from stress, digestive issues, sleep disorders, and more — through therapies that have stood the test of thousands of years.',
+  story_image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80',
+  practitioner_name: 'Dr. Anjali Kumar',
+  practitioner_title: 'Chief Ayurvedic Practitioner',
+  practitioner_bio:
+    'Dr. Anjali Kumar trained at the Ayurvedic Medical College in Kerala and has over 15 years of clinical experience. She has treated thousands of patients across India and the UK, specialising in Panchakarma and chronic lifestyle disorders.',
+  practitioner_image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&q=80',
+}
+
 export default async function AboutPage() {
+  const { data: row } = await supabase
+    .from('site_content')
+    .select('content')
+    .eq('key', 'about')
+    .single()
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const saved = (row?.content as Record<string, any>) ?? {}
+  const c = { ...defaultAbout, ...saved }
+
   return (
     <main className="w-full overflow-x-hidden bg-white">
       <Navbar />
@@ -14,14 +53,12 @@ export default async function AboutPage() {
       <section className="w-full bg-[#0F3D34] py-20">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="text-sm font-semibold uppercase tracking-widest" style={{ color: '#D4A853' }}>
-            ✦ Our Story ✦
+            ✦ {c.hero_eyebrow} ✦
           </p>
           <h1 className="mt-4 font-display text-4xl font-semibold text-white md:text-6xl">
-            About AK Ayurveda
+            {c.hero_heading}
           </h1>
-          <p className="mt-5 text-lg text-white/70">
-            Rooted in 5,000 years of Vedic wisdom, practised in the heart of London.
-          </p>
+          <p className="mt-5 text-lg text-white/70">{c.hero_subtext}</p>
         </div>
       </section>
 
@@ -32,21 +69,9 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-5xl px-6">
           <div className="grid grid-cols-1 gap-10 text-center md:grid-cols-3">
             {[
-              {
-                icon: '🌿',
-                title: 'Our Mission',
-                desc: 'To heal through ancient wisdom — addressing root causes rather than symptoms, restoring balance to mind, body, and soul.',
-              },
-              {
-                icon: '🏛️',
-                title: 'Our Heritage',
-                desc: '5,000 years of Ayurvedic tradition form the foundation of every therapy we offer — timeless science, modern care.',
-              },
-              {
-                icon: '🌍',
-                title: 'Our Reach',
-                desc: 'London-based clinic proudly serving clients from across the globe seeking authentic Ayurvedic wellness.',
-              },
+              { icon: c.mission1_icon, title: c.mission1_title, desc: c.mission1_text },
+              { icon: c.mission2_icon, title: c.mission2_title, desc: c.mission2_text },
+              { icon: c.mission3_icon, title: c.mission3_title, desc: c.mission3_text },
             ].map((item) => (
               <div key={item.title} className="flex flex-col items-center">
                 <span className="text-5xl">{item.icon}</span>
@@ -72,26 +97,12 @@ export default async function AboutPage() {
                 className="font-display text-4xl font-semibold md:text-5xl"
                 style={{ color: '#0F3D34' }}
               >
-                Our Journey
+                {c.story_heading}
               </h2>
               <div className="mt-6 space-y-4 text-[17px] leading-relaxed text-gray-600">
-                <p>
-                  AK Ayurveda was founded with a singular vision: to bring the transformative power of classical
-                  Ayurvedic medicine to the heart of London. Born from a deep reverence for Vedic traditions and
-                  a passion for holistic health, our clinic opened its doors to offer something truly different —
-                  an approach grounded in over 5,000 years of time-tested healing wisdom.
-                </p>
-                <p>
-                  Our philosophy centres on the individual. We believe every person carries a unique
-                  constitutional blueprint — their <em>prakriti</em> — and that sustainable wellness begins
-                  when treatments are crafted in harmony with this blueprint. From your first consultation,
-                  we listen, assess, and design a personalised pathway to balance.
-                </p>
-                <p>
-                  Today, AK Ayurveda serves clients from across the UK and around the world, combining
-                  authentic Ayurvedic therapies with a warm, welcoming environment where healing is not
-                  just a treatment — it is an experience.
-                </p>
+                <p>{c.story_para1}</p>
+                <p>{c.story_para2}</p>
+                <p>{c.story_para3}</p>
               </div>
             </div>
 
@@ -99,7 +110,7 @@ export default async function AboutPage() {
             <div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80"
+                src={c.story_image}
                 alt="Ayurvedic wellness practice"
                 className="h-80 w-full rounded-2xl object-cover shadow-lg md:h-96"
               />
@@ -109,7 +120,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ============================================================ */}
-      {/* 4. VALUES SECTION */}
+      {/* 4. VALUES SECTION (static) */}
       {/* ============================================================ */}
       <section className="w-full bg-white py-16">
         <div className="mx-auto max-w-7xl px-6">
@@ -175,29 +186,18 @@ export default async function AboutPage() {
                 className="mt-3 font-display text-3xl font-semibold md:text-4xl"
                 style={{ color: '#0F3D34' }}
               >
-                Dr. Anjali Kumar
+                {c.practitioner_name}
               </h2>
-              <p className="mt-1 text-sm font-medium text-gray-500">Chief Ayurvedic Practitioner</p>
-              <ul className="mt-4 space-y-1 text-sm text-gray-600">
-                <li>🎓 BAMS (Bachelor of Ayurvedic Medicine &amp; Surgery)</li>
-                <li>🎓 MD Ayurveda — Kerala Ayurveda Academy</li>
-                <li>🏅 15+ years of clinical practice</li>
-                <li>🌍 Trained across India, Sri Lanka &amp; the UK</li>
-              </ul>
-              <p className="mt-5 text-[17px] leading-relaxed text-gray-600">
-                Dr. Anjali Kumar brings over fifteen years of clinical experience spanning three continents.
-                Her approach weaves classical Ayurvedic diagnostics — pulse reading, constitution assessment,
-                and lifestyle analysis — with compassionate, patient-centred care. She believes healing is a
-                partnership between practitioner and patient, grounded in trust, patience, and deep listening.
-              </p>
+              <p className="mt-1 text-sm font-medium text-gray-500">{c.practitioner_title}</p>
+              <p className="mt-5 text-[17px] leading-relaxed text-gray-600">{c.practitioner_bio}</p>
             </div>
 
             {/* Right — Image */}
             <div className="flex justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&q=80"
-                alt="Dr. Anjali Kumar — Chief Ayurvedic Practitioner"
+                src={c.practitioner_image}
+                alt={c.practitioner_name}
                 className="h-64 w-64 rounded-full object-cover shadow-xl mx-auto"
               />
             </div>

@@ -11,15 +11,26 @@ interface ConditionItem {
   image_url?: string | null
 }
 
+const defaultConditionsPage = {
+  hero_eyebrow: 'Conditions We Support',
+  hero_heading: 'Conditions We Support',
+  hero_subtext: 'Ayurveda offers a holistic approach to many modern health challenges.',
+  intro_text:
+    'In Ayurveda, every condition is understood through the lens of your unique constitution (Prakriti) and current imbalances (Vikriti). Rather than treating symptoms in isolation, we work to restore the underlying balance of Vata, Pitta, and Kapha — allowing the body to heal naturally.',
+}
+
 export default async function ConditionsPage() {
-  const { data: conditionsRow } = await supabase
-    .from('site_content')
-    .select('content')
-    .eq('key', 'conditions')
-    .single()
+  const [conditionsRow, pageRow] = await Promise.all([
+    supabase.from('site_content').select('content').eq('key', 'conditions').single(),
+    supabase.from('site_content').select('content').eq('key', 'conditions_page').single(),
+  ])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const conditions: ConditionItem[] = (conditionsRow?.content as any[]) ?? defaultConditions
+  const conditions: ConditionItem[] = (conditionsRow.data?.content as any[]) ?? defaultConditions
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const savedPage = (pageRow.data?.content as Record<string, any>) ?? {}
+  const p = { ...defaultConditionsPage, ...savedPage }
 
   const cardItems = conditions.filter((c) => c.image_url)
   const chipItems = conditions.filter((c) => !c.image_url)
@@ -34,14 +45,12 @@ export default async function ConditionsPage() {
       <section className="w-full bg-[#0F3D34] py-20">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="text-sm font-semibold uppercase tracking-widest" style={{ color: '#D4A853' }}>
-            ✦ Conditions We Support ✦
+            ✦ {p.hero_eyebrow} ✦
           </p>
           <h1 className="mt-4 font-display text-4xl font-semibold text-white md:text-6xl">
-            Conditions We Support
+            {p.hero_heading}
           </h1>
-          <p className="mt-5 text-lg text-white/70">
-            Ayurveda offers a holistic approach to many modern health challenges.
-          </p>
+          <p className="mt-5 text-lg text-white/70">{p.hero_subtext}</p>
         </div>
       </section>
 
@@ -54,10 +63,7 @@ export default async function ConditionsPage() {
             className="font-display text-xl italic leading-relaxed text-gray-700 md:text-2xl"
             style={{ color: '#0F3D34' }}
           >
-            Ayurveda does not simply treat disease — it works with the body&apos;s own intelligence,
-            gently restoring the natural balance between <em>Vata</em>, <em>Pitta</em>, and{' '}
-            <em>Kapha</em>. By addressing the root cause of imbalance, these ancient therapies
-            support lasting wellbeing across a wide spectrum of modern health concerns.
+            {p.intro_text}
           </p>
         </div>
       </section>

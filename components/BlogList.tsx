@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 
 interface Blog {
   id: string
@@ -124,12 +123,11 @@ export default function BlogList({ blogs }: { blogs: Blog[] }) {
                     >
                       <div className="relative h-48 overflow-hidden">
                         {blog.image_url ? (
-                          <Image
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
                             src={blog.image_url}
                             alt={blog.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(27,110,92,0.1), rgba(212,168,83,0.1))' }}>
