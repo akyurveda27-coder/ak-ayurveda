@@ -206,7 +206,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         )}
 
         {/* Content */}
-        <div className="max-w-3xl mx-auto px-4 pb-16">
+        <div className="max-w-3xl mx-auto px-4 pb-8">
           {blog.content ? (
             <div
               className="prose prose-base md:prose-lg max-w-none
@@ -237,10 +237,10 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           </div>
 
           {/* Footer nav */}
-          <div className="mt-10 pt-8 border-t border-green-100 flex items-center justify-between">
+          <div className="mt-6 pt-6 border-t border-green-100 flex items-center justify-between">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-2 font-body text-sm font-medium text-primary hover:text-accent transition-colors"
+              className="inline-flex items-center gap-2 font-body text-sm font-medium transition-colors" style={{ color: '#1B6E5C' }}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -249,7 +249,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             </Link>
             <Link
               href="/book"
-              className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full font-body text-sm font-medium hover:bg-primaryDark transition-colors"
+              className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-full font-body text-sm font-medium transition-colors" style={{ background: '#1B6E5C' }}
             >
               Book a Consultation
             </Link>
@@ -258,7 +258,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
         {/* Related Posts */}
         {related.length > 0 && (
-          <div className="bg-white border-t border-green-50 py-16 px-4">
+          <div className="bg-white border-t border-green-50 py-10 px-4">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-10">
                 <span className="inline-block text-xs font-body font-semibold tracking-widest text-accent uppercase mb-3">
