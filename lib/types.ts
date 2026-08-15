@@ -60,6 +60,7 @@ export interface Service {
   faqs?: { q: string; a: string }[]
   trust_stats?: { num: string; label: string }[]
   hero_image?: string
+  card_image?: string
   testimonial_quote?: string
   testimonial_name?: string
   testimonial_location?: string

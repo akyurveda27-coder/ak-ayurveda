@@ -303,6 +303,7 @@ function ServicesEditor() {
       name: service.name, description: service.description, icon: service.icon,
       duration: service.duration ?? null, price_from: service.price_from ?? null,
       hero_image: service.hero_image ?? null,
+      card_image: service.card_image ?? null,
       location: service.location ?? null, phone: service.phone ?? null,
       benefits: service.benefits ?? [], benefit_descriptions: service.benefit_descriptions ?? [],
       process: service.process ?? [], process_days: service.process_days ?? [],
@@ -515,11 +516,11 @@ function ServicesEditor() {
                 </div>
                 <div>
                   <label className={labelClass}>Card Image URL <span className="text-gray-400 font-normal">(subtle background on homepage service cards)</span></label>
-                  <input value={(s as Record<string, unknown>).card_image as string ?? ''} onChange={e => upd(s.id, { card_image: e.target.value } as Partial<typeof s>)} placeholder="https://images.unsplash.com/photo-...?w=800&q=80" className={inputClass} />
-                  {(s as Record<string, unknown>).card_image && (
+                  <input value={s.card_image ?? ''} onChange={e => upd(s.id, { card_image: e.target.value })} placeholder="https://images.unsplash.com/photo-...?w=800&q=80" className={inputClass} />
+                  {s.card_image && (
                     <div className="mt-2 rounded-xl overflow-hidden border border-green-100" style={{ height: 80 }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={(s as Record<string, unknown>).card_image as string} alt="Card preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={s.card_image} alt="Card preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   )}
                 </div>
