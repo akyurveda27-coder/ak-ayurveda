@@ -49,7 +49,7 @@ const defaultServices: ServiceItem[] = [
 ]
 
 interface ServicesProps {
-  services?: Array<{ id: string; name: string; description: string; icon: string; hero_image?: string | null }>
+  services?: Array<{ id: string; name: string; description: string; icon: string; hero_image?: string | null; card_image?: string | null }>
 }
 
 function toSlug(name: string) {
@@ -57,8 +57,8 @@ function toSlug(name: string) {
 }
 
 export default function Services({ services }: ServicesProps) {
-  const data: (ServiceItem & { hero_image?: string | null })[] = services && services.length > 0
-    ? services.map((s) => ({ icon: s.icon, name: s.name, description: s.description, slug: toSlug(s.name), hero_image: s.hero_image }))
+  const data: (ServiceItem & { hero_image?: string | null; card_image?: string | null })[] = services && services.length > 0
+    ? services.map((s) => ({ icon: s.icon, name: s.name, description: s.description, slug: toSlug(s.name), hero_image: s.hero_image, card_image: s.card_image }))
     : defaultServices
 
   return (
@@ -68,12 +68,12 @@ export default function Services({ services }: ServicesProps) {
           key={service.slug}
           className="relative rounded-2xl border border-[#E0F0EB] bg-white p-6 shadow-sm transition hover:shadow-md overflow-hidden"
         >
-          {/* Subtle background image */}
-          {(service as ServiceItem & { hero_image?: string | null }).hero_image && (
+          {/* Subtle background image — card_image preferred, fallback to hero_image */}
+          {((service as ServiceItem & { card_image?: string | null; hero_image?: string | null }).card_image || (service as ServiceItem & { hero_image?: string | null }).hero_image) && (
             <div
               className="absolute inset-0 rounded-2xl"
               style={{
-                backgroundImage: `url(${(service as ServiceItem & { hero_image?: string | null }).hero_image})`,
+                backgroundImage: `url(${(service as ServiceItem & { card_image?: string | null; hero_image?: string | null }).card_image || (service as ServiceItem & { hero_image?: string | null }).hero_image})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 opacity: 0.08,

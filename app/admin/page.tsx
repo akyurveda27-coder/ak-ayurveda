@@ -504,12 +504,22 @@ function ServicesEditor() {
                     <input value={s.phone ?? ''} onChange={e => upd(s.id, { phone: e.target.value })} placeholder="+91 98765 43210" className={inputClass} /></div>
                 </div>
                 <div>
-                  <label className={labelClass}>Hero Image URL</label>
+                  <label className={labelClass}>Hero Image URL <span className="text-gray-400 font-normal">(treatment detail page background)</span></label>
                   <input value={s.hero_image ?? ''} onChange={e => upd(s.id, { hero_image: e.target.value })} placeholder="https://images.unsplash.com/photo-...?w=1200&q=80" className={inputClass} />
                   {s.hero_image && (
-                    <div className="mt-2 rounded-xl overflow-hidden border border-green-100" style={{ height: 120 }}>
+                    <div className="mt-2 rounded-xl overflow-hidden border border-green-100" style={{ height: 100 }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={s.hero_image} alt="Hero preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <label className={labelClass}>Card Image URL <span className="text-gray-400 font-normal">(subtle background on homepage service cards)</span></label>
+                  <input value={(s as Record<string, unknown>).card_image as string ?? ''} onChange={e => upd(s.id, { card_image: e.target.value } as Partial<typeof s>)} placeholder="https://images.unsplash.com/photo-...?w=800&q=80" className={inputClass} />
+                  {(s as Record<string, unknown>).card_image && (
+                    <div className="mt-2 rounded-xl overflow-hidden border border-green-100" style={{ height: 80 }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={(s as Record<string, unknown>).card_image as string} alt="Card preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   )}
                 </div>
