@@ -76,7 +76,28 @@ export default async function ConditionsPage() {
       </section>
 
       {/* ============================================================ */}
-      {/* 3. CONDITIONS GRID */}
+      {/* 3. STATS STRIP */}
+      {/* ============================================================ */}
+      <section className="w-full bg-white pb-0 pt-0">
+        <div className="mx-auto max-w-4xl px-6 pb-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-10">
+            {[
+              { num: '18+', label: 'Therapies Offered' },
+              { num: '50+', label: 'Conditions Supported' },
+              { num: '5000', label: 'Years of Tradition' },
+              { num: '500+', label: 'Happy Clients' },
+            ].map((stat) => (
+              <div key={stat.label} className="rounded-xl p-5 text-center" style={{ background: '#F0FAF7', border: '1px solid #D0EDE6' }}>
+                <p className="font-display text-3xl font-bold" style={{ color: '#1B6E5C' }}>{stat.num}</p>
+                <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* 4. CONDITIONS GRID */}
       {/* ============================================================ */}
       <section className="w-full bg-mint py-16">
         <div className="mx-auto max-w-7xl px-6">

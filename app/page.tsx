@@ -186,14 +186,65 @@ export default async function HomePage() {
       </section>
 
       {/* ============================================================ */}
-      {/* 5. CONDITIONS */}
+      {/* 5. GALLERY STRIP */}
+      {/* ============================================================ */}
+      <section className="w-full py-0 overflow-hidden">
+        <div className="flex gap-1 h-48 md:h-64">
+          {[
+            'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=400&q=75&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1541199249251-f713e6145474?w=400&q=75&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=400&q=75&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=400&q=75&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=75&auto=format&fit=crop',
+          ].map((src, i) => (
+            <div key={i} className="flex-1 overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt="AK Ayurveda treatment" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" loading="lazy" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* 6. CONDITIONS */}
       {/* ============================================================ */}
       <section id="conditions" className="w-full py-12 md:py-16" style={{ backgroundColor: '#F0FAF7' }}>
         <Conditions conditions={conditionsData ?? defaultConditions} />
       </section>
 
       {/* ============================================================ */}
-      {/* 6. BLOG PREVIEW */}
+      {/* 7. TESTIMONIALS */}
+      {/* ============================================================ */}
+      <section className="w-full bg-white py-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: '#D4A853' }}>✦ What Our Clients Say ✦</p>
+            <h2 className="font-display text-3xl md:text-4xl font-semibold" style={{ color: '#0F3D34' }}>Stories of Transformation</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { quote: "The Shirodhara treatment was unlike anything I've experienced. I left feeling completely calm and centred. Truly transformative.", name: "Sarah M.", location: "London, UK", avatar: "S" },
+              { quote: "Dr. Anjali's consultation was thorough and deeply personalised. The dietary recommendations have made a huge difference to my energy levels.", name: "James T.", location: "Surrey, UK", avatar: "J" },
+              { quote: "I've tried many wellness clinics in London but AK Ayurveda feels genuinely authentic. The Abhyanga massage is something I look forward to every month.", name: "Priya K.", location: "London, UK", avatar: "P" },
+            ].map((t, i) => (
+              <div key={i} className="rounded-2xl p-6 border border-[#D0EDE6]" style={{ background: '#F0FAF7' }}>
+                <p className="text-3xl mb-3" style={{ color: '#D4A853' }}>&ldquo;</p>
+                <p className="text-gray-600 leading-relaxed text-sm mb-5 italic">&ldquo;{t.quote}&rdquo;</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center font-display font-semibold text-white text-sm" style={{ background: '#1B6E5C' }}>{t.avatar}</div>
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: '#0F3D34' }}>{t.name}</p>
+                    <p className="text-xs text-gray-400">{t.location}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* 8. BLOG PREVIEW */}
       {/* ============================================================ */}
       <section id="journal" className="w-full border-t border-sectionBorder bg-white py-12 md:py-16">
         <BlogPreview />

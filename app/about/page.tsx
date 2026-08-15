@@ -211,17 +211,28 @@ export default async function AboutPage() {
               <p className="mt-5 text-[17px] leading-relaxed text-gray-600">{c.practitioner_bio}</p>
             </div>
 
-            {/* Right — Image */}
-            <div className="flex justify-center">
-              <Image
-                src={optimizeUrl(c.practitioner_image, 400)}
-                alt={c.practitioner_name}
-                width={256}
-                height={256}
-                className="h-64 w-64 rounded-full object-cover shadow-xl mx-auto"
-                loading="lazy"
-                sizes="256px"
-              />
+            {/* Right — Circular image with credentials */}
+            <div className="flex flex-col items-center">
+              <div className="relative w-56 h-56 mx-auto">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={optimizeUrl(c.practitioner_image, 400)}
+                  alt={c.practitioner_name}
+                  className="w-full h-full object-cover rounded-full"
+                  style={{ border: '4px solid #D4A853' }}
+                />
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 rounded-full px-4 py-1.5 text-xs font-semibold text-white whitespace-nowrap" style={{ background: '#1B6E5C' }}>
+                  ✦ Chief Practitioner
+                </div>
+              </div>
+              <h3 className="mt-8 font-display text-2xl font-semibold" style={{ color: '#0F3D34' }}>{c.practitioner_name}</h3>
+              <p className="text-sm mb-4" style={{ color: '#1B6E5C' }}>{c.practitioner_title}</p>
+              <div className="flex flex-wrap justify-center gap-2 mb-4">
+                {['BAMS Certified', '15+ Years', 'London Clinic', 'Panchakarma Expert'].map((badge) => (
+                  <span key={badge} className="rounded-full bg-white border border-[#D0EDE6] px-3 py-1 text-xs font-medium" style={{ color: '#1B6E5C' }}>{badge}</span>
+                ))}
+              </div>
+              <p className="text-center text-gray-600 leading-relaxed text-sm max-w-xs">{c.practitioner_bio}</p>
             </div>
           </div>
         </div>

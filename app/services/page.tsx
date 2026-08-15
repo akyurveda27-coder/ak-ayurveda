@@ -1,6 +1,5 @@
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import type { Metadata } from 'next'
 
@@ -41,7 +40,7 @@ export default async function ServicesPage() {
       <Navbar />
 
       {/* Hero Banner */}
-      <section className="w-full bg-primaryDark py-16 text-center">
+      <section className="w-full py-16 text-center" style={{ backgroundColor: '#0F3D34' }}>
         <span className="text-sm font-semibold uppercase tracking-wider text-accent">Our Treatments</span>
         <h1 className="mt-3 font-display text-4xl font-semibold text-white md:text-5xl">
           Ayurvedic Treatments in London
@@ -55,57 +54,53 @@ export default async function ServicesPage() {
       <section className="w-full bg-white py-16">
         <div className="mx-auto max-w-7xl px-6">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {list.map((service) => {
-              const slug = slugify(service.name)
-              return (
-                <div
-                  key={service.id}
-                  className="relative rounded-2xl border border-sectionBorder bg-white p-6 shadow-sm transition hover:shadow-md overflow-hidden"
-                >
-                  {/* Card background image */}
-                  {(service.card_image || service.hero_image) && (
-                    <div
-                      className="absolute inset-0 rounded-2xl pointer-events-none"
-                      style={{
-                        backgroundImage: `url(${service.card_image || service.hero_image})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        opacity: 0.07,
-                      }}
+            {list.map((service) => (
+              <div key={service.id} className="group rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white border border-[#E0F0EB]">
+                {/* Image top */}
+                <div className="relative h-48 overflow-hidden">
+                  {(service.card_image || service.hero_image) ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={`${(service.card_image || service.hero_image)!.split('?')[0]}?w=400&q=75&auto=format&fit=crop`}
+                      alt={service.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
                     />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1B6E5C, #0F3D34)' }}>
+                      <span className="text-5xl opacity-40">{service.icon || '🌿'}</span>
+                    </div>
                   )}
-                  <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-xl bg-mint text-2xl">
-                    {service.icon || '🌿'}
-                  </div>
-                  <h3 className="relative z-10 mt-4 font-display text-xl font-semibold leading-snug" style={{ color: '#1B6E5C' }}>
-                    {service.name}
-                  </h3>
-                  <p className="relative z-10 mt-3 text-sm leading-relaxed text-gray-600 line-clamp-3">
-                    {service.description}
-                  </p>
+                  {/* Price badge */}
                   {service.price_from && (
-                    <p className="relative z-10 mt-3 text-sm font-semibold" style={{ color: '#D4A853' }}>From {String(service.price_from).replace(/^£+/, '£')}</p>
+                    <span className="absolute top-3 right-3 rounded-full bg-white/90 backdrop-blur px-3 py-1 text-xs font-semibold" style={{ color: '#1B6E5C' }}>
+                      From {String(service.price_from).replace(/^£+/, '£')}
+                    </span>
                   )}
-                  <div className="relative z-10 mt-5 flex items-center gap-4 text-sm font-medium" style={{ color: '#1B6E5C' }}>
-                    <Link href={`/services/${slug}`} className="hover:underline">
-                      Learn more →
-                    </Link>
-                    <span className="text-gray-300">|</span>
-                    <Link href="/book" className="hover:underline">
-                      Book
-                    </Link>
+                </div>
+                {/* Content */}
+                <div className="p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">{service.icon || '🌿'}</span>
+                    <h3 className="font-display text-lg font-semibold leading-snug" style={{ color: '#0F3D34' }}>{service.name}</h3>
+                  </div>
+                  <p className="text-sm text-gray-500 leading-relaxed line-clamp-2 mb-4">{service.description}</p>
+                  <div className="flex items-center gap-4 text-sm font-semibold" style={{ color: '#1B6E5C' }}>
+                    <a href={`/services/${toSlug(service.name)}`} className="hover:underline">Learn more →</a>
+                    <span className="text-gray-200">|</span>
+                    <a href="/book" className="hover:underline">Book</a>
                   </div>
                 </div>
-              )
-            })}
+              </div>
+            ))}
           </div>
 
           {list.length === 0 && (
             <div className="py-20 text-center text-gray-400">
               <p className="text-lg">Treatments coming soon...</p>
-              <Link href="/book" className="mt-6 inline-block rounded-full bg-primary px-8 py-3 text-white">
+              <a href="/book" className="mt-6 inline-block rounded-full px-8 py-3 text-white" style={{ backgroundColor: '#1B6E5C' }}>
                 Book a Consultation
-              </Link>
+              </a>
             </div>
           )}
         </div>
@@ -113,16 +108,17 @@ export default async function ServicesPage() {
 
       {/* CTA Banner */}
       <section className="w-full bg-mint py-14 text-center">
-        <h2 className="font-display text-3xl font-semibold text-primary md:text-4xl">
+        <h2 className="font-display text-3xl font-semibold md:text-4xl" style={{ color: '#1B6E5C' }}>
           Not sure which therapy is right for you?
         </h2>
         <p className="mt-3 text-gray-600">Book a consultation and our practitioner will guide you.</p>
-        <Link
+        <a
           href="/book"
-          className="mt-8 inline-block rounded-full bg-primary px-10 py-3.5 font-semibold text-white transition hover:bg-primaryDark"
+          className="mt-8 inline-block rounded-full px-10 py-3.5 font-semibold text-white transition hover:bg-[#0F3D34]"
+          style={{ backgroundColor: '#1B6E5C' }}
         >
           Book a Free Consultation
-        </Link>
+        </a>
       </section>
 
       <Footer />

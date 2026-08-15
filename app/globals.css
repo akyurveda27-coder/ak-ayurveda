@@ -108,3 +108,21 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Mobile padding consistency */
+@media (max-width: 640px) {
+  section {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Reduce large headings on mobile */
+  .font-display {
+    line-height: 1.2;
+  }
+}
+
+/* Better tap highlights */
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
