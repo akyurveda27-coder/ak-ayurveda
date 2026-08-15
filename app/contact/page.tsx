@@ -65,7 +65,7 @@ export default async function ContactPage() {
       <Navbar />
 
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <section className="bg-[#0F3D34] py-20 text-center px-6">
+      <section className="bg-[#0F3D34] pt-24 pb-12 text-center px-6">
         <p
           className="font-display text-sm tracking-[0.25em] uppercase mb-4"
           style={{ color: '#D4A853' }}
@@ -82,7 +82,7 @@ export default async function ContactPage() {
       </section>
 
       {/* ── Contact Tiles ────────────────────────────────────── */}
-      <section className="py-16 px-6" style={{ background: '#F0FAF7' }}>
+      <section className="py-10 px-6" style={{ background: '#F0FAF7' }}>
         <div className="mx-auto max-w-4xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {tiles.map((tile) => {
