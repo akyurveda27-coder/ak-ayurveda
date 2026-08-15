@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 const defaultAbout = {
   hero_eyebrow: 'Our Story',
-  hero_heading: 'About AK Ayurveda',
+  hero_heading: 'About AK Ayurveda — London\'s Ayurvedic Clinic',
   hero_subtext: 'Rooted in 5,000 years of Vedic wisdom, practised in the heart of London.',
   mission1_icon: '🌿',
   mission1_title: 'Our Mission',

@@ -42,10 +42,10 @@ export default async function ServicesPage() {
       <section className="w-full bg-primaryDark py-16 text-center">
         <span className="text-sm font-semibold uppercase tracking-wider text-accent">Our Treatments</span>
         <h1 className="mt-3 font-display text-4xl font-semibold text-white md:text-5xl">
-          All Ayurvedic Therapies
+          Ayurvedic Treatments in London
         </h1>
         <p className="mt-4 text-white/70 text-[17px] max-w-lg mx-auto">
-          Choose from {list.length || 18} traditional Ayurvedic therapies, each personalised to your individual needs and constitution.
+          18 authentic Ayurvedic therapies at our London clinic, each personalised to your individual constitution.
         </p>
       </section>
 

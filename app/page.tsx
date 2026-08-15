@@ -56,7 +56,7 @@ export default async function HomePage() {
           {/* Left — 60% */}
           <div className="md:col-span-3">
             <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-              Traditional Ayurvedic Clinic · London, UK
+              London&rsquo;s Authentic Ayurvedic Clinic · London, UK
             </span>
 
             <h1 className="mt-6 font-display text-[36px] font-semibold leading-[1.1] text-[#1A1A1A] md:text-[64px]">
@@ -228,6 +228,97 @@ export default async function HomePage() {
       {/* 9. BOOK APPOINTMENT + FOOTER */}
       {/* ============================================================ */}
       
+      {/* Schema markup for Google — LocalBusiness */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HealthAndBeautyBusiness",
+            "name": "AK Ayurveda",
+            "description": "Authentic Ayurvedic clinic in London offering Abhyanga, Shirodhara, Panchakarma and personalised Ayurvedic consultations.",
+            "url": "https://ak-ayurveda.vercel.app",
+            "telephone": "+44-20-7946-0958",
+            "email": "info@akayurveda.co.uk",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "London",
+              "addressLocality": "London",
+              "addressCountry": "GB"
+            },
+            "openingHoursSpecification": [
+              {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+                "opens": "09:00",
+                "closes": "19:00"
+              }
+            ],
+            "priceRange": "££",
+            "currenciesAccepted": "GBP",
+            "hasMap": "https://maps.google.com/?q=London+Ayurveda+Clinic",
+            "sameAs": [],
+            "serviceArea": {
+              "@type": "City",
+              "name": "London"
+            }
+          })
+        }}
+      />
+
+      {/* Schema markup for Google — FAQPage */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is Ayurveda?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "An ancient holistic wellness tradition developed over 5,000 years ago in India, focused on balancing the body, mind, and spirit through natural therapies and lifestyle practices."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How long does an Ayurvedic session take at AK Ayurveda London?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Most sessions run between 45 and 90 minutes, depending on the therapy selected. Your practitioner will advise the ideal duration during your initial consultation."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is Ayurvedic treatment safe alongside modern healthcare?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Our therapies are designed to complement your existing routine. We recommend discussing any concerns with your GP, and our practitioners will always ask about your current health before treatment."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How many Ayurvedic sessions are recommended?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "This varies by individual. Your practitioner will suggest a personalised plan after your first consultation, taking into account your constitution and wellness goals."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Are online Ayurvedic consultations available?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, we offer online consultations for clients who are unable to visit us in person. Please select 'General Consultation' when booking."
+                }
+              }
+            ]
+          })
+        }}
+      />
+
       <Footer />
     </main>
   )

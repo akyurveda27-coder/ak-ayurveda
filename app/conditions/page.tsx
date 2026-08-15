@@ -21,7 +21,7 @@ interface ConditionItem {
 const defaultConditionsPage = {
   hero_eyebrow: 'Conditions We Support',
   hero_heading: 'Conditions We Support',
-  hero_subtext: 'Ayurveda offers a holistic approach to many modern health challenges.',
+  hero_subtext: 'At our London Ayurvedic clinic, we offer holistic support for a wide range of wellness concerns through personalised treatments.',
   intro_text:
     'In Ayurveda, every condition is understood through the lens of your unique constitution (Prakriti) and current imbalances (Vikriti). Rather than treating symptoms in isolation, we work to restore the underlying balance of Vata, Pitta, and Kapha — allowing the body to heal naturally.',
 }
