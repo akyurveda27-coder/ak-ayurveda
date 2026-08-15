@@ -45,7 +45,7 @@ const DEFAULT_FAQS = [
 export default async function TreatmentPage({ params }: { params: { slug: string } }) {
   const { data: allServices } = await supabase
     .from('services')
-    .select('id, name, description, icon, hero_image, benefits, benefit_descriptions, process, process_descriptions, ideal_for, faqs, pricing, duration, price_from')
+    .select('*')
     .order('sort_order', { ascending: true })
 
   const service = allServices?.find(s => toSlug(s.name) === params.slug) ?? null

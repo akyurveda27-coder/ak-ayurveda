@@ -26,7 +26,7 @@ interface Service {
 export default async function ServicesPage() {
   const { data: services } = await supabase
     .from('services')
-    .select('id, name, description, icon, price_from')
+    .select('*')
     .order('sort_order', { ascending: true })
 
   const list: Service[] = services ?? []
