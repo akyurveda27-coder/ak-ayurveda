@@ -33,6 +33,7 @@ export interface ContactContent {
   phone: string
   email: string
   hours: string
+  map_url: string
   facebook_url: string
   instagram_url: string
   twitter_url: string

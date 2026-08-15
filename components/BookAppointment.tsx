@@ -34,16 +34,24 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
   const [bookService, setBookService] = useState('')
 
   useEffect(() => {
+    // Only use sessionStorage value if set within last 5 minutes
+    const ts = parseInt(sessionStorage.getItem('book_ts') ?? '0')
+    const isRecent = Date.now() - ts < 5 * 60 * 1000
+    if (!isRecent) {
+      // Expired — clear stale values
+      sessionStorage.removeItem('book_service')
+      sessionStorage.removeItem('book_duration')
+      sessionStorage.removeItem('book_price')
+      sessionStorage.removeItem('book_ts')
+      return
+    }
     const svc = sessionStorage.getItem('book_service') ?? ''
     const dur = sessionStorage.getItem('book_duration') ?? ''
     const prc = sessionStorage.getItem('book_price') ?? ''
     setBookService(svc)
     setSelectedDuration(dur)
     setSelectedPrice(prc)
-    // Pre-fill the service dropdown if we know which service
-    if (svc) {
-      setForm((prev) => ({ ...prev, service: svc }))
-    }
+    if (svc) setForm((prev) => ({ ...prev, service: svc }))
   }, [])
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')

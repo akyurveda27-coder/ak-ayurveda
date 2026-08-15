@@ -32,9 +32,10 @@ export const defaultDoctor: DoctorContent = {
 
 export const defaultContact: ContactContent = {
   address: 'London, United Kingdom',
-  phone: '+44 20 0000 0000',
+  phone: '+44 20 7946 0958',
   email: 'info@akayurveda.co.uk',
-  hours: 'Mon–Sat: 9:00 AM – 6:00 PM',
+  hours: 'Mon–Sat: 9:00 AM – 7:00 PM\nSun: Closed',
+  map_url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.4!2d-0.1276!3d51.5074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTHCsDMwJzI2LjYiTiAwwrAwNyc0MC4wIlc!5e0!3m2!1sen!2suk!4v1234567890',
   facebook_url: 'https://facebook.com',
   instagram_url: 'https://instagram.com',
   twitter_url: 'https://twitter.com',

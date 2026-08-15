@@ -260,8 +260,9 @@ function ContactEditor() {
       <div className="grid grid-cols-2 gap-4">
         <Field label="Phone" name="phone" value={data.phone} onChange={handleChange} />
         <Field label="Email" name="email" value={data.email} onChange={handleChange} type="email" />
-        <Field label="Hours" name="hours" value={data.hours} onChange={handleChange} />
       </div>
+      <Field label="Opening Hours" name="hours" value={data.hours} onChange={handleChange} textarea rows={3} />
+      <Field label="Google Maps Embed URL" name="map_url" value={data.map_url ?? ''} onChange={handleChange} />
       <div className="grid grid-cols-2 gap-4">
         <Field label="Facebook URL" name="facebook_url" value={data.facebook_url} onChange={handleChange} />
         <Field label="Instagram URL" name="instagram_url" value={data.instagram_url} onChange={handleChange} />
