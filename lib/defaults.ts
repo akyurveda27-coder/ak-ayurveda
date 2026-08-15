@@ -2,7 +2,7 @@ import { HeroContent, StatsContent, DoctorContent, ContactContent, Service, Cond
 
 export const defaultHero: HeroContent = {
   heading: 'Ancient Wisdom, Modern Healing',
-  subheading: 'Experience the transformative power of authentic Ayurvedic medicine. Holistic treatments rooted in 5000 years of Vedic science, personalized for your unique constitution.',
+  subheading: 'Experience authentic Ayurvedic therapies rooted in 5,000 years of Vedic tradition. Personalised wellness treatments for your unique constitution.',
   cta1_text: 'Book Appointment',
   cta1_link: '#book-appointment',
   cta2_text: 'Explore Treatments',
@@ -31,10 +31,10 @@ export const defaultDoctor: DoctorContent = {
 }
 
 export const defaultContact: ContactContent = {
-  address: '42, Ayurveda Lane, Koramangala, Bengaluru – 560034',
-  phone: '+91 98765 43210',
-  email: 'care@akayurveda.in',
-  hours: 'Mon–Sat: 9:00 AM – 7:00 PM',
+  address: 'London, United Kingdom',
+  phone: '+44 20 0000 0000',
+  email: 'info@akayurveda.co.uk',
+  hours: 'Mon–Sat: 9:00 AM – 6:00 PM',
   facebook_url: 'https://facebook.com',
   instagram_url: 'https://instagram.com',
   twitter_url: 'https://twitter.com',
