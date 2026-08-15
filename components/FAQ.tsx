@@ -1,93 +1,73 @@
 'use client'
 
-import { useState } from 'react'
-import { FAQ as FAQType } from '@/lib/types'
-import { defaultFAQs } from '@/lib/defaults'
+const faqs = [
+  {
+    question: 'What is Ayurveda?',
+    answer: 'An ancient holistic wellness tradition developed over 5,000 years ago in India, focused on balancing the body, mind, and spirit through natural therapies and lifestyle practices.',
+  },
+  {
+    question: 'How long does a session take?',
+    answer: 'Most sessions run between 45 and 90 minutes, depending on the therapy selected. Your practitioner will advise the ideal duration during your initial consultation.',
+  },
+  {
+    question: 'Is it safe alongside modern healthcare?',
+    answer: 'Our therapies are designed to complement your existing routine. We recommend discussing any concerns with your GP, and our practitioners will always ask about your current health before treatment.',
+  },
+  {
+    question: 'How many sessions are recommended?',
+    answer: 'This varies by individual. Your practitioner will suggest a personalised plan after your first consultation, taking into account your constitution and wellness goals.',
+  },
+  {
+    question: 'Are online consultations available?',
+    answer: 'Yes, we offer online consultations for clients who are unable to visit us in person. Please select "General Consultation" when booking.',
+  },
+]
 
-interface FAQProps {
-  faqs?: FAQType[]
-}
-
-export default function FAQ({ faqs }: FAQProps) {
-  const [openIndex, setOpenIndex] = useState<number | null>(0)
-
-  const data = faqs && faqs.length > 0
-    ? faqs
-    : defaultFAQs.map((f, i) => ({ ...f, id: String(i) }))
-
-  const toggle = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index)
-  }
-
+export default function FAQ() {
   return (
-    <section id="faq" className="py-20 md:py-28 bg-background">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <span className="inline-block text-accent text-sm font-body font-semibold tracking-widest uppercase mb-3">
-            Questions Answered
-          </span>
-          <h2 className="section-title">Frequently Asked Questions</h2>
-          <p className="section-subtitle max-w-xl mx-auto">
-            Everything you need to know before starting your Ayurvedic journey with us.
-          </p>
-        </div>
-
-        {/* Accordion */}
-        <div className="space-y-3">
-          {data.map((faq, index) => (
-            <div
-              key={faq.id}
-              className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
-                openIndex === index
-                  ? 'border-primary/30 shadow-sm'
-                  : 'border-green-100 hover:border-green-200'
-              }`}
-            >
-              <button
-                onClick={() => toggle(index)}
-                className="w-full flex items-center justify-between px-6 py-5 text-left bg-white"
-                aria-expanded={openIndex === index}
-              >
-                <span className="font-body font-semibold text-base text-textMain pr-4">
-                  {faq.question}
-                </span>
-                <span
-                  className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
-                    openIndex === index ? 'bg-primary text-white rotate-180' : 'bg-green-50 text-primary'
-                  }`}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-              </button>
-
-              <div
-                className={`overflow-hidden transition-all duration-300 ${
-                  openIndex === index ? 'max-h-96' : 'max-h-0'
-                }`}
-              >
-                <div className="px-6 pb-5 pt-0 bg-white">
-                  <div className="h-px bg-green-50 mb-4" />
-                  <p className="font-body text-sage text-sm leading-relaxed">{faq.answer}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center mt-10">
-          <p className="font-body text-sage text-sm mb-3">Still have questions?</p>
-          <a href="tel:+919876543210" className="btn-primary inline-flex items-center gap-2">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-            </svg>
-            Call Us Now
-          </a>
-        </div>
+    <div className="mx-auto max-w-4xl px-6">
+      {/* Header */}
+      <div className="mx-auto max-w-2xl text-center">
+        <span className="text-sm font-semibold uppercase tracking-wider text-accent">Questions Answered</span>
+        <h2 className="mt-3 font-display text-4xl font-semibold text-primary md:text-5xl">
+          Frequently Asked Questions
+        </h2>
+        <p className="mt-4 text-[17px] text-gray-600">
+          Everything you need to know before starting your Ayurvedic journey with us.
+        </p>
       </div>
-    </section>
+
+      {/* Accordion — native details/summary, no JS state needed */}
+      <div className="mt-12 space-y-4">
+        {faqs.map((faq, i) => (
+          <details
+            key={faq.question}
+            className="group rounded-xl border border-[#D0EDE6] bg-white p-6 open:shadow-sm"
+            {...(i === 0 ? { open: true } : {})}
+          >
+            <summary className="flex cursor-pointer list-none items-center justify-between font-medium text-[#1A1A1A]">
+              {faq.question}
+              <span className="ml-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F0FAF7] text-primary transition-transform duration-200 group-open:rotate-180">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+            </summary>
+            <p className="mt-3 text-sm text-gray-600">{faq.answer}</p>
+          </details>
+        ))}
+      </div>
+
+      {/* Bottom CTA */}
+      <div className="mt-10 text-center">
+        <p className="text-sm text-gray-600">Still have questions?</p>
+        <a
+          href="tel:+442079460958"
+          className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-white transition hover:bg-[#155A4A]"
+        >
+          📞 Call Us Now
+        </a>
+      </div>
+    </div>
   )
 }

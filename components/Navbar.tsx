@@ -14,82 +14,89 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Services', href: '#services' },
-    { label: 'About', href: '#doctor' },
+    { label: 'About', href: '#about' },
     { label: 'Conditions', href: '#conditions' },
     { label: 'Blog', href: '/blog' },
-    { label: 'Contact', href: '#footer' },
+    { label: 'Contact', href: '#faq' },
   ]
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-background/95 backdrop-blur-sm shadow-sm border-b border-green-100' : 'bg-transparent'
+    <header
+      className={`sticky top-0 z-50 w-full border-b border-[#E0F0EB] transition-all duration-300 ${
+        scrolled ? 'bg-white/95 backdrop-blur shadow-sm' : 'bg-white/90 backdrop-blur'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
-          <a href="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow-sm group-hover:bg-primaryDark transition-colors">
-              <span className="text-white text-sm font-bold font-display">AK</span>
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="font-display font-bold text-primary text-lg leading-tight">AK Ayurveda</span>
-              <span className="text-sage text-[10px] font-body tracking-wider uppercase">Healing Clinic</span>
-            </div>
-          </a>
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10">
+        {/* Logo */}
+        <a href="/" className="flex items-center gap-2">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary font-display text-sm font-semibold text-white">
+            AK
+          </span>
+          <span className="leading-tight">
+            <span className="block font-display text-lg font-semibold text-primary">AK Ayurveda</span>
+            <span className="block text-[10px] tracking-widest text-gray-500">HEALING CLINIC</span>
+          </span>
+        </a>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="font-body text-sm font-medium text-textMain hover:text-primary transition-colors duration-200 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-accent hover:after:w-full after:transition-all after:duration-200"
-              >
-                {link.label}
-              </a>
-            ))}
-            <a href="#book-appointment" className="btn-primary text-sm">
-              Book Appointment
+        {/* Desktop Nav */}
+        <div className="hidden items-center gap-8 md:flex">
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="text-sm font-medium text-gray-700 transition hover:text-primary"
+            >
+              {link.label}
             </a>
-          </div>
-
-          {/* Mobile Hamburger */}
-          <button
-            className="md:hidden flex flex-col gap-1.5 p-3 min-h-[44px] min-w-[44px] items-center justify-center"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
-          >
-            <span className={`block w-6 h-0.5 bg-primary transition-all duration-200 ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-            <span className={`block w-6 h-0.5 bg-primary transition-all duration-200 ${menuOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-6 h-0.5 bg-primary transition-all duration-200 ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-          </button>
+          ))}
         </div>
-      </div>
+
+        {/* Book CTA */}
+        <a
+          href="#book-appointment"
+          className="hidden rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#155A4A] md:block"
+        >
+          Book Appointment
+        </a>
+
+        {/* Mobile Hamburger */}
+        <button
+          className="flex flex-col items-center justify-center gap-1.5 p-3 md:hidden min-h-[44px] min-w-[44px]"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span className={`block h-0.5 w-6 bg-primary transition-all duration-200 ${menuOpen ? 'translate-y-2 rotate-45' : ''}`} />
+          <span className={`block h-0.5 w-6 bg-primary transition-all duration-200 ${menuOpen ? 'opacity-0' : ''}`} />
+          <span className={`block h-0.5 w-6 bg-primary transition-all duration-200 ${menuOpen ? '-translate-y-2 -rotate-45' : ''}`} />
+        </button>
+      </nav>
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden bg-background border-t border-green-100 transition-all duration-300 overflow-hidden ${
+        className={`overflow-hidden border-t border-[#E0F0EB] bg-white transition-all duration-300 md:hidden ${
           menuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="px-4 py-4 flex flex-col gap-4">
+        <div className="flex flex-col gap-4 px-6 py-5">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className="font-body text-base font-medium text-textMain hover:text-primary transition-colors py-1"
+              className="text-base font-medium text-gray-700 transition hover:text-primary"
             >
               {link.label}
             </a>
           ))}
-          <a href="#book-appointment" onClick={() => setMenuOpen(false)} className="btn-primary text-center mt-2">
+          <a
+            href="#book-appointment"
+            onClick={() => setMenuOpen(false)}
+            className="mt-2 rounded-full bg-primary px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-[#155A4A]"
+          >
             Book Appointment
           </a>
         </div>
       </div>
-    </nav>
+    </header>
   )
 }

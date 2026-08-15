@@ -1,56 +1,53 @@
 'use client'
 
-import { Condition } from '@/lib/types'
-import { defaultConditions } from '@/lib/defaults'
+const conditions = [
+  { icon: '😴', name: 'Sleep & Relaxation' },
+  { icon: '🦴', name: 'Joint & Muscle Comfort' },
+  { icon: '🧘', name: 'Stress & Balance' },
+  { icon: '✨', name: 'Skin & Vitality' },
+  { icon: '🍃', name: 'Digestive Wellbeing' },
+  { icon: '💪', name: 'Energy & Immunity' },
+  { icon: '🧠', name: 'Mental Clarity' },
+  { icon: '🌸', name: "Women's Wellness" },
+]
 
-interface ConditionsProps {
-  conditions?: Condition[]
-}
-
-export default function Conditions({ conditions }: ConditionsProps) {
-  const data = conditions && conditions.length > 0
-    ? conditions
-    : defaultConditions.map((c, i) => ({ ...c, id: String(i) }))
-
+export default function Conditions() {
   return (
-    <section id="conditions" className="py-20 md:py-28 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-14">
-          <span className="inline-block text-accent text-sm font-body font-semibold tracking-widest uppercase mb-3">
-            Wellness Areas
-          </span>
-          <h2 className="section-title">Conditions We Support</h2>
-          <p className="section-subtitle max-w-2xl mx-auto">
-            We offer a range of traditional Ayurvedic wellness therapies to support your everyday health and wellbeing.
-          </p>
-        </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {data.map((condition) => (
-            <div
-              key={condition.id}
-              className="flex flex-col items-center gap-3 p-6 bg-white rounded-2xl border border-green-50 hover:border-accent/30 hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
-            >
-              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-2xl group-hover:bg-primary/20 transition-colors">
-                {condition.icon}
-              </div>
-              <span className="font-body text-sm font-semibold text-textMain text-center leading-tight">
-                {condition.name}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <div className="text-center mt-12">
-          <p className="font-body text-sage text-sm mb-4">Not sure if Ayurveda is right for you?</p>
-          <a href="#book-appointment" className="btn-outline inline-block">
-            Book a Consultation
-          </a>
-        </div>
+    <div className="mx-auto max-w-7xl px-6">
+      {/* Header */}
+      <div className="mx-auto max-w-2xl text-center">
+        <span className="text-sm font-semibold uppercase tracking-wider text-accent">Wellness Areas</span>
+        <h2 className="mt-3 font-display text-4xl font-semibold text-primary md:text-5xl">
+          Conditions We Support
+        </h2>
+        <p className="mt-4 text-[17px] text-gray-600">
+          We offer a range of traditional Ayurvedic wellness therapies to support your everyday health and wellbeing.
+        </p>
       </div>
-    </section>
+
+      {/* Grid */}
+      <div className="mt-16 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {conditions.map((c) => (
+          <div
+            key={c.name}
+            className="rounded-xl border border-[#D0EDE6] bg-white px-5 py-6 text-center shadow-sm transition hover:shadow-md"
+          >
+            <div className="text-2xl">{c.icon}</div>
+            <p className="mt-2 text-sm font-medium text-[#1A1A1A]">{c.name}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* CTA */}
+      <div className="mt-12 text-center">
+        <p className="text-sm text-gray-600">Not sure if Ayurveda is right for you?</p>
+        <a
+          href="#book-appointment"
+          className="mt-4 inline-block rounded-full border-2 border-primary px-7 py-3 text-sm font-medium text-primary transition hover:bg-primary/5"
+        >
+          Book a Consultation
+        </a>
+      </div>
+    </div>
   )
 }

@@ -18,6 +18,7 @@ const config: Config = {
       },
       fontFamily: {
         display: ['Cormorant Garamond', 'Georgia', 'serif'],
+        heading: ['Cormorant Garamond', 'Georgia', 'serif'],
         body: ['DM Sans', 'Helvetica Neue', 'sans-serif'],
       },
       keyframes: {
