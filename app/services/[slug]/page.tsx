@@ -291,10 +291,10 @@ export default async function TreatmentPage({ params }: { params: { slug: string
 
           {/* Steps grid */}
           <div className="grid md:grid-cols-4 gap-10 md:gap-6 relative">
-            {/* Horizontal connector line (desktop only) */}
+            {/* Horizontal connector line (desktop only) — behind circles */}
             <div
-              className="hidden md:block absolute h-[2px] step-line-h"
-              style={{ top: '24px', left: '12.5%', right: '12.5%' }}
+              className="hidden md:block absolute h-[2px]"
+              style={{ top: '24px', left: '10%', right: '10%', background: 'rgba(27,110,92,0.25)' }}
             />
 
             {(steps as string[]).map((step: string, i: number) => (
