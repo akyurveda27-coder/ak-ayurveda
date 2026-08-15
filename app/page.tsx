@@ -16,11 +16,11 @@ export default function HomePage() {
       <section className="relative w-full overflow-hidden bg-white">
         {/* Radial glow */}
         <div
-          className="pointer-events-none absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full opacity-70 blur-3xl"
+          className="pointer-events-none absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full opacity-70 blur-3xl z-0"
           style={{ background: 'radial-gradient(circle, rgba(27,110,92,0.15) 0%, rgba(240,250,247,0.4) 60%, transparent 80%)' }}
         />
 
-        <div className="relative mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-6 pt-24 pb-20 md:grid-cols-5 md:px-10">
+        <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-6 pt-24 pb-20 md:grid-cols-5 md:px-10">
 
           {/* Left — 60% */}
           <div className="md:col-span-3">
