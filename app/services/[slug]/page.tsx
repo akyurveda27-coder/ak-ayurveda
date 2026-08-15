@@ -465,6 +465,11 @@ export default async function TreatmentPage({ params }: { params: { slug: string
         </div>
       </section>
 
+      {/* Separator strip */}
+      <div className="w-full bg-mint py-6 text-center">
+        <p className="text-sm text-primary font-medium">🌿 AK Ayurveda — Traditional Ayurvedic Wellness · London, UK</p>
+      </div>
+
       {/* ── 10. FOOTER ── */}
       <Footer />
     </>
