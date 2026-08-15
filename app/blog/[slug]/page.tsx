@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
+import ReactMarkdown from 'react-markdown'
 import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -191,22 +192,21 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         {/* Content */}
         <div className="max-w-3xl mx-auto px-4 pb-16">
           {blog.content ? (
-            <div
-              className="
-                prose prose-base md:prose-lg max-w-none
-                prose-headings:font-display prose-headings:text-primary prose-headings:leading-snug
-                prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:border-b prose-h2:border-green-100
-                prose-p:font-body prose-p:text-[#4a4a4a] prose-p:leading-relaxed prose-p:mb-4
-                prose-a:text-accent prose-a:no-underline hover:prose-a:underline
-                prose-strong:text-primary prose-strong:font-semibold
-                prose-ul:text-[#4a4a4a] prose-ol:text-[#4a4a4a]
-                prose-li:mb-1.5 prose-li:leading-relaxed
-                prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:bg-accent/5
-                prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg
-                prose-blockquote:text-primary prose-blockquote:italic prose-blockquote:not-italic
-              "
-              dangerouslySetInnerHTML={{ __html: blog.content }}
-            />
+            <div className="prose prose-base md:prose-lg max-w-none
+              prose-headings:font-display prose-headings:text-primaryDark prose-headings:leading-snug
+              prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:border-b prose-h2:border-[#D0EDE6]
+              prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
+              prose-p:font-body prose-p:text-[#4a4a4a] prose-p:leading-[1.85] prose-p:mb-5
+              prose-strong:text-primaryDark prose-strong:font-semibold
+              prose-ul:text-[#4a4a4a] prose-ol:text-[#4a4a4a]
+              prose-li:mb-2 prose-li:leading-relaxed
+              prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+              prose-blockquote:border-l-4 prose-blockquote:border-accent
+              prose-blockquote:bg-[#F0FAF7] prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg
+              prose-blockquote:text-primaryDark prose-blockquote:not-italic
+            ">
+              <ReactMarkdown>{blog.content}</ReactMarkdown>
+            </div>
           ) : (
             <div className="text-center py-16">
               <p className="font-body text-sage text-lg">Full article content coming soon.</p>
