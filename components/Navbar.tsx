@@ -13,11 +13,11 @@ export default function Navbar() {
   }, [])
 
   const navLinks = [
-    { label: 'Services', href: '#services' },
-    { label: 'About', href: '#about' },
-    { label: 'Conditions', href: '#conditions' },
+    { label: 'Services', href: '/services' },
+    { label: 'About', href: '/#about' },
+    { label: 'Conditions', href: '/#conditions' },
     { label: 'Blog', href: '/blog' },
-    { label: 'Contact', href: '#faq' },
+    { label: 'Contact', href: '/#faq' },
   ]
 
   return (
