@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AK Ayurveda — Font Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Fraunces:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f0f0;padding:24px 16px}
+h1{text-align:center;font-family:'DM Sans',sans-serif;font-size:22px;color:#333;margin-bottom:6px;font-weight:700}
+.sub{text-align:center;color:#888;font-size:13px;margin-bottom:36px}
+
+.block{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 6px 30px rgba(0,0,0,0.10);margin-bottom:40px;max-width:900px;margin-left:auto;margin-right:auto}
+.label{padding:14px 24px;font-size:15px;font-weight:700;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:10px}
+
+/* Teal theme colors */
+:root{
+  --teal:#1B6E5C;
+  --gold:#D4A853;
+  --mint:#F0FAF7;
+  --dark:#0F3D34;
+  --text:#1A1A1A;
+}
+
+.mock{background:#fff}
+
+/* NAVBAR */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid #E8F5F1;background:#fff}
+.logo-text{font-size:19px;font-weight:600;color:var(--teal);line-height:1.1}
+.logo-sub{font-size:11px;font-weight:400;letter-spacing:0.08em;color:#888;margin-top:2px}
+.nav-links{display:flex;gap:24px;font-size:13.5px;font-weight:500;color:#555}
+.nav-btn{background:var(--teal);color:#fff;border:none;padding:9px 22px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer}
+
+/* HERO */
+.hero{background:linear-gradient(150deg,#F0FAF7 0%,#fff 65%);padding:52px 28px 44px;text-align:center}
+.badge{display:inline-block;background:rgba(27,110,92,0.1);color:var(--teal);font-size:10.5px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:5px 16px;border-radius:100px;margin-bottom:18px}
+.hero-h1{font-size:42px;font-weight:500;color:#1A1A1A;line-height:1.15;margin-bottom:14px}
+.hero-h1 span{color:var(--gold)}
+.hero-p{font-size:15.5px;color:#555;line-height:1.65;max-width:460px;margin:0 auto 28px}
+.hero-btns{display:flex;gap:12px;justify-content:center}
+.btn-p{background:var(--teal);color:#fff;border:none;padding:13px 30px;border-radius:100px;font-size:13.5px;font-weight:700;cursor:pointer}
+.btn-o{background:transparent;color:var(--teal);border:2px solid var(--teal);padding:11px 28px;border-radius:100px;font-size:13.5px;font-weight:600;cursor:pointer}
+
+/* CARDS */
+.cards{background:var(--mint);padding:32px 28px}
+.section-label{font-size:10.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--teal);margin-bottom:8px}
+.section-h{font-size:28px;font-weight:500;color:#1A1A1A;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:#fff;border-radius:14px;padding:20px;border:1px solid #E0F0EB}
+.card-ic{font-size:26px;margin-bottom:10px}
+.card-h{font-size:15px;font-weight:700;color:#1A1A1A;margin-bottom:6px}
+.card-p{font-size:13px;color:#666;line-height:1.5}
+
+/* BODY TEXT SAMPLE */
+.body-sample{padding:28px;background:#fff;border-top:1px solid #f0f0f0}
+.body-h{font-size:14px;font-weight:700;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px}
+.body-text{font-size:15.5px;color:#444;line-height:1.7;margin-bottom:12px}
+.body-small{font-size:12.5px;color:#888;letter-spacing:0.04em}
+
+/* MOBILE PREVIEW */
+.mobile-row{display:flex;gap:20px;padding:20px 28px;background:#fafafa;border-top:1px solid #f0f0f0;align-items:flex-start}
+.mobile-frame{flex:0 0 220px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.12);border:2px solid #e0e0e0}
+.mobile-label{font-size:11px;font-weight:700;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px}
+.mobile-nav{background:var(--teal);padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+.mobile-logo{color:#fff;font-size:14px;font-weight:600}
+.mobile-ham{color:#fff;font-size:18px}
+.mobile-hero{padding:20px 14px;text-align:center;background:linear-gradient(150deg,#F0FAF7,#fff)}
+.mobile-badge{font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:rgba(27,110,92,0.1);color:var(--teal);padding:3px 10px;border-radius:100px;display:inline-block;margin-bottom:10px}
+.mobile-h1{font-size:22px;font-weight:500;color:#1A1A1A;line-height:1.2;margin-bottom:8px}
+.mobile-h1 span{color:var(--gold)}
+.mobile-p{font-size:11px;color:#666;line-height:1.5;margin-bottom:14px}
+.mobile-btn{background:var(--teal);color:#fff;border:none;padding:10px 20px;border-radius:100px;font-size:11px;font-weight:700;width:100%;margin-bottom:8px}
+.mobile-btn2{background:transparent;color:var(--teal);border:1.5px solid var(--teal);padding:9px 20px;border-radius:100px;font-size:11px;font-weight:600;width:100%}
+.desktop-info{flex:1;padding-top:8px}
+.desktop-info p{font-size:13.5px;color:#555;line-height:1.7;margin-bottom:10px}
+.size-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.size-table th{text-align:left;color:#888;font-weight:600;padding:4px 8px;border-bottom:1px solid #eee}
+.size-table td{padding:5px 8px;color:#444;border-bottom:1px solid #f5f5f5}
+
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr}
+  .mobile-row{flex-direction:column}
+  .mobile-frame{flex:none;width:100%;max-width:280px;margin:0 auto}
+  .hero-h1{font-size:28px}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<h1>🎨 AK Ayurveda — Font Comparison (Teal Theme)</h1>
+<p class="sub">Teeno fonts Teal theme ke saath dekho — Mobile + Desktop preview!</p>
+
+<!-- ══════════════════════════════════
+     OPTION 1 — Cormorant + DM Sans
+════════════════════════════════════ -->
+<div class="block">
+  <div class="label" style="background:#F0FAF7;font-family:'DM Sans',sans-serif;color:#1B6E5C">
+    ⭐ Option 1 — Cormorant Garamond + DM Sans <span style="background:#1B6E5C;color:#fff;padding:3px 10px;border-radius:100px;font-size:11px;margin-left:8px">RECOMMENDED</span>
+  </div>
+  <div class="mock" style="font-family:'DM Sans',sans-serif">
+    <div class="nav">
+      <div><div class="logo-text" style="font-family:'Cormorant Garamond',serif">AK Ayurveda</div><div class="logo-sub" style="font-family:'DM Sans',sans-serif">Ancient Wisdom · Modern Wellbeing</div></div>
+      <div class="nav-links" style="font-family:'DM Sans',sans-serif"><span>Services</span><span>About</span><span>Blog</span></div>
+      <button class="nav-btn" style="font-family:'DM Sans',sans-serif">Book Now</button>
+    </div>
+    <div class="hero">
+      <div class="badge" style="font-family:'DM Sans',sans-serif">Traditional Ayurvedic Clinic · London UK</div>
+      <div class="hero-h1" style="font-family:'Cormorant Garamond',serif;font-size:46px">Restore Balance.<br>Reconnect with <span>Ancient Wellness.</span></div>
+      <p class="hero-p" style="font-family:'DM Sans',sans-serif">Experience authentic Ayurvedic therapies in the heart of the UK. Personalised treatments rooted in 5,000 years of tradition.</p>
+      <div class="hero-btns">
+        <button class="btn-p" style="font-family:'DM Sans',sans-serif">Book a Consultation</button>
+        <button class="btn-o" style="font-family:'DM Sans',sans-serif">Explore Treatments</button>
+      </div>
+    </div>
+    <div class="cards">
+      <div class="section-label" style="font-family:'DM Sans',sans-serif">Our Treatments</div>
+      <div class="section-h" style="font-family:'Cormorant Garamond',serif;font-size:32px">Healing Through Tradition</div>
+      <div class="grid">
+        <div class="card"><div class="card-ic">🤲</div><div class="card-h" style="font-family:'DM Sans',sans-serif">Abhyanga Massage</div><p class="card-p" style="font-family:'DM Sans',sans-serif">Full-body warm oil massage to relax muscles and support wellbeing.</p></div>
+        <div class="card"><div class="card-ic">💧</div><div class="card-h" style="font-family:'DM Sans',sans-serif">Shirodhara</div><p class="card-p" style="font-family:'DM Sans',sans-serif">Gentle oil flow therapy for deep relaxation and mental calm.</p></div>
+        <div class="card"><div class="card-ic">🌿</div><div class="card-h" style="font-family:'DM Sans',sans-serif">Consultation</div><p class="card-p" style="font-family:'DM Sans',sans-serif">Personalised Ayurvedic wellness guidance with Nadi Pariksha.</p></div>
+      </div>
+    </div>
+    <div class="body-sample">
+      <div class="body-h" style="font-family:'DM Sans',sans-serif">Body Text Sample</div>
+      <p class="body-text" style="font-family:'DM Sans',sans-serif">Ayurveda is one of the world's oldest holistic healing systems. Developed more than 3,000 years ago in India, it is based on the belief that health and wellness depend on a delicate balance between the mind, body and spirit.</p>
+      <p class="body-small" style="font-family:'DM Sans',sans-serif">AK AYURVEDA · TRADITIONAL WELLNESS · LONDON, UK</p>
+    </div>
+    <div class="mobile-row">
+      <div>
+        <div class="mobile-label" style="font-family:'DM Sans',sans-serif">📱 Mobile View</div>
+        <div class="mobile-frame">
+          <div class="mobile-nav"><div class="mobile-logo" style="font-family:'Cormorant Garamond',serif;font-size:16px">AK Ayurveda</div><div class="mobile-ham">☰</div></div>
+          <div class="mobile-hero">
+            <div class="mobile-badge" style="font-family:'DM Sans',sans-serif">Ayurvedic Clinic · London</div>
+            <div class="mobile-h1" style="font-family:'Cormorant Garamond',serif">Restore Balance.<br><span>Ancient Wellness.</span></div>
+            <p class="mobile-p" style="font-family:'DM Sans',sans-serif">Authentic Ayurvedic therapies personalised for you.</p>
+            <button class="mobile-btn" style="font-family:'DM Sans',sans-serif">Book a Consultation</button>
+            <button class="mobile-btn2" style="font-family:'DM Sans',sans-serif">Explore Treatments</button>
+          </div>
+        </div>
+      </div>
+      <div class="desktop-info">
+        <p style="font-family:'DM Sans',sans-serif"><strong>Why Cormorant + DM Sans?</strong><br>Cormorant is a high-end serif used by luxury brands worldwide — pairs perfectly with Teal. DM Sans is slightly rounder than Inter, making it feel warmer and more approachable.</p>
+        <table class="size-table" style="font-family:'DM Sans',sans-serif">
+          <tr><th>Element</th><th>Mobile</th><th>Desktop</th></tr>
+          <tr><td>Hero H1</td><td>28px</td><td>52px</td></tr>
+          <tr><td>Section H2</td><td>24px</td><td>36px</td></tr>
+          <tr><td>Card H3</td><td>16px</td><td>17px</td></tr>
+          <tr><td>Body text</td><td>15px</td><td>16px</td></tr>
+          <tr><td>Labels</td><td>11px</td><td>11.5px</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     OPTION 2 — Playfair + Inter
+════════════════════════════════════ -->
+<div class="block">
+  <div class="label" style="background:#F0FAF7;font-family:'Inter',sans-serif;color:#1B6E5C">
+    Option 2 — Playfair Display + Inter
+  </div>
+  <div class="mock" style="font-family:'Inter',sans-serif">
+    <div class="nav">
+      <div><div class="logo-text" style="font-family:'Playfair Display',serif">AK Ayurveda</div><div class="logo-sub">Ancient Wisdom · Modern Wellbeing</div></div>
+      <div class="nav-links"><span>Services</span><span>About</span><span>Blog</span></div>
+      <button class="nav-btn">Book Now</button>
+    </div>
+    <div class="hero">
+      <div class="badge">Traditional Ayurvedic Clinic · London UK</div>
+      <div class="hero-h1" style="font-family:'Playfair Display',serif">Restore Balance.<br>Reconnect with <span>Ancient Wellness.</span></div>
+      <p class="hero-p">Experience authentic Ayurvedic therapies in the heart of the UK. Personalised treatments rooted in 5,000 years of tradition.</p>
+      <div class="hero-btns">
+        <button class="btn-p">Book a Consultation</button>
+        <button class="btn-o">Explore Treatments</button>
+      </div>
+    </div>
+    <div class="cards">
+      <div class="section-label">Our Treatments</div>
+      <div class="section-h" style="font-family:'Playfair Display',serif">Healing Through Tradition</div>
+      <div class="grid">
+        <div class="card"><div class="card-ic">🤲</div><div class="card-h">Abhyanga Massage</div><p class="card-p">Full-body warm oil massage to relax muscles and support wellbeing.</p></div>
+        <div class="card"><div class="card-ic">💧</div><div class="card-h">Shirodhara</div><p class="card-p">Gentle oil flow therapy for deep relaxation and mental calm.</p></div>
+        <div class="card"><div class="card-ic">🌿</div><div class="card-h">Consultation</div><p class="card-p">Personalised Ayurvedic wellness guidance with Nadi Pariksha.</p></div>
+      </div>
+    </div>
+    <div class="body-sample">
+      <div class="body-h">Body Text Sample</div>
+      <p class="body-text">Ayurveda is one of the world's oldest holistic healing systems. Developed more than 3,000 years ago in India, it is based on the belief that health and wellness depend on a delicate balance between the mind, body and spirit.</p>
+      <p class="body-small">AK AYURVEDA · TRADITIONAL WELLNESS · LONDON, UK</p>
+    </div>
+    <div class="mobile-row">
+      <div>
+        <div class="mobile-label">📱 Mobile View</div>
+        <div class="mobile-frame">
+          <div class="mobile-nav"><div class="mobile-logo" style="font-family:'Playfair Display',serif;font-size:15px">AK Ayurveda</div><div class="mobile-ham">☰</div></div>
+          <div class="mobile-hero">
+            <div class="mobile-badge">Ayurvedic Clinic · London</div>
+            <div class="mobile-h1" style="font-family:'Playfair Display',serif">Restore Balance.<br><span>Ancient Wellness.</span></div>
+            <p class="mobile-p">Authentic Ayurvedic therapies personalised for you.</p>
+            <button class="mobile-btn">Book a Consultation</button>
+            <button class="mobile-btn2">Explore Treatments</button>
+          </div>
+        </div>
+      </div>
+      <div class="desktop-info">
+        <p><strong>Why Playfair + Inter?</strong><br>Playfair Display is widely used in editorial and medical websites — authoritative yet elegant. Inter is the most readable sans-serif for body text. Very clean combination.</p>
+        <table class="size-table">
+          <tr><th>Element</th><th>Mobile</th><th>Desktop</th></tr>
+          <tr><td>Hero H1</td><td>28px</td><td>48px</td></tr>
+          <tr><td>Section H2</td><td>22px</td><td>34px</td></tr>
+          <tr><td>Card H3</td><td>15px</td><td>16px</td></tr>
+          <tr><td>Body text</td><td>15px</td><td>16px</td></tr>
+          <tr><td>Labels</td><td>11px</td><td>11px</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     OPTION 3 — Fraunces + Inter (Current)
+════════════════════════════════════ -->
+<div class="block">
+  <div class="label" style="background:#F0FAF7;font-family:'Inter',sans-serif;color:#1B6E5C">
+    Option 3 — Fraunces + Inter (Current — Already on site)
+  </div>
+  <div class="mock" style="font-family:'Inter',sans-serif">
+    <div class="nav">
+      <div><div class="logo-text" style="font-family:'Fraunces',serif">AK Ayurveda</div><div class="logo-sub">Ancient Wisdom · Modern Wellbeing</div></div>
+      <div class="nav-links"><span>Services</span><span>About</span><span>Blog</span></div>
+      <button class="nav-btn">Book Now</button>
+    </div>
+    <div class="hero">
+      <div class="badge">Traditional Ayurvedic Clinic · London UK</div>
+      <div class="hero-h1" style="font-family:'Fraunces',serif">Restore Balance.<br>Reconnect with <span>Ancient Wellness.</span></div>
+      <p class="hero-p">Experience authentic Ayurvedic therapies in the heart of the UK. Personalised treatments rooted in 5,000 years of tradition.</p>
+      <div class="hero-btns">
+        <button class="btn-p">Book a Consultation</button>
+        <button class="btn-o">Explore Treatments</button>
+      </div>
+    </div>
+    <div class="cards">
+      <div class="section-label">Our Treatments</div>
+      <div class="section-h" style="font-family:'Fraunces',serif">Healing Through Tradition</div>
+      <div class="grid">
+        <div class="card"><div class="card-ic">🤲</div><div class="card-h">Abhyanga Massage</div><p class="card-p">Full-body warm oil massage to relax muscles and support wellbeing.</p></div>
+        <div class="card"><div class="card-ic">💧</div><div class="card-h">Shirodhara</div><p class="card-p">Gentle oil flow therapy for deep relaxation and mental calm.</p></div>
+        <div class="card"><div class="card-ic">🌿</div><div class="card-h">Consultation</div><p class="card-p">Personalised Ayurvedic wellness guidance with Nadi Pariksha.</p></div>
+      </div>
+    </div>
+    <div class="body-sample">
+      <div class="body-h">Body Text Sample</div>
+      <p class="body-text">Ayurveda is one of the world's oldest holistic healing systems. Developed more than 3,000 years ago in India, it is based on the belief that health and wellness depend on a delicate balance between the mind, body and spirit.</p>
+      <p class="body-small">AK AYURVEDA · TRADITIONAL WELLNESS · LONDON, UK</p>
+    </div>
+    <div class="mobile-row">
+      <div>
+        <div class="mobile-label">📱 Mobile View</div>
+        <div class="mobile-frame">
+          <div class="mobile-nav"><div class="mobile-logo" style="font-family:'Fraunces',serif;font-size:15px">AK Ayurveda</div><div class="mobile-ham">☰</div></div>
+          <div class="mobile-hero">
+            <div class="mobile-badge">Ayurvedic Clinic · London</div>
+            <div class="mobile-h1" style="font-family:'Fraunces',serif">Restore Balance.<br><span>Ancient Wellness.</span></div>
+            <p class="mobile-p">Authentic Ayurvedic therapies personalised for you.</p>
+            <button class="mobile-btn">Book a Consultation</button>
+            <button class="mobile-btn2">Explore Treatments</button>
+          </div>
+        </div>
+      </div>
+      <div class="desktop-info">
+        <p><strong>Why Fraunces + Inter?</strong><br>Fraunces is a unique optical serif — very distinctive and modern. Already on your website so no change needed. Works well with the new teal theme too.</p>
+        <table class="size-table">
+          <tr><th>Element</th><th>Mobile</th><th>Desktop</th></tr>
+          <tr><td>Hero H1</td><td>28px</td><td>48px</td></tr>
+          <tr><td>Section H2</td><td>22px</td><td>36px</td></tr>
+          <tr><td>Card H3</td><td>15px</td><td>16px</td></tr>
+          <tr><td>Body text</td><td>15px</td><td>16px</td></tr>
+          <tr><td>Labels</td><td>11px</td><td>11px</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p style="text-align:center;margin-top:30px;color:#888;font-size:13px;font-family:'DM Sans',sans-serif">Font choose karo: 1, 2 ya 3 — 5 min mein update! 🎨</p>
+</body>
+</html>
