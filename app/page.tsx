@@ -5,19 +5,19 @@ import BlogPreview from '@/components/BlogPreview'
 import FAQ from '@/components/FAQ'
 import Footer from '@/components/Footer'
 import { supabase } from '@/lib/supabase'
-import { defaultHero } from '@/lib/defaults'
-import type { HeroContent } from '@/lib/types'
+import { defaultHero, defaultStats } from '@/lib/defaults'
+import type { HeroContent, StatsContent } from '@/lib/types'
 
 export const revalidate = 60 // revalidate every 60 seconds
 
 export default async function HomePage() {
-  // Fetch hero content from admin (site_content table)
-  const { data: heroRow } = await supabase
-    .from('site_content')
-    .select('value')
-    .eq('key', 'hero')
-    .single()
-  const hero: HeroContent = (heroRow?.value as HeroContent) ?? defaultHero
+  // Fetch hero + stats from admin (site_content table)
+  const [heroRow, statsRow] = await Promise.all([
+    supabase.from('site_content').select('value').eq('key', 'hero').single(),
+    supabase.from('site_content').select('value').eq('key', 'stats').single(),
+  ])
+  const hero: HeroContent = (heroRow.data?.value as HeroContent) ?? defaultHero
+  const stats: StatsContent = (statsRow.data?.value as StatsContent) ?? defaultStats
 
   return (
     <main className="w-full overflow-x-hidden bg-white">
@@ -90,26 +90,17 @@ export default async function HomePage() {
       {/* ============================================================ */}
       <section className="w-full border-t border-b border-mintBorder bg-mint py-12">
         <div className="mx-auto grid max-w-5xl grid-cols-2 gap-8 px-6 text-center lg:grid-cols-4">
-          <div>
-            <div className="font-display text-4xl font-semibold text-primary md:text-5xl">5,000+</div>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-primary md:text-sm">Years</p>
-            <p className="mt-1 text-sm text-gray-600">Of Vedic Tradition</p>
-          </div>
-          <div>
-            <div className="font-display text-4xl font-semibold text-primary md:text-5xl">18</div>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-primary md:text-sm">Treatments</p>
-            <p className="mt-1 text-sm text-gray-600">Traditional Therapies</p>
-          </div>
-          <div>
-            <div className="font-display text-4xl font-semibold text-primary md:text-5xl">100%</div>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-primary md:text-sm">Natural</p>
-            <p className="mt-1 text-sm text-gray-600">Herbal Ingredients</p>
-          </div>
-          <div>
-            <div className="font-display text-4xl font-semibold text-primary md:text-5xl">London</div>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-primary md:text-sm">UK</p>
-            <p className="mt-1 text-sm text-gray-600">Based Clinic</p>
-          </div>
+          {[
+            { value: stats.stat1_value, label: stats.stat1_label },
+            { value: stats.stat2_value, label: stats.stat2_label },
+            { value: stats.stat3_value, label: stats.stat3_label },
+            { value: stats.stat4_value, label: stats.stat4_label },
+          ].map((s, i) => (
+            <div key={i}>
+              <div className="font-display text-4xl font-semibold text-primary md:text-5xl">{s.value}</div>
+              <p className="mt-1 text-sm text-gray-600">{s.label}</p>
+            </div>
+          ))}
         </div>
       </section>
 

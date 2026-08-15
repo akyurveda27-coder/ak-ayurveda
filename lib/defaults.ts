@@ -10,14 +10,14 @@ export const defaultHero: HeroContent = {
 }
 
 export const defaultStats: StatsContent = {
-  stat1_value: '15+',
-  stat1_label: 'Years Experience',
-  stat2_value: '8000+',
-  stat2_label: 'Patients Treated',
-  stat3_value: '40+',
-  stat3_label: 'Treatments',
-  stat4_value: '4.9/5',
-  stat4_label: 'Patient Rating',
+  stat1_value: '5,000+',
+  stat1_label: 'Years of Vedic Tradition',
+  stat2_value: '18',
+  stat2_label: 'Personalised Therapies',
+  stat3_value: '100%',
+  stat3_label: 'Natural Herbal Ingredients',
+  stat4_value: 'London',
+  stat4_label: 'UK Based Clinic',
 }
 
 export const defaultDoctor: DoctorContent = {
