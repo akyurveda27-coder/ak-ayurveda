@@ -4,8 +4,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const CLINIC_EMAIL = 'info@akayurveda.co.uk'
+// Lazy init — env var only available at runtime, not build time
+const getResend = () => new Resend(process.env.RESEND_API_KEY ?? '')
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
     // 2. Email to clinic (notification)
-    await resend.emails.send({
+    await getResend().emails.send({
       from: 'AK Ayurveda Bookings <onboarding@resend.dev>',
       to: [CLINIC_EMAIL],
       subject: `New Booking Request — ${service}`,
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
     }).catch(() => {}) // don't fail booking if email fails
 
     // 3. Confirmation email to customer
-    await resend.emails.send({
+    await getResend().emails.send({
       from: 'AK Ayurveda <onboarding@resend.dev>',
       to: [email],
       subject: 'Your Booking Request Received — AK Ayurveda',
