@@ -66,9 +66,12 @@ export default async function TreatmentPage({ params }: { params: { slug: string
 
   const benefits = (Array.isArray(service.benefits) && service.benefits.length > 0) ? service.benefits : ['Deep muscle relaxation', 'Improves circulation', 'Calms the nervous system', 'Nourishes skin']
   const benefitDescs = (Array.isArray(service.benefit_descriptions) && service.benefit_descriptions.length > 0) ? service.benefit_descriptions : ['Rhythmic strokes ease tension.', 'Encourages healthy blood flow.', 'Quiets an overactive mind.', 'Leaves skin soft and hydrated.']
-  const steps = (Array.isArray(service.process) && service.process.length > 0) ? service.process : ['Welcome & Consultation', 'Oil Selection', 'Full Body Treatment', 'Rest & Aftercare']
-  const stepDescs = (Array.isArray(service.process_descriptions) && service.process_descriptions.length > 0) ? service.process_descriptions : ['A brief conversation about your current health and areas of tension.', 'A warm herbal oil is chosen to suit your dosha and current imbalance.', 'The full treatment session using traditional Ayurvedic techniques.', 'A short rest period followed by aftercare guidance for the rest of your day.']
-  const idealFor = service.ideal_for ?? ['Muscle tension', 'Poor sleep', 'Stress & anxiety', 'New to Ayurveda']
+  const hasValidProcess = Array.isArray(service.process) && service.process.some((s: string) => s && s.trim().length > 0)
+  const steps = hasValidProcess ? service.process : ['Welcome & Consultation', 'Oil Selection', 'Full Body Treatment', 'Rest & Aftercare']
+  const hasValidStepDescs = Array.isArray(service.process_descriptions) && service.process_descriptions.some((s: string) => s && s.trim().length > 0)
+  const stepDescs = hasValidStepDescs ? service.process_descriptions : ['A brief conversation about your current health and areas of tension.', 'A warm herbal oil is chosen to suit your dosha and current imbalance.', 'The full treatment session using traditional Ayurvedic techniques.', 'A short rest period followed by aftercare guidance for the rest of your day.']
+  const idealForRaw = (Array.isArray(service.ideal_for) && service.ideal_for.length > 0) ? service.ideal_for : ['Muscle tension', 'Poor sleep', 'Stress & anxiety', 'New to Ayurveda']
+  const idealFor = idealForRaw
   const faqs: { question?: string; q?: string; answer?: string; a?: string }[] = service.faqs ?? []
 
   const faqList = faqs.length > 0 ? faqs : DEFAULT_FAQS
@@ -296,8 +299,8 @@ export default async function TreatmentPage({ params }: { params: { slug: string
                 >
                   Step {i + 1}
                 </p>
-                <h3 className="font-semibold mb-2" style={{ color: '#0F3D34' }}>
-                  {step}
+                <h3 className="font-semibold mb-2 text-primaryDark">
+                  {step || `Step ${i + 1}`}
                 </h3>
                 {stepDescs[i] && (
                   <p className="text-sm text-black/55 leading-relaxed">{stepDescs[i]}</p>
@@ -331,7 +334,7 @@ export default async function TreatmentPage({ params }: { params: { slug: string
           {/* Glass cards grid — dynamic columns based on item count */}
           <div
             className="grid gap-6"
-            style={{ gridTemplateColumns: `repeat(${Math.min((idealFor as string[]).length, 4)}, 1fr)` }}
+            style={{ gridTemplateColumns: `repeat(${Math.min((idealFor as string[]).length, 5)}, 1fr)` }}
           >
             {(idealFor as string[]).map((item: string, i: number) => (
               <div key={i} className="glass-card rounded-2xl p-7">
