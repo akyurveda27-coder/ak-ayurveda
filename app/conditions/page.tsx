@@ -49,7 +49,7 @@ export default async function ConditionsPage() {
       {/* ============================================================ */}
       {/* 1. HERO */}
       {/* ============================================================ */}
-      <section className="w-full bg-[#0F3D34] py-20">
+      <section className="w-full bg-[#0F3D34] pt-24 pb-12">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="text-sm font-semibold uppercase tracking-widest" style={{ color: '#D4A853' }}>
             ✦ {p.hero_eyebrow} ✦
@@ -64,7 +64,7 @@ export default async function ConditionsPage() {
       {/* ============================================================ */}
       {/* 2. INTRO PARAGRAPH */}
       {/* ============================================================ */}
-      <section className="w-full bg-white py-16">
+      <section className="w-full bg-white py-8">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p
             className="font-display text-xl italic leading-relaxed text-gray-700 md:text-2xl"
@@ -99,7 +99,7 @@ export default async function ConditionsPage() {
       {/* ============================================================ */}
       {/* 4. CONDITIONS GRID */}
       {/* ============================================================ */}
-      <section className="w-full bg-mint py-16">
+      <section className="w-full bg-mint py-10">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl font-semibold md:text-4xl" style={{ color: '#0F3D34' }}>
