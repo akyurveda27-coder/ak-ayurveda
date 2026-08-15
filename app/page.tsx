@@ -211,14 +211,14 @@ export default async function HomePage() {
       {/* ============================================================ */}
       {/* 6. CONDITIONS */}
       {/* ============================================================ */}
-      <section id="conditions" className="w-full py-12 md:py-16" style={{ backgroundColor: '#F0FAF7' }}>
+      <section id="conditions" className="w-full py-10" style={{ backgroundColor: '#F0FAF7' }}>
         <Conditions conditions={conditionsData ?? defaultConditions} />
       </section>
 
       {/* ============================================================ */}
       {/* 7. TESTIMONIALS */}
       {/* ============================================================ */}
-      <section className="w-full bg-white py-12 px-4">
+      <section className="w-full bg-white py-10 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
             <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: '#D4A853' }}>✦ What Our Clients Say ✦</p>

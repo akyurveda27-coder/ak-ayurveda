@@ -66,7 +66,7 @@ export default async function AboutPage() {
       {/* ============================================================ */}
       {/* 1. HERO */}
       {/* ============================================================ */}
-      <section className="w-full bg-[#0F3D34] py-20">
+      <section className="w-full bg-[#0F3D34] pt-24 pb-14">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="text-sm font-semibold uppercase tracking-widest" style={{ color: '#D4A853' }}>
             ✦ {c.hero_eyebrow} ✦
