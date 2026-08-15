@@ -52,7 +52,7 @@ export default async function HomePage() {
           style={{ background: 'radial-gradient(circle, rgba(27,110,92,0.15) 0%, rgba(240,250,247,0.4) 60%, transparent 80%)' }}
         />
 
-        <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-6 px-6 pt-16 pb-10 md:grid-cols-5 md:px-10 md:pt-20 md:pb-12">
+        <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-6 px-6 pt-4 pb-10 md:grid-cols-5 md:px-10 md:pt-12 md:pb-12">
 
           {/* Left — 60% */}
           <div className="md:col-span-3">
