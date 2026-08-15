@@ -15,6 +15,9 @@ const config: Config = {
         background: '#FFFFFF',
         textMain: '#1A1A1A',
         sage: '#3D8B7A',
+        mint: '#F0FAF7',
+        mintBorder: '#D0EDE6',
+        sectionBorder: '#E0F0EB',
       },
       fontFamily: {
         display: ['Cormorant Garamond', 'Georgia', 'serif'],

@@ -75,7 +75,7 @@ export default function HomePage() {
       {/* ============================================================ */}
       {/* 2. STATS STRIP — 4 columns */}
       {/* ============================================================ */}
-      <section className="w-full border-t border-b border-[#D0EDE6] bg-[#F0FAF7] py-12">
+      <section className="w-full border-t border-b border-mintBorder bg-mint py-12">
         <div className="mx-auto grid max-w-5xl grid-cols-2 gap-8 px-6 text-center lg:grid-cols-4">
           <div>
             <div className="font-display text-4xl font-semibold text-primary md:text-5xl">5,000+</div>
@@ -103,7 +103,7 @@ export default function HomePage() {
       {/* ============================================================ */}
       {/* 3. SERVICES */}
       {/* ============================================================ */}
-      <section id="services" className="w-full border-b border-[#E0F0EB] bg-white py-24 md:py-28">
+      <section id="services" className="w-full border-b border-sectionBorder bg-white py-24 md:py-28">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
             <span className="text-sm font-semibold uppercase tracking-wider text-accent">Our Treatments</span>
@@ -121,7 +121,7 @@ export default function HomePage() {
       {/* ============================================================ */}
       {/* 4. WHY CHOOSE US — dark */}
       {/* ============================================================ */}
-      <section id="about" className="w-full bg-[#0F3D34] py-24 md:py-28">
+      <section id="about" className="w-full bg-primaryDark py-24 md:py-28">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
             <span className="text-sm font-semibold uppercase tracking-wider text-accent">Why AK Ayurveda</span>
@@ -152,21 +152,21 @@ export default function HomePage() {
       {/* ============================================================ */}
       {/* 5. CONDITIONS */}
       {/* ============================================================ */}
-      <section id="conditions" className="w-full bg-[#F0FAF7] py-24 md:py-28">
+      <section id="conditions" className="w-full bg-mint py-24 md:py-28">
         <Conditions />
       </section>
 
       {/* ============================================================ */}
       {/* 6. BLOG PREVIEW */}
       {/* ============================================================ */}
-      <section id="journal" className="w-full border-t border-[#E0F0EB] bg-white py-24 md:py-28">
+      <section id="journal" className="w-full border-t border-sectionBorder bg-white py-24 md:py-28">
         <BlogPreview />
       </section>
 
       {/* ============================================================ */}
       {/* 7. BOOK BANNER */}
       {/* ============================================================ */}
-      <section className="w-full bg-[#0F3D34] py-20">
+      <section className="w-full bg-primaryDark py-20">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="font-display text-[32px] font-semibold text-white md:text-[42px]">
             Ready to Begin Your Wellness Journey?
@@ -186,7 +186,7 @@ export default function HomePage() {
       {/* ============================================================ */}
       {/* 8. FAQ */}
       {/* ============================================================ */}
-      <section id="faq" className="w-full bg-[#F0FAF7] py-24 md:py-28">
+      <section id="faq" className="w-full bg-mint py-24 md:py-28">
         <FAQ />
       </section>
 
