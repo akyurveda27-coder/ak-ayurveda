@@ -1424,9 +1424,176 @@ function ReviewsViewer() {
   )
 }
 
+// ─── About Page Editor ───────────────────────────────────────────────────────
+
+const defaultAboutContent = {
+  hero_eyebrow: 'Our Story',
+  hero_heading: 'About AK Ayurveda',
+  hero_subtext: 'Rooted in 5,000 years of Vedic wisdom, practised in the heart of London.',
+  mission1_icon: '🌿', mission1_title: 'Our Mission', mission1_text: 'To restore balance and wellbeing through the timeless principles of Ayurveda, tailored to modern life.',
+  mission2_icon: '🏛️', mission2_title: 'Our Heritage', mission2_text: 'Drawing from over 5,000 years of Vedic wisdom, our treatments are rooted in authentic Ayurvedic tradition.',
+  mission3_icon: '🌍', mission3_title: 'Our Reach', mission3_text: 'Based in London, we serve clients from across the UK and beyond who seek genuine Ayurvedic care.',
+  story_heading: 'Our Journey',
+  story_para1: 'AK Ayurveda was founded with a single purpose: to bring authentic Ayurvedic healing to London. Frustrated by the lack of genuine, personalised Ayurvedic care in the UK, our founders set out to create a clinic that honours the full depth of this ancient science.',
+  story_para2: 'Every treatment at AK Ayurveda is rooted in classical Ayurvedic texts and delivered with modern sensitivity. We believe true healing addresses not just symptoms, but the root imbalances that cause them.',
+  story_para3: 'Today, AK Ayurveda serves hundreds of clients seeking relief from stress, digestive issues, sleep disorders, and more — through therapies that have stood the test of thousands of years.',
+  story_image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80',
+  practitioner_name: 'Dr. Anjali Kumar',
+  practitioner_title: 'Chief Ayurvedic Practitioner',
+  practitioner_bio: 'Dr. Anjali Kumar trained at the Ayurvedic Medical College in Kerala and has over 15 years of clinical experience. She has treated thousands of patients across India and the UK, specialising in Panchakarma and chronic lifestyle disorders.',
+  practitioner_image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&q=80',
+}
+
+type AboutContent = typeof defaultAboutContent
+
+function AboutEditor() {
+  const [data, setData] = useState<AboutContent>(defaultAboutContent)
+  const { status, saving, saved, error } = useSaveStatus()
+
+  useEffect(() => {
+    supabase.from('site_content').select('content').eq('key', 'about').single()
+      .then(({ data: d }) => {
+        if (d?.content && typeof d.content === 'object') {
+          setData((prev) => ({ ...prev, ...(d.content as Partial<AboutContent>) }))
+        }
+      })
+  }, [])
+
+  const handleChange = (name: string, value: string) => setData((p) => ({ ...p, [name]: value }))
+
+  const handleSave = async () => {
+    saving()
+    const { error: err } = await supabase.from('site_content').upsert(
+      { key: 'about', content: data },
+      { onConflict: 'key' }
+    )
+    err ? error() : saved()
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Hero */}
+      <div className="bg-green-50/50 rounded-xl p-5 space-y-4">
+        <p className="font-body text-xs font-semibold text-primary uppercase tracking-wide">Hero Section</p>
+        <Field label="Hero Eyebrow" name="hero_eyebrow" value={data.hero_eyebrow} onChange={handleChange} />
+        <Field label="Hero Heading" name="hero_heading" value={data.hero_heading} onChange={handleChange} />
+        <Field label="Hero Subtext" name="hero_subtext" value={data.hero_subtext} onChange={handleChange} textarea rows={2} />
+      </div>
+
+      {/* Missions */}
+      <div className="bg-green-50/50 rounded-xl p-5 space-y-4">
+        <p className="font-body text-xs font-semibold text-primary uppercase tracking-wide">Mission Strip</p>
+        {([1, 2, 3] as const).map((n) => (
+          <div key={n} className="bg-white rounded-xl p-4 space-y-3 border border-green-100">
+            <p className="font-body text-xs font-semibold text-sage">Mission {n}</p>
+            <div className="grid grid-cols-5 gap-3">
+              <Field label="Icon" name={`mission${n}_icon`} value={(data as Record<string, string>)[`mission${n}_icon`]} onChange={handleChange} />
+              <div className="col-span-4">
+                <Field label="Title" name={`mission${n}_title`} value={(data as Record<string, string>)[`mission${n}_title`]} onChange={handleChange} />
+              </div>
+            </div>
+            <Field label="Text" name={`mission${n}_text`} value={(data as Record<string, string>)[`mission${n}_text`]} onChange={handleChange} textarea rows={2} />
+          </div>
+        ))}
+      </div>
+
+      {/* Story */}
+      <div className="bg-green-50/50 rounded-xl p-5 space-y-4">
+        <p className="font-body text-xs font-semibold text-primary uppercase tracking-wide">Our Story Section</p>
+        <Field label="Story Heading" name="story_heading" value={data.story_heading} onChange={handleChange} />
+        <Field label="Story Paragraph 1" name="story_para1" value={data.story_para1} onChange={handleChange} textarea rows={3} />
+        <Field label="Story Paragraph 2" name="story_para2" value={data.story_para2} onChange={handleChange} textarea rows={3} />
+        <Field label="Story Paragraph 3" name="story_para3" value={data.story_para3} onChange={handleChange} textarea rows={3} />
+        <div>
+          <Field label="Story Image URL" name="story_image" value={data.story_image} onChange={handleChange} />
+          {data.story_image && (
+            <div className="mt-2 rounded-xl overflow-hidden border border-green-100" style={{ height: 120 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={data.story_image} alt="Story preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Practitioner */}
+      <div className="bg-green-50/50 rounded-xl p-5 space-y-4">
+        <p className="font-body text-xs font-semibold text-primary uppercase tracking-wide">Practitioner Section</p>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Practitioner Name" name="practitioner_name" value={data.practitioner_name} onChange={handleChange} />
+          <Field label="Practitioner Title" name="practitioner_title" value={data.practitioner_title} onChange={handleChange} />
+        </div>
+        <Field label="Practitioner Bio" name="practitioner_bio" value={data.practitioner_bio} onChange={handleChange} textarea rows={4} />
+        <div>
+          <Field label="Practitioner Image URL" name="practitioner_image" value={data.practitioner_image} onChange={handleChange} />
+          {data.practitioner_image && (
+            <div className="mt-2 rounded-xl overflow-hidden border border-green-100" style={{ height: 100, width: 100 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={data.practitioner_image} alt="Practitioner preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <SaveButton status={status} onClick={handleSave} />
+    </div>
+  )
+}
+
+// ─── Conditions Page Editor ───────────────────────────────────────────────────
+
+const defaultConditionsPageContent = {
+  hero_eyebrow: 'Conditions We Support',
+  hero_heading: 'Conditions We Support',
+  hero_subtext: 'Ayurveda offers a holistic approach to many modern health challenges.',
+  intro_text: 'In Ayurveda, every condition is understood through the lens of your unique constitution (Prakriti) and current imbalances (Vikriti). Rather than treating symptoms in isolation, we work to restore the underlying balance of Vata, Pitta, and Kapha — allowing the body to heal naturally.',
+}
+
+type ConditionsPageContent = typeof defaultConditionsPageContent
+
+function ConditionsPageEditor() {
+  const [data, setData] = useState<ConditionsPageContent>(defaultConditionsPageContent)
+  const { status, saving, saved, error } = useSaveStatus()
+
+  useEffect(() => {
+    supabase.from('site_content').select('content').eq('key', 'conditions_page').single()
+      .then(({ data: d }) => {
+        if (d?.content && typeof d.content === 'object') {
+          setData((prev) => ({ ...prev, ...(d.content as Partial<ConditionsPageContent>) }))
+        }
+      })
+  }, [])
+
+  const handleChange = (name: string, value: string) => setData((p) => ({ ...p, [name]: value }))
+
+  const handleSave = async () => {
+    saving()
+    const { error: err } = await supabase.from('site_content').upsert(
+      { key: 'conditions_page', content: data },
+      { onConflict: 'key' }
+    )
+    err ? error() : saved()
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-green-50/50 rounded-xl p-5 space-y-4">
+        <p className="font-body text-xs font-semibold text-primary uppercase tracking-wide">Hero Section</p>
+        <Field label="Hero Eyebrow" name="hero_eyebrow" value={data.hero_eyebrow} onChange={handleChange} />
+        <Field label="Hero Heading" name="hero_heading" value={data.hero_heading} onChange={handleChange} />
+        <Field label="Hero Subtext" name="hero_subtext" value={data.hero_subtext} onChange={handleChange} textarea rows={2} />
+      </div>
+      <div className="bg-green-50/50 rounded-xl p-5 space-y-4">
+        <p className="font-body text-xs font-semibold text-primary uppercase tracking-wide">Intro Paragraph</p>
+        <Field label="Intro Text" name="intro_text" value={data.intro_text} onChange={handleChange} textarea rows={4} />
+      </div>
+      <SaveButton status={status} onClick={handleSave} />
+    </div>
+  )
+}
+
 // ─── Main Admin Panel ────────────────────────────────────────────────────────
 
-type AdminTab = 'hero' | 'stats' | 'services' | 'doctor' | 'conditions' | 'testimonials' | 'faqs' | 'contact' | 'appointments' | 'reviews' | 'blogs'
+type AdminTab = 'hero' | 'stats' | 'services' | 'doctor' | 'conditions' | 'testimonials' | 'faqs' | 'contact' | 'appointments' | 'reviews' | 'blogs' | 'about' | 'conditions_page'
 
 const tabs: { id: AdminTab; label: string; icon: string }[] = [
   { id: 'hero', label: 'Hero', icon: '🏠' },
@@ -1440,6 +1607,8 @@ const tabs: { id: AdminTab; label: string; icon: string }[] = [
   { id: 'appointments', label: 'Appointments', icon: '📅' },
   { id: 'reviews', label: 'Reviews', icon: '⭐' },
   { id: 'blogs', label: 'Blog Posts', icon: '📝' },
+  { id: 'about', label: 'About', icon: '🏥' },
+  { id: 'conditions_page', label: 'Conditions Page', icon: '📋' },
 ]
 
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
@@ -1459,6 +1628,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       case 'appointments': return <AppointmentsViewer />
       case 'reviews': return <ReviewsViewer />
       case 'blogs': return <BlogEditor />
+      case 'about': return <AboutEditor />
+      case 'conditions_page': return <ConditionsPageEditor />
     }
   }
 
