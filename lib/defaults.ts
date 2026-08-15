@@ -6,7 +6,7 @@ export const defaultHero: HeroContent = {
   cta1_text: 'Book a Consultation',
   cta1_link: '/book',
   cta2_text: 'Explore Treatments',
-  cta2_link: '#services',
+  cta2_link: '/services',
 }
 
 export const defaultStats: StatsContent = {

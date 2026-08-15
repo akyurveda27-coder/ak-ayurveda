@@ -57,7 +57,7 @@ export default async function HomePage() {
                 {hero.cta1_text || 'Book a Consultation'}
               </a>
               <a
-                href="#services"
+                href="/services"
                 className="w-full rounded-full border-2 border-primary px-8 py-3.5 text-center font-medium text-primary transition hover:bg-primary/5 sm:w-auto"
               >
                 {hero.cta2_text || 'Explore Treatments'}
