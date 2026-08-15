@@ -5,12 +5,12 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #2D5016;
-  --color-primary-dark: #1F3A10;
-  --color-accent: #C9A84C;
-  --color-background: #FDFBF5;
+  --color-primary: #1B6E5C;
+  --color-primary-dark: #0F3D34;
+  --color-accent: #D4A853;
+  --color-background: #FFFFFF;
   --color-text: #1A1A1A;
-  --color-sage: #6B7B4F;
+  --color-sage: #3D8B7A;
 }
 
 html {
@@ -52,7 +52,7 @@ body {
   }
 
   .card {
-    @apply bg-white rounded-2xl p-6 shadow-sm border border-green-50 hover:shadow-md transition-shadow duration-200;
+    @apply bg-white rounded-2xl p-6 shadow-sm border border-teal-50 hover:shadow-md transition-shadow duration-200;
   }
 }
 
@@ -64,7 +64,7 @@ body {
   background: #f1f1f1;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2D5016;
+  background: #1B6E5C;
   border-radius: 3px;
 }
 

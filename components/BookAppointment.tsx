@@ -93,7 +93,7 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
   const inputClass = 'w-full px-4 py-3 rounded-xl border border-green-100 bg-white font-body text-base text-textMain placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200'
 
   return (
-    <section id="book-section" className="py-20 md:py-28 bg-[#F5F0E8]">
+    <section id="book-section" className="py-20 md:py-28 bg-[#F0FAF7]">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -128,8 +128,8 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
             {/* ── Selected Duration Banner (pre-filled from treatment page) ── */}
             {selectedDuration && (
               <div style={{
-                background: 'linear-gradient(135deg, rgba(45,80,22,0.06), rgba(45,80,22,0.03))',
-                border: '1px solid rgba(45,80,22,0.15)',
+                background: 'linear-gradient(135deg, rgba(27,110,92,0.06), rgba(27,110,92,0.03))',
+                border: '1px solid rgba(27,110,92,0.15)',
                 borderRadius: 14,
                 padding: '14px 18px',
                 display: 'flex',
@@ -137,13 +137,13 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
                 gap: 12,
                 alignItems: 'center',
               }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#2D5016', letterSpacing: '0.04em' }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#1B6E5C', letterSpacing: '0.04em' }}>
                   📋 Selected Treatment
                 </span>
                 {bookService && (
                   <span style={{
-                    background: 'rgba(45,80,22,0.10)',
-                    color: '#1F3A10',
+                    background: 'rgba(27,110,92,0.10)',
+                    color: '#0F3D34',
                     borderRadius: 100,
                     padding: '4px 12px',
                     fontSize: 12,
@@ -153,7 +153,7 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
                   </span>
                 )}
                 <span style={{
-                  background: 'rgba(201,168,76,0.15)',
+                  background: 'rgba(212,168,83,0.15)',
                   color: '#8a6b1a',
                   borderRadius: 100,
                   padding: '4px 12px',
@@ -164,7 +164,7 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
                 </span>
                 {selectedPrice && (
                   <span style={{
-                    background: 'rgba(201,168,76,0.15)',
+                    background: 'rgba(212,168,83,0.15)',
                     color: '#8a6b1a',
                     borderRadius: 100,
                     padding: '4px 12px',

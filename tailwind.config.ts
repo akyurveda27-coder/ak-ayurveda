@@ -9,12 +9,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: '#2D5016',
-        primaryDark: '#1F3A10',
-        accent: '#C9A84C',
-        background: '#FDFBF5',
+        primary: '#1B6E5C',
+        primaryDark: '#0F3D34',
+        accent: '#D4A853',
+        background: '#FFFFFF',
         textMain: '#1A1A1A',
-        sage: '#6B7B4F',
+        sage: '#3D8B7A',
       },
       fontFamily: {
         display: ['Fraunces', 'Georgia', 'serif'],

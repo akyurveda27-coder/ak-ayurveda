@@ -105,7 +105,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     <main>
       <Navbar />
 
-      <article className="bg-[#FDFBF5] min-h-screen">
+      <article className="bg-white min-h-screen">
         {/* Hero */}
         <div className="bg-primary pt-28 pb-16 px-4">
           <div className="max-w-3xl mx-auto">
@@ -261,7 +261,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                   return (
                     <article
                       key={rel.id}
-                      className="bg-[#FDFBF5] rounded-2xl overflow-hidden border border-green-50 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col group"
+                      className="bg-[#F0FAF7] rounded-2xl overflow-hidden border border-teal-50 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col group"
                     >
                       <div className="relative h-40 overflow-hidden">
                         {rel.image_url ? (

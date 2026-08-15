@@ -120,7 +120,7 @@ export default function BlogPage() {
       )}
 
       {/* Blog grid */}
-      <section className="bg-[#FDFBF5] py-16 px-4">
+      <section className="bg-white py-16 px-4">
         <div className="max-w-6xl mx-auto">
           {loading ? (
             <div className="flex items-center justify-center py-24">

@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-[#FDFBF5] flex flex-col items-center justify-center px-4 text-center">
+    <main className="min-h-screen bg-white flex flex-col items-center justify-center px-4 text-center">
       {/* Logo mark */}
       <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-md mb-6">
         <span className="text-white text-xl font-bold font-display">AK</span>
