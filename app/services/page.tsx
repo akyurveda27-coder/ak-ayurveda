@@ -20,7 +20,9 @@ interface Service {
   name: string
   description: string
   icon?: string
-  price_from?: number
+  price_from?: string | number | null
+  card_image?: string | null
+  hero_image?: string | null
 }
 
 export default async function ServicesPage() {
@@ -55,21 +57,33 @@ export default async function ServicesPage() {
               return (
                 <div
                   key={service.id}
-                  className="rounded-2xl border border-sectionBorder bg-white p-6 shadow-sm transition hover:shadow-md"
+                  className="relative rounded-2xl border border-sectionBorder bg-white p-6 shadow-sm transition hover:shadow-md overflow-hidden"
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-mint text-2xl">
+                  {/* Card background image */}
+                  {(service.card_image || service.hero_image) && (
+                    <div
+                      className="absolute inset-0 rounded-2xl pointer-events-none"
+                      style={{
+                        backgroundImage: `url(${service.card_image || service.hero_image})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        opacity: 0.07,
+                      }}
+                    />
+                  )}
+                  <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-xl bg-mint text-2xl">
                     {service.icon || '🌿'}
                   </div>
-                  <h3 className="mt-4 font-display text-xl font-semibold text-primary leading-snug">
+                  <h3 className="relative z-10 mt-4 font-display text-xl font-semibold leading-snug" style={{ color: '#1B6E5C' }}>
                     {service.name}
                   </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-gray-600 line-clamp-3">
+                  <p className="relative z-10 mt-3 text-sm leading-relaxed text-gray-600 line-clamp-3">
                     {service.description}
                   </p>
                   {service.price_from && (
-                    <p className="mt-3 text-sm font-semibold text-accent">From {String(service.price_from).replace(/^£+/, '£')}</p>
+                    <p className="relative z-10 mt-3 text-sm font-semibold" style={{ color: '#D4A853' }}>From {String(service.price_from).replace(/^£+/, '£')}</p>
                   )}
-                  <div className="mt-5 flex items-center gap-4 text-sm font-medium text-primary">
+                  <div className="relative z-10 mt-5 flex items-center gap-4 text-sm font-medium" style={{ color: '#1B6E5C' }}>
                     <Link href={`/services/${slug}`} className="hover:underline">
                       Learn more →
                     </Link>
