@@ -1,5 +1,7 @@
 export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 
+import { unstable_noStore as noStore } from 'next/cache'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BlogList from '@/components/BlogList'
@@ -12,6 +14,7 @@ export const metadata: Metadata = {
 }
 
 export default async function BlogPage() {
+  noStore()
   const { data: blogs } = await supabase
     .from('blogs')
     .select('id, title, slug, excerpt, content, image_url, category, created_at')
