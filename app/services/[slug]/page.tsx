@@ -152,15 +152,7 @@ export default async function TreatmentPage({ params }: { params: { slug: string
                 style={{ height: '420px' }}
                 loading="eager"
               />
-              <div className="absolute -bottom-6 -left-6 hidden md:block glass-card rounded-xl px-5 py-4">
-                <p
-                  className="text-white/60 text-xs uppercase mb-1"
-                  style={{ letterSpacing: '0.14em' }}
-                >
-                  Rooted in
-                </p>
-                <p className="font-display text-white text-xl">5,000 years of Vedic wisdom</p>
-              </div>
+
             </div>
           </div>
         </div>
