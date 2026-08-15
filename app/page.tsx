@@ -5,7 +5,6 @@ import Services from '@/components/Services'
 import Conditions from '@/components/Conditions'
 import BlogPreview from '@/components/BlogPreview'
 import FAQ from '@/components/FAQ'
-import BookAppointment from '@/components/BookAppointment'
 import Footer from '@/components/Footer'
 
 export default function HomePage() {
@@ -41,7 +40,7 @@ export default function HomePage() {
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <a
-                href="#book-appointment"
+                href="/book"
                 className="w-full rounded-full bg-primary px-8 py-3.5 text-center font-medium text-white transition hover:bg-[#155A4A] sm:w-auto"
               >
                 Book a Consultation
@@ -178,7 +177,7 @@ export default function HomePage() {
             Take the first step towards holistic wellbeing. We&apos;ll confirm your appointment within 24 hours.
           </p>
           <a
-            href="#book-appointment"
+            href="/book"
             className="mt-8 inline-block rounded-full bg-accent px-10 py-3.5 font-semibold text-[#0F3D34] transition hover:brightness-95"
           >
             Book a Consultation
@@ -196,7 +195,7 @@ export default function HomePage() {
       {/* ============================================================ */}
       {/* 9. BOOK APPOINTMENT + FOOTER */}
       {/* ============================================================ */}
-      <BookAppointment />
+      
       <Footer />
     </main>
   )

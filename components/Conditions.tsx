@@ -42,7 +42,7 @@ export default function Conditions() {
       <div className="mt-12 text-center">
         <p className="text-sm text-gray-600">Not sure if Ayurveda is right for you?</p>
         <a
-          href="#book-appointment"
+          href="/book"
           className="mt-4 inline-block rounded-full border-2 border-primary px-7 py-3 text-sm font-medium text-primary transition hover:bg-primary/5"
         >
           Book a Consultation

@@ -196,7 +196,7 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
                   value={form.name}
                   onChange={handleChange}
                   required
-                  placeholder="Dr. / Mr. / Ms. Your Name"
+                  placeholder="Your Full Name"
                   className={inputClass}
                 />
               </div>
@@ -210,7 +210,7 @@ export default function BookAppointment({ services }: BookAppointmentProps) {
                   value={form.phone}
                   onChange={handleChange}
                   required
-                  placeholder="+91 98765 43210"
+                  placeholder="+44 7700 000000"
                   className={inputClass}
                 />
               </div>

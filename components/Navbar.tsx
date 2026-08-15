@@ -53,7 +53,7 @@ export default function Navbar() {
 
         {/* Book CTA */}
         <a
-          href="#book-appointment"
+          href="/book"
           className="hidden rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#155A4A] md:block"
         >
           Book Appointment
@@ -89,7 +89,7 @@ export default function Navbar() {
             </a>
           ))}
           <a
-            href="#book-appointment"
+            href="/book"
             onClick={() => setMenuOpen(false)}
             className="mt-2 rounded-full bg-primary px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-[#155A4A]"
           >

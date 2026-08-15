@@ -82,7 +82,7 @@ export default function Services({ services }: ServicesProps) {
               Learn more →
             </Link>
             <span className="text-gray-300">|</span>
-            <a href="#book-appointment" className="hover:underline">
+            <a href="/book" className="hover:underline">
               Book
             </a>
           </div>
