@@ -49,7 +49,7 @@ const defaultServices: ServiceItem[] = [
 ]
 
 interface ServicesProps {
-  services?: Array<{ id: string; name: string; description: string; icon: string }>
+  services?: Array<{ id: string; name: string; description: string; icon: string; hero_image?: string | null }>
 }
 
 function toSlug(name: string) {
@@ -57,8 +57,8 @@ function toSlug(name: string) {
 }
 
 export default function Services({ services }: ServicesProps) {
-  const data: ServiceItem[] = services && services.length > 0
-    ? services.map((s) => ({ icon: s.icon, name: s.name, description: s.description, slug: toSlug(s.name) }))
+  const data: (ServiceItem & { hero_image?: string | null })[] = services && services.length > 0
+    ? services.map((s) => ({ icon: s.icon, name: s.name, description: s.description, slug: toSlug(s.name), hero_image: s.hero_image }))
     : defaultServices
 
   return (
@@ -66,18 +66,30 @@ export default function Services({ services }: ServicesProps) {
       {data.map((service) => (
         <div
           key={service.slug}
-          className="rounded-2xl border border-[#E0F0EB] bg-white p-6 shadow-sm transition hover:shadow-md"
+          className="relative rounded-2xl border border-[#E0F0EB] bg-white p-6 shadow-sm transition hover:shadow-md overflow-hidden"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F0FAF7] text-2xl">
+          {/* Subtle background image */}
+          {(service as ServiceItem & { hero_image?: string | null }).hero_image && (
+            <div
+              className="absolute inset-0 rounded-2xl"
+              style={{
+                backgroundImage: `url(${(service as ServiceItem & { hero_image?: string | null }).hero_image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                opacity: 0.08,
+              }}
+            />
+          )}
+          <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-xl bg-[#F0FAF7] text-2xl">
             {service.icon}
           </div>
-          <h3 className="mt-4 font-display text-2xl font-semibold text-primary">
+          <h3 className="relative z-10 mt-4 font-display text-2xl font-semibold text-primary">
             {service.name}
           </h3>
-          <p className="mt-3 text-sm leading-relaxed text-gray-600">
+          <p className="relative z-10 mt-3 text-sm leading-relaxed text-gray-600">
             {service.description}
           </p>
-          <div className="mt-4 flex items-center gap-4 text-sm font-medium text-primary">
+          <div className="relative z-10 mt-4 flex items-center gap-4 text-sm font-medium text-primary">
             <Link href={`/services/${service.slug}`} className="hover:underline">
               Learn more →
             </Link>

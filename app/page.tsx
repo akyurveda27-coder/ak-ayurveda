@@ -15,7 +15,7 @@ export default async function HomePage() {
   const [heroRow, statsRow, servicesRow] = await Promise.all([
     supabase.from('site_content').select('value').eq('key', 'hero').single(),
     supabase.from('site_content').select('value').eq('key', 'stats').single(),
-    supabase.from('services').select('id, name, description, icon').order('sort_order', { ascending: true }).limit(6),
+    supabase.from('services').select('id, name, description, icon, hero_image').order('sort_order', { ascending: true }).limit(6),
   ])
   const hero: HeroContent = (heroRow.data?.value as HeroContent) ?? defaultHero
   const stats: StatsContent = (statsRow.data?.value as StatsContent) ?? defaultStats
