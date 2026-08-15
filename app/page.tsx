@@ -189,18 +189,21 @@ export default async function HomePage() {
       {/* 5. GALLERY STRIP */}
       {/* ============================================================ */}
       <section className="w-full overflow-hidden">
-        <div className="flex gap-1 h-52 md:h-72">
+        {/* Mobile: horizontal scroll | Desktop: flex strip */}
+        <div className="flex gap-1 h-52 md:h-72 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory scrollbar-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {[
             { src: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=500&q=80&auto=format&fit=crop', label: 'Abhyanga' },
             { src: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=500&q=80&auto=format&fit=crop', label: 'Shirodhara' },
             { src: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=500&q=80&auto=format&fit=crop', label: 'Head Massage' },
             { src: 'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=500&q=80&auto=format&fit=crop', label: 'Wellness' },
             { src: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=500&q=80&auto=format&fit=crop', label: 'Consultation' },
+            { src: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=500&q=80&auto=format&fit=crop', label: 'Face Care' },
+            { src: 'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=500&q=80&auto=format&fit=crop', label: 'Herbal' },
           ].map((item, i) => (
-            <div key={i} className="relative flex-1 overflow-hidden group">
+            <div key={i} className="relative flex-shrink-0 snap-start overflow-hidden group" style={{ width: 'calc(70vw)', minWidth: '200px', flex: '1 0 auto' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={item.src} alt={`AK Ayurveda ${item.label}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-3">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end justify-center pb-3">
                 <span className="text-white text-xs font-semibold tracking-wider uppercase">{item.label}</span>
               </div>
             </div>
