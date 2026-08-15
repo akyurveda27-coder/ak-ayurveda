@@ -1,9 +1,16 @@
+import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { defaultConditions } from '@/components/Conditions'
 import { supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Conditions We Support | Ayurvedic Wellness London | AK Ayurveda',
+  description: 'Ayurveda may support stress, digestive issues, sleep disorders, skin concerns, joint discomfort & more. Discover a holistic approach to wellness at AK Ayurveda London.',
+  keywords: 'ayurvedic treatment for stress uk, ayurvedic treatment for back pain uk, ayurvedic skincare uk, ayurveda for sleep uk, digestive wellness london, holistic health london',
+}
 
 interface ConditionItem {
   emoji: string

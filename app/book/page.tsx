@@ -7,8 +7,9 @@ import { supabase } from '@/lib/supabase'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Book an Appointment — AK Ayurveda',
-  description: 'Book your personalised Ayurvedic wellness consultation at AK Ayurveda, London. Choose your treatment and preferred date.',
+  title: 'Book Ayurvedic Treatment London | AK Ayurveda',
+  description: 'Book your Ayurvedic treatment or consultation at AK Ayurveda London. Choose from 18 therapies including Abhyanga, Shirodhara, Panchakarma & more.',
+  keywords: 'book ayurvedic treatment london, ayurvedic appointment london, shirodhara booking london, abhyanga massage booking london',
 }
 
 export default async function BookPage() {

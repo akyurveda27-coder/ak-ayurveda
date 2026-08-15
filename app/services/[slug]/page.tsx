@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
@@ -5,6 +6,17 @@ import Footer from '@/components/Footer'
 import BookButton from '@/components/BookButton'
 
 export const revalidate = 60
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const { data: services } = await supabase.from('services').select('name, description, price_from')
+  const service = services?.find((s: { name: string }) => toSlug(s.name) === params.slug)
+  if (!service) return { title: 'Treatment | AK Ayurveda London' }
+  return {
+    title: `${service.name} London | AK Ayurveda`,
+    description: `${(service.description as string)?.slice(0, 140)} Book ${service.name} at AK Ayurveda London.`,
+    keywords: `${(service.name as string).toLowerCase()} london, ayurvedic treatment london, ${(service.name as string).toLowerCase()} uk, ayurveda london`,
+  }
+}
 
 function toSlug(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')

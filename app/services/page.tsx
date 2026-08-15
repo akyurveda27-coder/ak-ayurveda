@@ -5,8 +5,9 @@ import { supabase } from '@/lib/supabase'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'All Treatments — AK Ayurveda',
-  description: 'Explore our full range of 18 traditional Ayurvedic treatments at AK Ayurveda, London.',
+  title: 'Ayurvedic Treatments London | 18 Therapies | AK Ayurveda',
+  description: 'Explore 18 authentic Ayurvedic treatments in London — Abhyanga, Shirodhara, Kati Vasti, Udvartana, Indian Head Massage & more. Personalised to your constitution.',
+  keywords: 'ayurvedic treatments london, abhyanga massage london, shirodhara london, kati vasti london, udvartana london, indian head massage london, ayurvedic facial london, janu vasti london',
 }
 
 export const revalidate = 60

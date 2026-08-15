@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import Services from '@/components/Services'
 import Conditions, { defaultConditions } from '@/components/Conditions'
@@ -7,6 +8,18 @@ import Footer from '@/components/Footer'
 import { supabase } from '@/lib/supabase'
 import { defaultHero, defaultStats } from '@/lib/defaults'
 import type { HeroContent, StatsContent } from '@/lib/types'
+
+export const metadata: Metadata = {
+  title: 'AK Ayurveda London | Authentic Ayurvedic Clinic & Treatments',
+  description: 'London\'s trusted Ayurvedic clinic offering Abhyanga, Shirodhara, Panchakarma & personalised wellness consultations. Book your Ayurvedic treatment in London today.',
+  keywords: 'ayurveda london, ayurvedic clinic london, ayurvedic massage london, shirodhara london, abhyanga london, panchakarma london, ayurveda uk, holistic wellness london',
+  openGraph: {
+    title: 'AK Ayurveda London | Authentic Ayurvedic Clinic',
+    description: 'London\'s trusted Ayurvedic clinic. Abhyanga, Shirodhara, Panchakarma & personalised wellness consultations.',
+    type: 'website',
+    url: 'https://ak-ayurveda.vercel.app',
+  },
+}
 
 export const revalidate = 60 // revalidate every 60 seconds
 

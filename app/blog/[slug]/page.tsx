@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
@@ -80,12 +81,19 @@ async function getContact(): Promise<ContactContent | null> {
 
 export const revalidate = 0
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const blog = await getBlogBySlug(params.slug)
-  if (!blog) return { title: 'Article Not Found — AK Ayurveda' }
+  if (!blog) return { title: 'Blog | AK Ayurveda' }
   return {
-    title: `${blog.title} — AK Ayurveda`,
-    description: blog.excerpt ?? undefined,
+    title: `${blog.title} | AK Ayurveda London`,
+    description: blog.excerpt ?? blog.content?.replace(/<[^>]+>/g, '').slice(0, 160),
+    keywords: `${blog.category?.toLowerCase() ?? ''}, ayurveda london, ayurvedic wellness uk, ${blog.title.toLowerCase()}`,
+    openGraph: {
+      title: blog.title,
+      description: blog.excerpt ?? '',
+      images: blog.image_url ? [{ url: blog.image_url }] : [],
+      type: 'article',
+    },
   }
 }
 

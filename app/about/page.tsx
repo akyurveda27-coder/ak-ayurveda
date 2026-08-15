@@ -1,8 +1,15 @@
+import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'About AK Ayurveda | London\'s Authentic Ayurvedic Clinic',
+  description: 'Learn about AK Ayurveda — London\'s authentic Ayurvedic clinic rooted in 5,000 years of Vedic tradition. Meet our practitioners and discover our approach to holistic wellness.',
+  keywords: 'ayurvedic clinic london, ayurvedic doctor london, best ayurvedic clinic london, ayurveda uk, holistic wellness london, vedic medicine london',
+}
 
 const defaultAbout = {
   hero_eyebrow: 'Our Story',

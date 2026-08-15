@@ -16,12 +16,15 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'AK Ayurveda — Ancient Wisdom, Modern Healing',
-  description: 'Experience authentic Ayurvedic treatments by Dr. Anjali Kumar. Panchakarma, Abhyanga, Shirodhara, Herbal Medicine & more. Book your consultation today.',
-  keywords: 'ayurveda, panchakarma, abhyanga, shirodhara, herbal medicine, holistic healing, Dr Anjali Kumar',
+  title: {
+    default: 'AK Ayurveda London | Authentic Ayurvedic Clinic',
+    template: '%s | AK Ayurveda London',
+  },
+  description: 'London\'s authentic Ayurvedic clinic offering personalised treatments rooted in 5,000 years of Vedic wisdom.',
+  keywords: 'ayurveda london, ayurvedic clinic london, ayurvedic massage london, holistic wellness london, ayurveda uk',
+  metadataBase: new URL('https://ak-ayurveda.vercel.app'),
   openGraph: {
-    title: 'AK Ayurveda — Ancient Wisdom, Modern Healing',
-    description: 'Holistic Ayurvedic treatments rooted in 5000 years of Vedic science.',
+    siteName: 'AK Ayurveda London',
     type: 'website',
   },
 }
