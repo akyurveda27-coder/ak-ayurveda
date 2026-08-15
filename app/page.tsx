@@ -1,5 +1,3 @@
-'use client'
-
 import Navbar from '@/components/Navbar'
 import Services from '@/components/Services'
 import Conditions from '@/components/Conditions'
