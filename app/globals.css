@@ -126,3 +126,11 @@ html {
 a, button {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* Gallery strip — equal columns on desktop */
+@media (min-width: 768px) {
+  .gallery-strip > div {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+  }
+}

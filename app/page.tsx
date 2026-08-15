@@ -190,17 +190,16 @@ export default async function HomePage() {
       {/* ============================================================ */}
       <section className="w-full overflow-hidden">
         {/* Mobile: horizontal scroll | Desktop: flex strip */}
-        <div className="flex gap-1 h-52 md:h-72 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory scrollbar-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        {/* Mobile: swipe scroll | Desktop: 5 equal columns */}
+        <div className="gallery-strip flex h-48 md:h-64 overflow-x-auto md:overflow-x-hidden snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
           {[
             { src: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=500&q=80&auto=format&fit=crop', label: 'Abhyanga' },
             { src: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=500&q=80&auto=format&fit=crop', label: 'Shirodhara' },
             { src: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=500&q=80&auto=format&fit=crop', label: 'Head Massage' },
             { src: 'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=500&q=80&auto=format&fit=crop', label: 'Wellness' },
             { src: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=500&q=80&auto=format&fit=crop', label: 'Consultation' },
-            { src: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=500&q=80&auto=format&fit=crop', label: 'Face Care' },
-            { src: 'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=500&q=80&auto=format&fit=crop', label: 'Herbal' },
           ].map((item, i) => (
-            <div key={i} className="relative flex-shrink-0 snap-start overflow-hidden group" style={{ width: 'calc(70vw)', minWidth: '200px', flex: '1 0 auto' }}>
+            <div key={i} className="relative snap-start overflow-hidden group" style={{ flex: '0 0 72vw', minWidth: '72vw' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={item.src} alt={`AK Ayurveda ${item.label}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end justify-center pb-3">
