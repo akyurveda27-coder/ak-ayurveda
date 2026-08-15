@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import BookButton from '@/components/BookButton'
 
 export const revalidate = 60
 
@@ -141,13 +142,13 @@ export default async function TreatmentPage({ params }: { params: { slug: string
                 {service.description}
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link
-                  href="/book"
+                <BookButton
+                  serviceName={service.name}
                   className="inline-flex items-center rounded-full px-7 py-3.5 font-semibold shadow-lg hover:brightness-105 transition"
                   style={{ background: '#D4A853', color: '#0F3D34' }}
                 >
                   Book This Treatment
-                </Link>
+                </BookButton>
                 <Link
                   href="/services"
                   className="inline-flex items-center rounded-full px-7 py-3.5 font-semibold text-white border border-white/40 hover:bg-white/10 transition"
@@ -467,13 +468,13 @@ export default async function TreatmentPage({ params }: { params: { slug: string
           <p className="text-white/70 leading-relaxed mb-10 max-w-xl mx-auto">
             Experience the restorative traditions of authentic Ayurvedic care. Our practitioners are here to guide you toward everyday balance and lasting wellbeing.
           </p>
-          <Link
-            href="/book"
+          <BookButton
+            serviceName={service.name}
             className="inline-flex items-center rounded-full px-8 py-3.5 font-semibold shadow-lg hover:brightness-105 transition"
             style={{ background: '#D4A853', color: '#0F3D34' }}
           >
             Book an Appointment
-          </Link>
+          </BookButton>
         </div>
       </section>
 
