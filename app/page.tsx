@@ -273,14 +273,10 @@ export default async function HomePage() {
       {/* ============================================================ */}
       {/* 8. FAQ */}
       {/* ============================================================ */}
-      <section id="faq" className="w-full bg-mint py-12 md:py-16">
+      <section id="faq" className="w-full bg-mint py-10">
         <FAQ />
       </section>
 
-      {/* ============================================================ */}
-      {/* 9. BOOK APPOINTMENT + FOOTER */}
-      {/* ============================================================ */}
-      
       {/* Schema markup for Google — LocalBusiness */}
       <script
         type="application/ld+json"
