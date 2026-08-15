@@ -17,8 +17,8 @@ const config: Config = {
         sage: '#3D8B7A',
       },
       fontFamily: {
-        display: ['Fraunces', 'Georgia', 'serif'],
-        body: ['Inter', 'Helvetica Neue', 'sans-serif'],
+        display: ['Cormorant Garamond', 'Georgia', 'serif'],
+        body: ['DM Sans', 'Helvetica Neue', 'sans-serif'],
       },
       keyframes: {
         fadeInUp: {
