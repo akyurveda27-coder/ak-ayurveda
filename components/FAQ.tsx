@@ -38,7 +38,7 @@ export default function FAQ() {
       </div>
 
       {/* Accordion — native details/summary, no JS state needed */}
-      <div className="mt-12 space-y-4">
+      <div className="mt-6 space-y-4">
         {faqs.map((faq, i) => (
           <details
             key={faq.question}

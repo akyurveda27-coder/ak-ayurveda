@@ -26,7 +26,7 @@ export default function Conditions() {
       </div>
 
       {/* Grid */}
-      <div className="mt-16 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {conditions.map((c) => (
           <div
             key={c.name}
@@ -39,7 +39,7 @@ export default function Conditions() {
       </div>
 
       {/* CTA */}
-      <div className="mt-12 text-center">
+      <div className="mt-6 text-center">
         <p className="text-sm text-gray-600">Not sure if Ayurveda is right for you?</p>
         <a
           href="/book"

@@ -20,7 +20,7 @@ export default function HomePage() {
           style={{ background: 'radial-gradient(circle, rgba(27,110,92,0.15) 0%, rgba(240,250,247,0.4) 60%, transparent 80%)' }}
         />
 
-        <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-6 pt-24 pb-20 md:grid-cols-5 md:px-10">
+        <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-6 pt-20 pb-12 md:grid-cols-5 md:px-10">
 
           {/* Left — 60% */}
           <div className="md:col-span-3">
@@ -103,7 +103,7 @@ export default function HomePage() {
       {/* ============================================================ */}
       {/* 3. SERVICES */}
       {/* ============================================================ */}
-      <section id="services" className="w-full border-b border-sectionBorder bg-white py-24 md:py-28">
+      <section id="services" className="w-full border-b border-sectionBorder bg-white py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
             <span className="text-sm font-semibold uppercase tracking-wider text-accent">Our Treatments</span>
@@ -112,7 +112,7 @@ export default function HomePage() {
               Choose from 18 traditional Ayurvedic therapies, each personalised to your individual needs and constitution.
             </p>
           </div>
-          <div className="mt-16">
+          <div className="mt-10">
             <Services />
           </div>
         </div>
@@ -121,14 +121,14 @@ export default function HomePage() {
       {/* ============================================================ */}
       {/* 4. WHY CHOOSE US — dark */}
       {/* ============================================================ */}
-      <section id="about" className="w-full bg-primaryDark py-24 md:py-28">
+      <section id="about" className="w-full bg-primaryDark py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
             <span className="text-sm font-semibold uppercase tracking-wider text-accent">Why AK Ayurveda</span>
             <h2 className="mt-3 font-display text-4xl font-semibold text-white md:text-5xl">Why Choose AK Ayurveda</h2>
           </div>
 
-          <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { icon: '🎓', title: 'Qualified Therapists', desc: 'Our practitioners hold advanced qualifications and bring decades of combined clinical expertise to every consultation.' },
               { icon: '🌿', title: 'Authentic Techniques', desc: 'Every therapy follows classical Ayurvedic protocols passed down through generations — no shortcuts, no compromises.' },
@@ -152,21 +152,21 @@ export default function HomePage() {
       {/* ============================================================ */}
       {/* 5. CONDITIONS */}
       {/* ============================================================ */}
-      <section id="conditions" className="w-full bg-mint py-24 md:py-28">
+      <section id="conditions" className="w-full bg-mint py-12 md:py-16">
         <Conditions />
       </section>
 
       {/* ============================================================ */}
       {/* 6. BLOG PREVIEW */}
       {/* ============================================================ */}
-      <section id="journal" className="w-full border-t border-sectionBorder bg-white py-24 md:py-28">
+      <section id="journal" className="w-full border-t border-sectionBorder bg-white py-12 md:py-16">
         <BlogPreview />
       </section>
 
       {/* ============================================================ */}
       {/* 7. BOOK BANNER */}
       {/* ============================================================ */}
-      <section className="w-full bg-primaryDark py-20">
+      <section className="w-full bg-primaryDark py-12">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="font-display text-[32px] font-semibold text-white md:text-[42px]">
             Ready to Begin Your Wellness Journey?
@@ -186,7 +186,7 @@ export default function HomePage() {
       {/* ============================================================ */}
       {/* 8. FAQ */}
       {/* ============================================================ */}
-      <section id="faq" className="w-full bg-mint py-24 md:py-28">
+      <section id="faq" className="w-full bg-mint py-12 md:py-16">
         <FAQ />
       </section>
 

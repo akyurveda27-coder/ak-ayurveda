@@ -14,7 +14,7 @@ export default function BookPage() {
       <Navbar />
 
       {/* Hero Banner */}
-      <section className="w-full bg-[#0F3D34] py-16 text-center">
+      <section className="w-full bg-[#0F3D34] py-10 text-center">
         <span className="text-sm font-semibold uppercase tracking-wider text-[#D4A853]">Get Started</span>
         <h1 className="mt-3 font-display text-4xl font-semibold text-white md:text-5xl">
           Book Your Appointment
