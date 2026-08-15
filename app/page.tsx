@@ -4,8 +4,21 @@ import Conditions from '@/components/Conditions'
 import BlogPreview from '@/components/BlogPreview'
 import FAQ from '@/components/FAQ'
 import Footer from '@/components/Footer'
+import { supabase } from '@/lib/supabase'
+import { defaultHero } from '@/lib/defaults'
+import type { HeroContent } from '@/lib/types'
 
-export default function HomePage() {
+export const revalidate = 60 // revalidate every 60 seconds
+
+export default async function HomePage() {
+  // Fetch hero content from admin (site_content table)
+  const { data: heroRow } = await supabase
+    .from('site_content')
+    .select('value')
+    .eq('key', 'hero')
+    .single()
+  const hero: HeroContent = (heroRow?.value as HeroContent) ?? defaultHero
+
   return (
     <main className="w-full overflow-x-hidden bg-white">
       <Navbar />
@@ -29,11 +42,11 @@ export default function HomePage() {
             </span>
 
             <h1 className="mt-6 font-display text-[36px] font-semibold leading-[1.1] text-[#1A1A1A] md:text-[64px]">
-              Restore Balance. Reconnect with Ancient Wellness.
+              {hero.heading}
             </h1>
 
             <p className="mt-6 max-w-md text-[17px] leading-relaxed text-gray-600">
-              Experience personalised Ayurvedic therapies rooted in 5,000 years of tradition — designed to support your body, mind, and spirit.
+              {hero.subheading}
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -41,20 +54,20 @@ export default function HomePage() {
                 href="/book"
                 className="w-full rounded-full bg-primary px-8 py-3.5 text-center font-medium text-white transition hover:bg-[#155A4A] sm:w-auto"
               >
-                Book a Consultation
+                {hero.cta1_text || 'Book a Consultation'}
               </a>
               <a
                 href="#services"
                 className="w-full rounded-full border-2 border-primary px-8 py-3.5 text-center font-medium text-primary transition hover:bg-primary/5 sm:w-auto"
               >
-                Explore Treatments
+                {hero.cta2_text || 'Explore Treatments'}
               </a>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600">
-              <span>🌿 18 Years Experience</span>
-              <span>✓ UK Registered</span>
-              <span>⭐ 200+ Happy Clients</span>
+              <span>🌿 100% Natural Ingredients</span>
+              <span>✓ UK Registered Clinic</span>
+              <span>⭐ Traditional Ayurvedic Methods</span>
             </div>
           </div>
 
