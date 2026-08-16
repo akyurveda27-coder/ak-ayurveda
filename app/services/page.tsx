@@ -71,7 +71,7 @@ export default async function ServicesPage({ searchParams }: { searchParams?: { 
           )}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((service) => (
-              <div key={service.id} className="group rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white border border-[#E0F0EB]">
+              <a key={service.id} href={`/services/${toSlug(service.name)}`} className="group rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white border border-[#E0F0EB] block cursor-pointer">
                 {/* Image top */}
                 <div className="relative h-48 overflow-hidden">
                   {(service.card_image || service.hero_image) ? (
@@ -107,7 +107,7 @@ export default async function ServicesPage({ searchParams }: { searchParams?: { 
                     <a href="/book" className="hover:underline">Book</a>
                   </div>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
 

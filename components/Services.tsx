@@ -64,9 +64,10 @@ export default function Services({ services }: ServicesProps) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {data.map((service) => (
-        <div
+        <Link
           key={service.slug}
-          className="relative rounded-2xl border border-[#E0F0EB] bg-white p-6 shadow-sm transition hover:shadow-md overflow-hidden"
+          href={`/services/${service.slug}`}
+          className="relative rounded-2xl border border-[#E0F0EB] bg-white p-6 shadow-sm transition hover:shadow-md overflow-hidden block cursor-pointer"
         >
           {/* Subtle background image — card_image preferred, fallback to hero_image */}
           {((service as ServiceItem & { card_image?: string | null; hero_image?: string | null }).card_image || (service as ServiceItem & { hero_image?: string | null }).hero_image) && (
@@ -98,7 +99,7 @@ export default function Services({ services }: ServicesProps) {
               Book
             </a>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   )
