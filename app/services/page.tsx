@@ -27,11 +27,19 @@ interface Service {
   hero_image?: string | null
 }
 
-export default async function ServicesPage() {
-  const { data: services } = await supabase
+export default async function ServicesPage({ searchParams }: { searchParams?: { search?: string } }) {
+  const searchQuery = searchParams?.search?.toLowerCase() || ''
+  const { data: allServices } = await supabase
     .from('services')
     .select('*')
     .order('sort_order', { ascending: true })
+
+  const services = searchQuery
+    ? allServices?.filter(s =>
+        s.name?.toLowerCase().includes(searchQuery) ||
+        s.description?.toLowerCase().includes(searchQuery)
+      )
+    : allServices
 
   const list: Service[] = services ?? []
 
@@ -53,6 +61,14 @@ export default async function ServicesPage() {
       {/* Services Grid */}
       <section className="w-full bg-white py-10">
         <div className="mx-auto max-w-7xl px-6">
+          {searchQuery && (
+            <div className="mb-6 flex items-center gap-3">
+              <span className="text-sm text-gray-500">
+                {services?.length ?? 0} result{(services?.length ?? 0) !== 1 ? 's' : ''} for <strong>&ldquo;{searchParams?.search}&rdquo;</strong>
+              </span>
+              <a href="/services" className="text-xs underline" style={{ color: '#1B6E5C' }}>Clear search</a>
+            </div>
+          )}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((service) => (
               <div key={service.id} className="group rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white border border-[#E0F0EB]">
