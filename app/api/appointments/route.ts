@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
 import { Resend } from 'resend'
 
-const CLINIC_EMAIL = 'akyurveda27@gmail.com'
+const CLINIC_EMAIL = 'contact.classie@gmail.com' // Resend verified email (free tier)
 // Lazy init — env var only available at runtime, not build time
 const getResend = () => new Resend(process.env.RESEND_API_KEY ?? '')
 
