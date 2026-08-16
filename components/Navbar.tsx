@@ -71,34 +71,40 @@ export default function Navbar() {
 
         {/* Right side — Search + Book */}
         <div className="hidden md:flex items-center gap-3">
-          {/* Search bar */}
-          {searchOpen ? (
-            <form onSubmit={handleSearch} className="flex items-center gap-2">
-              <input
-                ref={searchRef}
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search treatments..."
-                className="w-48 rounded-full border border-[#D0EDE6] px-4 py-1.5 text-sm outline-none focus:border-[#1B6E5C] transition"
-              />
-              <button type="submit" className="text-sm px-3 py-1.5 rounded-full text-white" style={{ background: '#1B6E5C' }}>
-                Go
-              </button>
-              <button type="button" onClick={() => setSearchOpen(false)} className="text-gray-400 hover:text-gray-600 text-lg leading-none">✕</button>
-            </form>
-          ) : (
+          {/* Search */}
+          <form onSubmit={handleSearch} className={`flex items-center transition-all duration-300 overflow-hidden rounded-full border ${searchOpen ? 'w-56 border-[#1B6E5C] bg-white shadow-sm' : 'w-9 border-transparent bg-transparent'}`}>
             <button
-              onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#1B6E5C] transition px-2 py-1.5"
-              aria-label="Search treatments"
+              type={searchOpen ? 'submit' : 'button'}
+              onClick={() => !searchOpen && setSearchOpen(true)}
+              className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full transition"
+              style={{ color: '#1B6E5C' }}
+              aria-label="Search"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
-              <span className="text-xs">Search</span>
             </button>
-          )}
+            {searchOpen && (
+              <>
+                <input
+                  ref={searchRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="Search treatments..."
+                  className="flex-1 bg-transparent text-sm outline-none text-gray-700 placeholder-gray-400 pr-1"
+                />
+                <button
+                  type="button"
+                  onClick={() => { setSearchOpen(false); setSearchQuery('') }}
+                  className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600 mr-1 rounded-full transition"
+                  aria-label="Close search"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </>
+            )}
+          </form>
 
           <a
             href="/book"
