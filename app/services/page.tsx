@@ -122,20 +122,7 @@ export default async function ServicesPage({ searchParams }: { searchParams?: { 
         </div>
       </section>
 
-      {/* CTA Banner */}
-      <section className="w-full bg-mint py-10 text-center">
-        <h2 className="font-display text-3xl font-semibold md:text-4xl" style={{ color: '#1B6E5C' }}>
-          Not sure which therapy is right for you?
-        </h2>
-        <p className="mt-3 text-gray-600">Book a consultation and our practitioner will guide you.</p>
-        <a
-          href="/book"
-          className="mt-8 inline-block rounded-full px-10 py-3.5 font-semibold text-white transition hover:bg-[#0F3D34]"
-          style={{ backgroundColor: '#1B6E5C' }}
-        >
-          Book a Free Consultation
-        </a>
-      </section>
+
 
       <Footer />
     </main>
