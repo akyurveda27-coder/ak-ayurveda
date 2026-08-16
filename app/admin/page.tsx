@@ -1059,10 +1059,13 @@ function AppointmentsViewer() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  const fetchAppointments = () => {
+    setLoading(true)
     supabase.from('appointments').select('*').order('created_at', { ascending: false })
       .then(({ data }) => { setAppointments(data ?? []); setLoading(false) })
-  }, [])
+  }
+
+  useEffect(() => { fetchAppointments() }, [])
 
   const updateStatus = async (id: string, status: string) => {
     await supabase.from('appointments').update({ status }).eq('id', id)
@@ -1078,8 +1081,26 @@ function AppointmentsViewer() {
     cancelled: 'bg-red-100 text-red-600',
   }
 
+  const pendingCount = appointments.filter(a => !a.status || a.status === 'pending').length
+
   return (
     <div className="space-y-3">
+      {/* Header with count + refresh */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <span className="font-body text-sm text-gray-500">{appointments.length} total bookings</span>
+          {pendingCount > 0 && (
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full text-white text-xs font-bold" style={{ background: '#D4A853' }}>{pendingCount}</span>
+          )}
+        </div>
+        <button
+          onClick={fetchAppointments}
+          className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition"
+          style={{ color: '#1B6E5C', borderColor: '#D0EDE6', background: '#F0FAF7' }}
+        >
+          🔄 Refresh
+        </button>
+      </div>
       {appointments.length === 0 && (
         <p className="text-sage font-body text-sm text-center py-8">No appointments yet.</p>
       )}
