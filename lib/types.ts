@@ -92,6 +92,19 @@ export interface FAQ {
   sort_order: number
 }
 
+export interface TimeSlot {
+  id: string
+  date: string
+  start_time: string
+  end_time: string
+  is_blocked: boolean
+  hold_until: string | null
+  hold_booking_id: string | null
+  created_at: string
+  /** Derived — not a DB column */
+  is_booked?: boolean
+}
+
 export interface Appointment {
   id: string
   name: string
@@ -104,6 +117,9 @@ export interface Appointment {
   created_at: string
   selected_duration?: string | null
   selected_price?: string | null
+  slot_id?: string | null
+  /** Joined from time_slots via slot_id FK */
+  slot?: { date: string; start_time: string; end_time: string } | null
 }
 
 export interface SiteContent {

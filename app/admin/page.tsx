@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import {
   HeroContent, StatsContent, DoctorContent, ContactContent,
-  Service, Condition, Testimonial, FAQ, Appointment
+  Service, Condition, Testimonial, FAQ, Appointment, TimeSlot
 } from '@/lib/types'
 import {
   defaultHero, defaultStats, defaultDoctor, defaultContact,
@@ -1055,14 +1055,22 @@ function FAQEditor() {
   )
 }
 
+function fmtAdminSlotTime(t: string) {
+  const [h, m] = t.split(':').map(Number)
+  return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`
+}
+
 function AppointmentsViewer() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchAppointments = () => {
     setLoading(true)
-    supabase.from('appointments').select('*').order('created_at', { ascending: false })
-      .then(({ data }) => { setAppointments(data ?? []); setLoading(false) })
+    supabase
+      .from('appointments')
+      .select('*, slot:time_slots(date, start_time, end_time)')
+      .order('created_at', { ascending: false })
+      .then(({ data }) => { setAppointments((data ?? []) as Appointment[]); setLoading(false) })
   }
 
   useEffect(() => { fetchAppointments() }, [])
@@ -1122,7 +1130,19 @@ function AppointmentsViewer() {
                     {a.selected_price}
                   </span>
                 )}
-                <span className="text-sage text-xs">· {a.preferred_date ?? 'Date TBD'}</span>
+                {/* Slot date & time (from time_slots FK join) */}
+                {a.slot ? (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    background: '#EFF6FF', border: '1px solid #BFDBFE',
+                    color: '#1D4ED8', fontSize: 11, fontWeight: 700,
+                    padding: '2px 8px', borderRadius: 999,
+                  }}>
+                    🕐 {new Date(a.slot.date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} · {fmtAdminSlotTime(a.slot.start_time)}–{fmtAdminSlotTime(a.slot.end_time)}
+                  </span>
+                ) : (
+                  <span className="text-sage text-xs">· {a.preferred_date ?? 'Date TBD'}</span>
+                )}
               </div>
             </div>
             <select
@@ -1612,9 +1632,404 @@ function ConditionsPageEditor() {
   )
 }
 
+// ─── Slots Manager ────────────────────────────────────────────────────────────
+
+function getAdminMonday(d: Date): Date {
+  const day = d.getDay()
+  const diff = day === 0 ? -6 : 1 - day
+  const mon = new Date(d)
+  mon.setDate(d.getDate() + diff)
+  mon.setHours(0, 0, 0, 0)
+  return mon
+}
+
+function slotYMD(d: Date): string {
+  return d.toISOString().split('T')[0]
+}
+
+function fmtST(t: string): string {
+  const [h, m] = t.split(':').map(Number)
+  return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`
+}
+
+const ADMIN_WEEK_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+type SlotWithBooked = TimeSlot & { is_booked: boolean }
+type SlotAppt = { id: string; slot_id: string; name: string; email: string; phone: string; service: string; status: string }
+
+function SlotsManager() {
+  const [weekStart, setWeekStart] = useState<Date>(() => getAdminMonday(new Date()))
+  const [weekSlots, setWeekSlots] = useState<SlotWithBooked[]>([])
+  const [weekAppts, setWeekAppts] = useState<SlotAppt[]>([])
+  const [loading, setLoading] = useState(false)
+  const [stats, setStats] = useState({ todayBooked: 0, todayFree: 0, weekTotal: 0, pendingCount: 0 })
+
+  const [createMode, setCreateMode] = useState<'bulk' | 'single'>('bulk')
+  const [creating, setCreating] = useState(false)
+  const [createMsg, setCreateMsg] = useState('')
+
+  const [bulkForm, setBulkForm] = useState({
+    fromDate: '', toDate: '',
+    days: [true, true, true, true, true, false, false],
+    startTime: '09:00', endTime: '17:00', duration: 60,
+  })
+  const [singleForm, setSingleForm] = useState({ date: '', startTime: '09:00', endTime: '10:00' })
+
+  const [modalData, setModalData] = useState<{ slot: SlotWithBooked; appt: SlotAppt } | null>(null)
+  const [toggling, setToggling] = useState<string | null>(null)
+
+  const weekDates = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(weekStart)
+    d.setDate(d.getDate() + i)
+    return slotYMD(d)
+  })
+
+  const fetchWeek = useCallback(async () => {
+    setLoading(true)
+    const { data: slots } = await supabase
+      .from('time_slots').select('*')
+      .gte('date', weekDates[0]).lte('date', weekDates[6])
+      .order('start_time')
+
+    const slotIds = (slots ?? []).map(s => s.id)
+    let appts: SlotAppt[] = []
+    if (slotIds.length > 0) {
+      const { data } = await supabase
+        .from('appointments')
+        .select('id, slot_id, name, email, phone, service, status')
+        .in('slot_id', slotIds).neq('status', 'cancelled')
+      appts = (data ?? []) as SlotAppt[]
+    }
+
+    const bookedIds = new Set(appts.map(a => a.slot_id))
+    const enriched: SlotWithBooked[] = (slots ?? []).map(s => ({ ...s, is_booked: bookedIds.has(s.id) }))
+    setWeekSlots(enriched)
+    setWeekAppts(appts)
+
+    const today = slotYMD(new Date())
+    const todaySlots = enriched.filter(s => s.date === today && !s.is_blocked)
+    const { count: pendingCount } = await supabase
+      .from('appointments').select('id', { count: 'exact', head: true }).eq('status', 'pending')
+
+    setStats({
+      todayBooked: todaySlots.filter(s => s.is_booked).length,
+      todayFree: todaySlots.filter(s => !s.is_booked).length,
+      weekTotal: enriched.length,
+      pendingCount: pendingCount ?? 0,
+    })
+    setLoading(false)
+  }, [weekStart]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => { fetchWeek() }, [fetchWeek])
+
+  const computeBulkDates = () => {
+    if (!bulkForm.fromDate || !bulkForm.toDate) return []
+    const dates: string[] = []
+    const cur = new Date(bulkForm.fromDate + 'T00:00:00')
+    const end = new Date(bulkForm.toDate + 'T00:00:00')
+    while (cur <= end) {
+      const dow = cur.getDay()
+      const idx = dow === 0 ? 6 : dow - 1
+      if (bulkForm.days[idx]) dates.push(slotYMD(cur))
+      cur.setDate(cur.getDate() + 1)
+    }
+    return dates
+  }
+
+  const countBulkSlots = () => {
+    const dates = computeBulkDates()
+    const [sh, sm] = bulkForm.startTime.split(':').map(Number)
+    const [eh, em] = bulkForm.endTime.split(':').map(Number)
+    const perDay = Math.max(0, Math.floor(((eh * 60 + em) - (sh * 60 + sm)) / bulkForm.duration))
+    return dates.length * perDay
+  }
+
+  const handleBulkCreate = async () => {
+    const dates = computeBulkDates()
+    if (!dates.length) { setCreateMsg('No dates match — check date range and day selection.'); return }
+    setCreating(true); setCreateMsg('')
+    try {
+      const res = await fetch('/api/slots', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dates, start_time: bulkForm.startTime, end_time: bulkForm.endTime, duration_minutes: bulkForm.duration }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setCreateMsg(`✓ Created ${data.created} slot${data.created !== 1 ? 's' : ''}`)
+      fetchWeek()
+    } catch (err) { setCreateMsg(`✗ ${(err as Error).message}`) }
+    finally { setCreating(false) }
+  }
+
+  const handleSingleCreate = async () => {
+    if (!singleForm.date) { setCreateMsg('Pick a date first.'); return }
+    setCreating(true); setCreateMsg('')
+    try {
+      const res = await fetch('/api/slots', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dates: [singleForm.date], start_time: singleForm.startTime, end_time: singleForm.endTime, duration_minutes: 60 }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setCreateMsg('✓ Slot created')
+      fetchWeek()
+    } catch (err) { setCreateMsg(`✗ ${(err as Error).message}`) }
+    finally { setCreating(false) }
+  }
+
+  const handleToggleBlock = async (slot: SlotWithBooked) => {
+    setToggling(slot.id)
+    await fetch(`/api/slots/${slot.id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ is_blocked: !slot.is_blocked }),
+    })
+    setToggling(null); fetchWeek()
+  }
+
+  const handleDeleteSlot = async (id: string) => {
+    if (!confirm('Delete this slot?')) return
+    const res = await fetch(`/api/slots/${id}`, { method: 'DELETE' })
+    const data = await res.json()
+    if (!res.ok) { alert(data.error); return }
+    fetchWeek()
+  }
+
+  const today = slotYMD(new Date())
+  const slotsByDate = weekDates.reduce<Record<string, SlotWithBooked[]>>((acc, d) => {
+    acc[d] = weekSlots.filter(s => s.date === d)
+    return acc
+  }, {})
+  const getAppt = (slotId: string) => weekAppts.find(a => a.slot_id === slotId)
+
+  const inp12: React.CSSProperties = { padding: '8px', borderRadius: 8, border: '1.5px solid #D0EDE6', fontSize: 12, width: '100%', boxSizing: 'border-box' }
+  const lbl11: React.CSSProperties = { fontSize: 11, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 4 }
+  const btnTiny: React.CSSProperties = { fontSize: 10, fontWeight: 700, padding: '3px 6px', borderRadius: 5, border: 'none', cursor: 'pointer' }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+      {/* Quick Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        {[
+          { label: 'Today Booked', value: stats.todayBooked, accent: '#1B6E5C', bg: '#F0FAF7' },
+          { label: 'Today Free', value: stats.todayFree, accent: '#0F3D34', bg: '#D0EDE6' },
+          { label: 'Week Slots', value: stats.weekTotal, accent: '#6B7280', bg: '#F9FAFB' },
+          { label: 'Pending Confirm', value: stats.pendingCount, accent: '#D97706', bg: '#FFFBEB' },
+        ].map(st => (
+          <div key={st.label} style={{ background: st.bg, borderRadius: 14, padding: '14px 18px', border: '1px solid rgba(0,0,0,0.05)' }}>
+            <p style={{ fontSize: 26, fontWeight: 800, color: st.accent, margin: 0, fontFamily: 'Cormorant Garamond, Georgia, serif' }}>{st.value}</p>
+            <p style={{ fontSize: 11, color: '#9CA3AF', margin: '2px 0 0', fontWeight: 600 }}>{st.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 16, alignItems: 'start' }}>
+
+        {/* Slot Creator */}
+        <div style={{ background: '#fff', borderRadius: 18, border: '1.5px solid #D0EDE6', overflow: 'hidden' }}>
+          <div style={{ background: '#F0FAF7', padding: '14px 18px', borderBottom: '1px solid #D0EDE6' }}>
+            <p style={{ fontWeight: 700, color: '#0F3D34', fontSize: 13, margin: 0 }}>🕐 Create Slots</p>
+          </div>
+          <div style={{ padding: '14px 18px', borderBottom: '1px solid #F0F0F0' }}>
+            <div style={{ display: 'flex', borderRadius: 9, overflow: 'hidden', border: '1.5px solid #D0EDE6' }}>
+              {(['bulk', 'single'] as const).map(m => (
+                <button key={m} onClick={() => setCreateMode(m)} style={{
+                  flex: 1, padding: '7px 0', fontSize: 11, fontWeight: 700,
+                  background: createMode === m ? '#1B6E5C' : '#fff',
+                  color: createMode === m ? '#fff' : '#9CA3AF',
+                  border: 'none', cursor: 'pointer',
+                }}>
+                  {m === 'bulk' ? '📅 Bulk' : '➕ Single'}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {createMode === 'bulk' ? (
+              <>
+                <div>
+                  <label style={lbl11}>Date Range</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                    <input type="date" value={bulkForm.fromDate} onChange={e => setBulkForm(p => ({ ...p, fromDate: e.target.value }))} style={inp12} />
+                    <input type="date" value={bulkForm.toDate} onChange={e => setBulkForm(p => ({ ...p, toDate: e.target.value }))} style={inp12} />
+                  </div>
+                </div>
+                <div>
+                  <label style={lbl11}>Days of Week</label>
+                  <div style={{ display: 'flex', gap: 3 }}>
+                    {['M','T','W','T','F','S','S'].map((d, i) => (
+                      <button key={i} onClick={() => setBulkForm(p => { const nd = [...p.days]; nd[i] = !nd[i]; return { ...p, days: nd } })}
+                        style={{ width: 28, height: 28, borderRadius: 7, fontSize: 10, fontWeight: 700, border: '1.5px solid ' + (bulkForm.days[i] ? '#1B6E5C' : '#D0EDE6'), background: bulkForm.days[i] ? '#1B6E5C' : '#F0FAF7', color: bulkForm.days[i] ? '#fff' : '#9CA3AF', cursor: 'pointer' }}>
+                        {d}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label style={lbl11}>Time Range</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                    <input type="time" value={bulkForm.startTime} onChange={e => setBulkForm(p => ({ ...p, startTime: e.target.value }))} style={inp12} />
+                    <input type="time" value={bulkForm.endTime} onChange={e => setBulkForm(p => ({ ...p, endTime: e.target.value }))} style={inp12} />
+                  </div>
+                </div>
+                <div>
+                  <label style={lbl11}>Duration</label>
+                  <select value={bulkForm.duration} onChange={e => setBulkForm(p => ({ ...p, duration: Number(e.target.value) }))} style={inp12}>
+                    <option value={30}>30 minutes</option>
+                    <option value={60}>60 minutes</option>
+                    <option value={90}>90 minutes</option>
+                  </select>
+                </div>
+                <div style={{ padding: '8px 10px', borderRadius: 8, background: '#F0FAF7', textAlign: 'center' }}>
+                  <p style={{ fontSize: 11, color: '#1B6E5C', fontWeight: 700, margin: 0 }}>
+                    ~{countBulkSlots()} slots across {computeBulkDates().length} days
+                  </p>
+                </div>
+                <button onClick={handleBulkCreate} disabled={creating}
+                  style={{ padding: '9px', borderRadius: 9, fontSize: 12, fontWeight: 700, background: creating ? '#D1D5DB' : '#1B6E5C', color: '#fff', border: 'none', cursor: creating ? 'not-allowed' : 'pointer' }}>
+                  {creating ? 'Creating…' : '📅 Create Slots'}
+                </button>
+              </>
+            ) : (
+              <>
+                <div><label style={lbl11}>Date</label><input type="date" value={singleForm.date} onChange={e => setSingleForm(p => ({ ...p, date: e.target.value }))} style={inp12} /></div>
+                <div><label style={lbl11}>Start Time</label><input type="time" value={singleForm.startTime} onChange={e => setSingleForm(p => ({ ...p, startTime: e.target.value }))} style={inp12} /></div>
+                <div><label style={lbl11}>End Time</label><input type="time" value={singleForm.endTime} onChange={e => setSingleForm(p => ({ ...p, endTime: e.target.value }))} style={inp12} /></div>
+                <button onClick={handleSingleCreate} disabled={creating}
+                  style={{ padding: '9px', borderRadius: 9, fontSize: 12, fontWeight: 700, background: creating ? '#D1D5DB' : '#1B6E5C', color: '#fff', border: 'none', cursor: creating ? 'not-allowed' : 'pointer' }}>
+                  {creating ? 'Creating…' : '➕ Create Slot'}
+                </button>
+              </>
+            )}
+            {createMsg && (
+              <p style={{ fontSize: 11, fontWeight: 600, padding: '7px 10px', borderRadius: 7, background: createMsg.startsWith('✓') ? '#F0FAF7' : '#FEF2F2', color: createMsg.startsWith('✓') ? '#1B6E5C' : '#EF4444', margin: 0 }}>
+                {createMsg}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Weekly Calendar */}
+        <div style={{ background: '#fff', borderRadius: 18, border: '1.5px solid #D0EDE6', overflow: 'hidden' }}>
+          {/* Week nav */}
+          <div style={{ background: '#F0FAF7', padding: '12px 16px', borderBottom: '1px solid #D0EDE6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <button onClick={() => { const d = new Date(weekStart); d.setDate(d.getDate() - 7); setWeekStart(d) }}
+              style={{ padding: '5px 10px', borderRadius: 7, border: '1.5px solid #D0EDE6', background: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600, color: '#1B6E5C' }}>← Prev</button>
+            <span style={{ fontWeight: 700, color: '#0F3D34', fontSize: 12 }}>
+              {weekDates[0]} → {weekDates[6]}{loading && <span style={{ color: '#9CA3AF', fontSize: 10, marginLeft: 6 }}>Loading…</span>}
+            </span>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button onClick={fetchWeek} style={{ padding: '5px 8px', borderRadius: 7, border: '1.5px solid #D0EDE6', background: '#F0FAF7', cursor: 'pointer', fontSize: 11, color: '#1B6E5C', fontWeight: 600 }}>🔄</button>
+              <button onClick={() => { const d = new Date(weekStart); d.setDate(d.getDate() + 7); setWeekStart(d) }}
+                style={{ padding: '5px 10px', borderRadius: 7, border: '1.5px solid #D0EDE6', background: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600, color: '#1B6E5C' }}>Next →</button>
+            </div>
+          </div>
+          {/* Legend */}
+          <div style={{ padding: '6px 16px', borderBottom: '1px solid #F0F0F0', display: 'flex', gap: 14 }}>
+            {[{ c: '#D1FAE5', l: 'Free' }, { c: '#DBEAFE', l: 'Booked' }, { c: '#F3F4F6', l: 'Blocked' }].map(x => (
+              <div key={x.l} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <div style={{ width: 10, height: 10, borderRadius: 3, background: x.c, border: '1px solid rgba(0,0,0,0.08)' }} />
+                <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 600 }}>{x.l}</span>
+              </div>
+            ))}
+          </div>
+          {/* 7-col grid */}
+          <div style={{ overflowX: 'auto' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(100px, 1fr))', minWidth: 700 }}>
+              {/* Headers */}
+              {weekDates.map((d, i) => {
+                const isToday = d === today
+                const dt = new Date(d + 'T00:00:00')
+                return (
+                  <div key={d} style={{ padding: '10px 6px', textAlign: 'center', background: isToday ? '#F0FAF7' : '#FAFAFA', borderBottom: '1px solid #E5E7EB', borderRight: i < 6 ? '1px solid #E5E7EB' : 'none' }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', margin: 0 }}>{ADMIN_WEEK_LABELS[i]}</p>
+                    <p style={{ fontSize: 15, fontWeight: 800, margin: '1px 0 0', color: isToday ? '#1B6E5C' : '#0F3D34' }}>{dt.getDate()}</p>
+                    {isToday && <p style={{ fontSize: 8, color: '#D4A853', fontWeight: 700, margin: 0, letterSpacing: '0.04em' }}>TODAY</p>}
+                  </div>
+                )
+              })}
+              {/* Slot cells */}
+              {weekDates.map((d, di) => {
+                const daySlots = slotsByDate[d] ?? []
+                return (
+                  <div key={d} style={{ padding: 5, minHeight: 100, borderRight: di < 6 ? '1px solid #E5E7EB' : 'none', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    {daySlots.length === 0 ? (
+                      <p style={{ fontSize: 9, color: '#D1D5DB', textAlign: 'center', marginTop: 12 }}>—</p>
+                    ) : daySlots.map(slot => {
+                      const appt = slot.is_booked ? getAppt(slot.id) : undefined
+                      const bg = slot.is_blocked ? '#F3F4F6' : slot.is_booked ? '#DBEAFE' : '#D1FAE5'
+                      const tc = slot.is_blocked ? '#9CA3AF' : slot.is_booked ? '#1E40AF' : '#065F46'
+                      return (
+                        <div key={slot.id}
+                          onClick={() => { if (slot.is_booked && appt) setModalData({ slot, appt }) }}
+                          style={{ padding: '3px 5px', borderRadius: 5, background: bg, cursor: slot.is_booked ? 'pointer' : 'default', fontSize: 9 }}>
+                          <p style={{ fontWeight: 700, color: tc, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {fmtST(slot.start_time)}
+                          </p>
+                          {appt && <p style={{ color: '#3B82F6', margin: 0, fontSize: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{appt.name.split(' ')[0]}</p>}
+                          {slot.is_blocked && <p style={{ color: '#9CA3AF', margin: 0, fontSize: 8 }}>Blocked</p>}
+                          {!slot.is_booked && (
+                            <div style={{ display: 'flex', gap: 2, marginTop: 2 }}>
+                              <button onClick={e => { e.stopPropagation(); handleToggleBlock(slot) }} disabled={toggling === slot.id}
+                                style={{ ...btnTiny, background: slot.is_blocked ? '#D1FAE5' : '#FEE2E2', color: slot.is_blocked ? '#065F46' : '#991B1B', opacity: toggling === slot.id ? 0.5 : 1 }}>
+                                {slot.is_blocked ? 'Unblock' : 'Block'}
+                              </button>
+                              <button onClick={e => { e.stopPropagation(); handleDeleteSlot(slot.id) }}
+                                style={{ ...btnTiny, background: '#FEE2E2', color: '#991B1B' }}>✕</button>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                    <button onClick={() => { setSingleForm(p => ({ ...p, date: d })); setCreateMode('single') }}
+                      style={{ padding: '2px', borderRadius: 5, background: 'transparent', border: '1.5px dashed #D0EDE6', cursor: 'pointer', fontSize: 9, color: '#D1D5DB', fontWeight: 600, marginTop: 'auto' }}>
+                      +
+                    </button>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Slot detail modal */}
+      {modalData && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 16 }}
+          onClick={() => setModalData(null)}>
+          <div style={{ background: '#fff', borderRadius: 20, padding: 24, maxWidth: 380, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <h3 style={{ fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: 18, color: '#0F3D34', margin: 0 }}>Booking Details</h3>
+              <button onClick={() => setModalData(null)} style={{ background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', color: '#9CA3AF' }}>✕</button>
+            </div>
+            <div style={{ background: '#F0FAF7', borderRadius: 10, padding: 14, marginBottom: 14 }}>
+              <p style={{ fontSize: 12, color: '#1B6E5C', fontWeight: 700, margin: '0 0 3px' }}>
+                📅 {new Date(modalData.slot.date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
+              </p>
+              <p style={{ fontSize: 12, color: '#0F3D34', margin: 0 }}>🕐 {fmtST(modalData.slot.start_time)} – {fmtST(modalData.slot.end_time)}</p>
+            </div>
+            {[
+              { l: 'Name', v: modalData.appt.name },
+              { l: 'Email', v: modalData.appt.email },
+              { l: 'Phone', v: modalData.appt.phone },
+              { l: 'Service', v: modalData.appt.service },
+              { l: 'Status', v: modalData.appt.status },
+            ].map(row => (
+              <div key={row.l} style={{ display: 'flex', gap: 10, marginBottom: 6 }}>
+                <span style={{ fontSize: 11, color: '#9CA3AF', width: 52, flexShrink: 0, paddingTop: 1 }}>{row.l}</span>
+                <span style={{ fontSize: 13, color: '#1A1A1A', fontWeight: row.l === 'Service' || row.l === 'Name' ? 600 : 400 }}>{row.v}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Main Admin Panel ────────────────────────────────────────────────────────
 
-type AdminTab = 'hero' | 'stats' | 'services' | 'doctor' | 'conditions' | 'testimonials' | 'faqs' | 'contact' | 'appointments' | 'reviews' | 'blogs' | 'about' | 'conditions_page'
+type AdminTab = 'hero' | 'stats' | 'services' | 'doctor' | 'conditions' | 'testimonials' | 'faqs' | 'contact' | 'appointments' | 'slots' | 'reviews' | 'blogs' | 'about' | 'conditions_page'
 
 const tabs: { id: AdminTab; label: string; icon: string }[] = [
   { id: 'hero', label: 'Hero', icon: '🏠' },
@@ -1626,6 +2041,7 @@ const tabs: { id: AdminTab; label: string; icon: string }[] = [
   { id: 'faqs', label: 'FAQs', icon: '❓' },
   { id: 'contact', label: 'Contact', icon: '📍' },
   { id: 'appointments', label: 'Appointments', icon: '📅' },
+  { id: 'slots', label: 'Slots', icon: '🕐' },
   { id: 'reviews', label: 'Reviews', icon: '⭐' },
   { id: 'blogs', label: 'Blog Posts', icon: '📝' },
   { id: 'about', label: 'About', icon: '🏥' },
@@ -1647,6 +2063,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       case 'faqs': return <FAQEditor />
       case 'contact': return <ContactEditor />
       case 'appointments': return <AppointmentsViewer />
+      case 'slots': return <SlotsManager />
       case 'reviews': return <ReviewsViewer />
       case 'blogs': return <BlogEditor />
       case 'about': return <AboutEditor />
