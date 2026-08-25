@@ -750,7 +750,7 @@ function ConditionsEditor() {
 
   const load = useCallback(async () => {
     setLoading(true)
-    const { data } = await supabase.from('site_content').select('content').eq('key', 'conditions').single()
+    const { data } = await supabase.from('site_content').select('value').eq('key', 'conditions').single()
     if (data?.content && Array.isArray(data.content)) {
       setConditions(data.content as ConditionItem[])
     } else {
@@ -1506,10 +1506,10 @@ function AboutEditor() {
   const { status, saving, saved, error } = useSaveStatus()
 
   useEffect(() => {
-    supabase.from('site_content').select('content').eq('key', 'about').single()
+    supabase.from('site_content').select('value').eq('key', 'about').single()
       .then(({ data: d }) => {
-        if (d?.content && typeof d.content === 'object') {
-          setData((prev) => ({ ...prev, ...(d.content as Partial<AboutContent>) }))
+        if (d?.value && typeof d.value === 'object') {
+          setData((prev) => ({ ...prev, ...(d.value as Partial<AboutContent>) }))
         }
       })
   }, [])
@@ -1519,7 +1519,7 @@ function AboutEditor() {
   const handleSave = async () => {
     saving()
     const { error: err } = await supabase.from('site_content').upsert(
-      { key: 'about', content: data },
+      { key: 'about', value: data, updated_at: new Date().toISOString() },
       { onConflict: 'key' }
     )
     err ? error() : saved()
@@ -1610,9 +1610,9 @@ function ConditionsPageEditor() {
   const { status, saving, saved, error } = useSaveStatus()
 
   useEffect(() => {
-    supabase.from('site_content').select('content').eq('key', 'conditions_page').single()
+    supabase.from('site_content').select('value').eq('key', 'conditions_page').single()
       .then(({ data: d }) => {
-        if (d?.content && typeof d.content === 'object') {
+        if (d?.value && typeof d.value === 'object') {
           setData((prev) => ({ ...prev, ...(d.content as Partial<ConditionsPageContent>) }))
         }
       })
