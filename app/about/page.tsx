@@ -51,12 +51,12 @@ const defaultAbout = {
 export default async function AboutPage() {
   const { data: row } = await supabase
     .from('site_content')
-    .select('content')
+    .select('value')
     .eq('key', 'about')
     .single()
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const saved = (row?.content as Record<string, any>) ?? {}
+  const saved = (row?.value as Record<string, any>) ?? {}
   const c = { ...defaultAbout, ...saved }
 
   return (

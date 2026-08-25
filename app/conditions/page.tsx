@@ -28,15 +28,15 @@ const defaultConditionsPage = {
 
 export default async function ConditionsPage() {
   const [conditionsRow, pageRow] = await Promise.all([
-    supabase.from('site_content').select('content').eq('key', 'conditions').single(),
-    supabase.from('site_content').select('content').eq('key', 'conditions_page').single(),
+    supabase.from('site_content').select('value').eq('key', 'conditions').single(),
+    supabase.from('site_content').select('value').eq('key', 'conditions_page').single(),
   ])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const conditions: ConditionItem[] = (conditionsRow.data?.content as any[]) ?? defaultConditions
+  const conditions: ConditionItem[] = (conditionsRow.data?.value as any[]) ?? defaultConditions
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const savedPage = (pageRow.data?.content as Record<string, any>) ?? {}
+  const savedPage = (pageRow.data?.value as Record<string, any>) ?? {}
   const p = { ...defaultConditionsPage, ...savedPage }
 
   const cardItems = conditions.filter((c) => c.image_url)
