@@ -1080,6 +1080,12 @@ function AppointmentsViewer() {
     setAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a))
   }
 
+  const deleteAppointment = async (id: string, name: string) => {
+    if (!confirm(`Delete booking by "${name}"? This cannot be undone.`)) return
+    await supabase.from('appointments').delete().eq('id', id)
+    setAppointments(prev => prev.filter(a => a.id !== id))
+  }
+
   if (loading) return <p className="text-sage font-body text-sm">Loading appointments...</p>
 
   const statusColors: Record<string, string> = {
@@ -1155,6 +1161,14 @@ function AppointmentsViewer() {
               <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
             </select>
+            <button
+              onClick={() => deleteAppointment(a.id, a.name)}
+              className="shrink-0 w-7 h-7 flex items-center justify-center rounded-full transition hover:bg-red-50"
+              title="Delete booking"
+              style={{ color: '#ef4444' }}
+            >
+              🗑️
+            </button>
           </div>
           <div className="flex flex-wrap gap-4 text-xs font-body text-sage">
             <span>📞 {a.phone}</span>
