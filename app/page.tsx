@@ -210,43 +210,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ============================================================ */}
-      {/* 6. CONDITIONS */}
-      {/* ============================================================ */}
-      <section id="conditions" className="w-full py-10" style={{ backgroundColor: '#F0FAF7' }}>
-        <Conditions conditions={conditionsData ?? defaultConditions} />
-      </section>
 
-      {/* ============================================================ */}
-      {/* 7. TESTIMONIALS */}
-      {/* ============================================================ */}
-      <section className="w-full bg-white py-10 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: '#D4A853' }}>✦ What Our Clients Say ✦</p>
-            <h2 className="font-display text-3xl md:text-4xl font-semibold" style={{ color: '#0F3D34' }}>Stories of Transformation</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { quote: "The Shirodhara treatment was unlike anything I've experienced. I left feeling completely calm and centred. Truly transformative.", name: "Sarah M.", location: "London, UK", avatar: "S" },
-              { quote: "Dr. Anjali's consultation was thorough and deeply personalised. The dietary recommendations have made a huge difference to my energy levels.", name: "James T.", location: "Surrey, UK", avatar: "J" },
-              { quote: "I've tried many wellness clinics in London but AK Ayurveda feels genuinely authentic. The Abhyanga massage is something I look forward to every month.", name: "Priya K.", location: "London, UK", avatar: "P" },
-            ].map((t, i) => (
-              <div key={i} className="rounded-2xl p-6 border border-[#D0EDE6]" style={{ background: '#F0FAF7' }}>
-                <p className="text-3xl mb-3" style={{ color: '#D4A853' }}>&ldquo;</p>
-                <p className="text-gray-600 leading-relaxed text-sm mb-5 italic">&ldquo;{t.quote}&rdquo;</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center font-display font-semibold text-white text-sm" style={{ background: '#1B6E5C' }}>{t.avatar}</div>
-                  <div>
-                    <p className="font-semibold text-sm" style={{ color: '#0F3D34' }}>{t.name}</p>
-                    <p className="text-xs text-gray-400">{t.location}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ============================================================ */}
       {/* 8. BLOG PREVIEW */}
