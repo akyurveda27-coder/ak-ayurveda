@@ -2061,20 +2061,20 @@ function SlotsManager() {
 
 // ─── Main Admin Panel ────────────────────────────────────────────────────────
 
-type AdminTab = 'hero' | 'stats' | 'services' | 'doctor' | 'conditions' | 'testimonials' | 'faqs' | 'contact' | 'appointments' | 'slots' | 'reviews' | 'blogs' | 'about' | 'conditions_page'
+type AdminTab = 'hero' | 'stats' | 'services' | 'doctor' | 'testimonials' | 'faqs' | 'contact' | 'appointments' | 'slots' | 'blogs' | 'about' | 'conditions_page'
 
 const tabs: { id: AdminTab; label: string; icon: string }[] = [
   { id: 'hero', label: 'Hero', icon: '🏠' },
   { id: 'stats', label: 'Stats', icon: '📊' },
   { id: 'services', label: 'Services', icon: '🌿' },
   { id: 'doctor', label: 'Doctor', icon: '👩‍⚕️' },
-  { id: 'conditions', label: 'Conditions', icon: '🩺' },
+
   { id: 'testimonials', label: 'Testimonials', icon: '💬' },
   { id: 'faqs', label: 'FAQs', icon: '❓' },
   { id: 'contact', label: 'Contact', icon: '📍' },
   { id: 'appointments', label: 'Appointments', icon: '📅' },
   { id: 'slots', label: 'Slots', icon: '🕐' },
-  { id: 'reviews', label: 'Reviews', icon: '⭐' },
+
   { id: 'blogs', label: 'Blog Posts', icon: '📝' },
   { id: 'about', label: 'About', icon: '🏥' },
   { id: 'conditions_page', label: 'Conditions Page', icon: '📋' },
@@ -2090,13 +2090,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       case 'stats': return <StatsEditor />
       case 'services': return <ServicesEditor />
       case 'doctor': return <DoctorEditor />
-      case 'conditions': return <ConditionsEditor />
       case 'testimonials': return <TestimonialsEditor />
       case 'faqs': return <FAQEditor />
       case 'contact': return <ContactEditor />
       case 'appointments': return <AppointmentsViewer />
       case 'slots': return <SlotsManager />
-      case 'reviews': return <ReviewsViewer />
+
       case 'blogs': return <BlogEditor />
       case 'about': return <AboutEditor />
       case 'conditions_page': return <ConditionsPageEditor />
