@@ -751,8 +751,8 @@ function ConditionsEditor() {
   const load = useCallback(async () => {
     setLoading(true)
     const { data } = await supabase.from('site_content').select('value').eq('key', 'conditions').single()
-    if (data?.content && Array.isArray(data.content)) {
-      setConditions(data.content as ConditionItem[])
+    if (data?.value && Array.isArray(data.value)) {
+      setConditions(data.value as ConditionItem[])
     } else {
       setConditions(defaultConditionItems)
     }
@@ -1613,7 +1613,7 @@ function ConditionsPageEditor() {
     supabase.from('site_content').select('value').eq('key', 'conditions_page').single()
       .then(({ data: d }) => {
         if (d?.value && typeof d.value === 'object') {
-          setData((prev) => ({ ...prev, ...(d.content as Partial<ConditionsPageContent>) }))
+          setData((prev) => ({ ...prev, ...(d.value as Partial<ConditionsPageContent>) }))
         }
       })
   }, [])
