@@ -191,9 +191,9 @@ export default async function AboutPage() {
       </section>
 
       {/* ============================================================ */}
-      {/* 5. PRACTITIONER SECTION */}
+      {/* 5. PRACTITIONER SECTION — hidden if name is blank in admin */}
       {/* ============================================================ */}
-      <section className="w-full bg-mint py-10">
+      {c.practitioner_name?.trim() && <section className="w-full bg-mint py-10">
         <div className="mx-auto max-w-5xl px-6">
           <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2">
             {/* Left — Text */}
@@ -236,7 +236,7 @@ export default async function AboutPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ============================================================ */}
       {/* 6. BOOK CTA BANNER */}
