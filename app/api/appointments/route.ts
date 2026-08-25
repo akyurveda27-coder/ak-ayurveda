@@ -183,29 +183,62 @@ export async function POST(request: NextRequest) {
 
     // ── Confirmation email to customer ────────────────────────────────────────
     await getResend().emails.send({
-      from: 'AK Ayurveda <noreply@akayurveda.co.uk>',
+      from: 'AK Ayurveda <bookings@akayurveda.co.uk>',
       to: [email],
-      subject: 'Your Booking Confirmed — AK Ayurveda',
+      subject: `Booking Received — ${service} · AK Ayurveda London`,
       html: `
-        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
-          <div style="text-align:center;padding:24px;background:#0F3D34;border-radius:16px 16px 0 0">
-            <h1 style="color:#D4A853;font-size:28px;margin:0">AK Ayurveda</h1>
-            <p style="color:rgba(255,255,255,0.7);margin:8px 0 0">Traditional Ayurvedic Wellness · London, UK</p>
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
+          <!-- Header -->
+          <div style="background:#0F3D34;padding:36px 32px;text-align:center">
+            <p style="color:#D4A853;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 8px">Traditional Ayurvedic Wellness</p>
+            <h1 style="color:#D4A853;font-size:32px;margin:0;font-weight:700;letter-spacing:1px">AK Ayurveda</h1>
+            <p style="color:rgba(255,255,255,0.6);margin:8px 0 0;font-size:13px">London, United Kingdom</p>
           </div>
-          <div style="padding:32px;background:#fff;border:1px solid #E0F0EB;border-top:none;border-radius:0 0 16px 16px">
-            <h2 style="color:#0F3D34;margin-top:0">Thank you, ${name}! 🌿</h2>
-            <p style="color:#555;line-height:1.6">Your appointment for <strong style="color:#1B6E5C">${service}</strong> has been received. We will confirm within 24 hours.</p>
-            <div style="background:#F0FAF7;border-radius:12px;padding:20px;margin:24px 0">
-              <h3 style="color:#0F3D34;margin:0 0 12px">Booking Details</h3>
-              <p style="margin:4px 0;color:#555">📋 Service: <strong>${service}</strong></p>
-              ${selected_duration ? `<p style="margin:4px 0;color:#555">⏱ Duration: <strong>${selected_duration}</strong></p>` : ''}
-              ${selected_price ? `<p style="margin:4px 0;color:#555">💷 Price: <strong>${selected_price}</strong></p>` : ''}
-              ${slotDateStr ? `<p style="margin:4px 0;color:#555">📅 Date: <strong>${slotDateStr}</strong></p>` : ''}
-              ${slotTimeStr ? `<p style="margin:4px 0;color:#555">🕐 Time: <strong>${slotTimeStr}</strong></p>` : ''}
-              <p style="margin:8px 0 0;color:#999;font-size:12px">Booking ref: ${bookingId}</p>
+          <!-- Green tick banner -->
+          <div style="background:#1B6E5C;padding:20px 32px;text-align:center">
+            <p style="margin:0;color:#ffffff;font-size:18px;font-weight:700">✅ Booking Request Received!</p>
+          </div>
+          <!-- Body -->
+          <div style="padding:36px 32px">
+            <p style="color:#0F3D34;font-size:20px;font-weight:700;margin:0 0 8px">Dear ${name},</p>
+            <p style="color:#555;line-height:1.7;margin:0 0 28px;font-size:15px">Thank you for choosing AK Ayurveda. Your appointment request has been received and our team will confirm within <strong>24 hours</strong>.</p>
+
+            <!-- Booking card -->
+            <div style="background:#F0FAF7;border-radius:14px;padding:24px;border:1px solid #D0EDE6;margin-bottom:28px">
+              <p style="color:#1B6E5C;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 16px">Your Booking Summary</p>
+              <table style="width:100%;border-collapse:collapse">
+                <tr style="border-bottom:1px solid #E0F0EB">
+                  <td style="padding:10px 0;color:#888;font-size:13px;width:130px">🌿 Treatment</td>
+                  <td style="padding:10px 0;font-weight:700;color:#0F3D34;font-size:15px">${service}</td>
+                </tr>
+                ${slotDateStr ? `<tr style="border-bottom:1px solid #E0F0EB"><td style="padding:10px 0;color:#888;font-size:13px">📅 Date</td><td style="padding:10px 0;font-weight:600;color:#0F3D34;font-size:14px">${slotDateStr}</td></tr>` : ''}
+                ${slotTimeStr ? `<tr style="border-bottom:1px solid #E0F0EB"><td style="padding:10px 0;color:#888;font-size:13px">🕐 Time</td><td style="padding:10px 0;font-weight:600;color:#0F3D34;font-size:14px">${slotTimeStr}</td></tr>` : ''}
+                ${selected_duration ? `<tr style="border-bottom:1px solid #E0F0EB"><td style="padding:10px 0;color:#888;font-size:13px">⏱ Duration</td><td style="padding:10px 0;font-weight:600;color:#0F3D34;font-size:14px">${selected_duration}</td></tr>` : ''}
+                ${selected_price ? `<tr><td style="padding:10px 0;color:#888;font-size:13px">💷 Price</td><td style="padding:10px 0;font-weight:700;color:#1B6E5C;font-size:15px">${selected_price}</td></tr>` : ''}
+              </table>
+              <div style="margin-top:16px;padding:12px 16px;background:#ffffff;border-radius:8px;border:1px dashed #B2D8CE;text-align:center">
+                <p style="margin:0;color:#999;font-size:10px;letter-spacing:1px;text-transform:uppercase">Reference Number</p>
+                <p style="margin:4px 0 0;color:#0F3D34;font-weight:800;font-size:16px;letter-spacing:2px">${bookingId.toUpperCase()}</p>
+              </div>
             </div>
-            <p style="color:#555;line-height:1.6">Questions? Call <strong>+44 20 7946 0958</strong> or reply to this email.</p>
-            <p style="color:#999;font-size:13px;margin-top:32px">AK Ayurveda · London, UK · Mon–Sat 9AM–7PM</p>
+
+            <!-- What's next -->
+            <div style="background:#FFF9F0;border-radius:12px;padding:20px 24px;border-left:4px solid #D4A853;margin-bottom:28px">
+              <p style="color:#D4A853;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 10px">What Happens Next?</p>
+              <p style="margin:4px 0;color:#555;font-size:13px;line-height:1.6">1️⃣ Our team will review your request</p>
+              <p style="margin:4px 0;color:#555;font-size:13px;line-height:1.6">2️⃣ You will receive a confirmation call/email within 24 hours</p>
+              <p style="margin:4px 0;color:#555;font-size:13px;line-height:1.6">3️⃣ Please arrive 10 minutes early for your first visit</p>
+            </div>
+
+            <!-- Contact -->
+            <p style="color:#555;font-size:14px;line-height:1.6;margin-bottom:8px">Need to reschedule or have questions?</p>
+            <p style="color:#555;font-size:14px;margin:0">📞 <strong>+44 20 7946 0958</strong></p>
+            <p style="color:#555;font-size:14px;margin:4px 0 0">✉️ <strong>info@akayurveda.co.uk</strong></p>
+          </div>
+          <!-- Footer -->
+          <div style="background:#0F3D34;padding:20px 32px;text-align:center">
+            <p style="margin:0;color:rgba(255,255,255,0.5);font-size:11px">AK Ayurveda · London, UK · Mon–Sat 9AM–7PM</p>
+            <p style="margin:6px 0 0;color:rgba(255,255,255,0.3);font-size:10px">This is an automated confirmation. Please do not reply to this email.</p>
           </div>
         </div>
       `,
