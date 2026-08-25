@@ -1810,7 +1810,8 @@ function SlotsManager() {
     try {
       const res = await fetch('/api/slots', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dates: [singleForm.date], start_time: singleForm.startTime, end_time: singleForm.endTime, duration_minutes: 60 }),
+        // Single mode: duration = exact diff between start and end (one slot only)
+        body: JSON.stringify({ dates: [singleForm.date], start_time: singleForm.startTime, end_time: singleForm.endTime, duration_minutes: (() => { const [sh, sm] = singleForm.startTime.split(':').map(Number); const [eh, em] = singleForm.endTime.split(':').map(Number); return (eh * 60 + em) - (sh * 60 + sm) })() }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
