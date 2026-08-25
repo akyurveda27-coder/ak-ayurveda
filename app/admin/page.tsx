@@ -1655,14 +1655,17 @@ function SlotCell({ slot, appt, bg, tc, onToggleBlock, onDelete, onOpenModal, to
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={() => { if (slot.is_booked && appt) onOpenModal(slot, appt) }}
-      title={slot.is_booked && appt ? `${appt.name} · ${appt.service}\n📞 ${appt.phone}\n✉️ ${appt.email}` : slot.is_blocked ? 'Blocked' : 'Available'}
-      style={{ padding: '4px 5px', borderRadius: 5, background: bg, cursor: slot.is_booked ? 'pointer' : 'default', fontSize: 9, position: 'relative' }}
+      style={{ padding: '4px 5px', borderRadius: 5, background: bg, cursor: slot.is_booked ? 'pointer' : 'default', fontSize: 9, position: 'relative', minHeight: 28 }}
     >
       <p style={{ fontWeight: 700, color: tc, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fmtST(slot.start_time)}</p>
       {appt && <p style={{ color: '#1E40AF', margin: 0, fontSize: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{appt.name.split(' ')[0]}</p>}
       {slot.is_blocked && <p style={{ color: '#9CA3AF', margin: 0, fontSize: 8 }}>Blocked</p>}
       {!slot.is_booked && hovered && (
-        <div style={{ display: 'flex', gap: 2, marginTop: 2 }}>
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          background: bg, borderRadius: 5, display: 'flex', alignItems: 'center',
+          justifyContent: 'center', gap: 4, zIndex: 10
+        }}>
           <button onClick={e => { e.stopPropagation(); onToggleBlock(slot) }} disabled={toggling === slot.id}
             style={{ ...btnTiny, background: slot.is_blocked ? '#D1FAE5' : '#F3F4F6', color: slot.is_blocked ? '#065F46' : '#6B7280' }}>
             {slot.is_blocked ? 'Unblock' : 'Block'}
