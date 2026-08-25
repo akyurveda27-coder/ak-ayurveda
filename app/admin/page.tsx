@@ -1985,11 +1985,12 @@ function SlotsManager() {
                           {!slot.is_booked && (
                             <div style={{ display: 'flex', gap: 2, marginTop: 2 }}>
                               <button onClick={e => { e.stopPropagation(); handleToggleBlock(slot) }} disabled={toggling === slot.id}
-                                style={{ ...btnTiny, background: slot.is_blocked ? '#D1FAE5' : '#FEE2E2', color: slot.is_blocked ? '#065F46' : '#991B1B', opacity: toggling === slot.id ? 0.5 : 1 }}>
-                                {slot.is_blocked ? 'Unblock' : 'Block'}
+                                style={{ ...btnTiny, background: slot.is_blocked ? '#D1FAE5' : '#F3F4F6', color: slot.is_blocked ? '#065F46' : '#6B7280', opacity: toggling === slot.id ? 0.5 : 1 }}
+                                title={slot.is_blocked ? 'Click to unblock' : 'Click to block this slot'}>
+                                {slot.is_blocked ? '✓ Unblock' : '🚫 Block'}
                               </button>
                               <button onClick={e => { e.stopPropagation(); handleDeleteSlot(slot.id) }}
-                                style={{ ...btnTiny, background: '#FEE2E2', color: '#991B1B' }}>✕</button>
+                                style={{ ...btnTiny, background: '#FEE2E2', color: '#991B1B' }} title="Delete slot">✕</button>
                             </div>
                           )}
                         </div>
