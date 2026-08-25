@@ -130,25 +130,53 @@ export async function POST(request: NextRequest) {
       to: [CLINIC_EMAIL],
       subject: `New Booking — ${service}${slotDateStr ? ` · ${slotDateStr}` : ''}`,
       html: `
-        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
-          <h2 style="color:#0F3D34;border-bottom:2px solid #D4A853;padding-bottom:12px">
-            New Appointment Request 📅
-          </h2>
-          <table style="width:100%;border-collapse:collapse;margin-top:16px">
-            <tr><td style="padding:8px 0;color:#666;width:140px">Name</td><td style="padding:8px 0;font-weight:600;color:#1A1A1A">${name}</td></tr>
-            <tr><td style="padding:8px 0;color:#666">Phone</td><td style="padding:8px 0;font-weight:600;color:#1A1A1A">${phone}</td></tr>
-            <tr><td style="padding:8px 0;color:#666">Email</td><td style="padding:8px 0;font-weight:600;color:#1A1A1A">${email}</td></tr>
-            <tr><td style="padding:8px 0;color:#666">Service</td><td style="padding:8px 0;font-weight:600;color:#1B6E5C">${service}</td></tr>
-            ${selected_duration ? `<tr><td style="padding:8px 0;color:#666">Duration</td><td style="padding:8px 0;font-weight:600;color:#1A1A1A">${selected_duration}</td></tr>` : ''}
-            ${selected_price ? `<tr><td style="padding:8px 0;color:#666">Price</td><td style="padding:8px 0;font-weight:600;color:#D4A853">${selected_price}</td></tr>` : ''}
-            ${slotDateStr ? `<tr><td style="padding:8px 0;color:#666">Slot Date</td><td style="padding:8px 0;font-weight:600;color:#1A1A1A">${slotDateStr}</td></tr>` : ''}
-            ${slotTimeStr ? `<tr><td style="padding:8px 0;color:#666">Slot Time</td><td style="padding:8px 0;font-weight:600;color:#1A1A1A">${slotTimeStr}</td></tr>` : ''}
-            ${message ? `<tr><td style="padding:8px 0;color:#666">Message</td><td style="padding:8px 0;color:#1A1A1A">${message}</td></tr>` : ''}
-          </table>
-          <div style="margin-top:24px;padding:16px;background:#F0FAF7;border-radius:12px;border-left:4px solid #1B6E5C">
-            <p style="margin:0;color:#0F3D34;font-weight:600">Booking ID: ${bookingId}</p>
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
+          <!-- Header -->
+          <div style="background:#0F3D34;padding:28px 32px;text-align:center">
+            <p style="color:#D4A853;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px">AK Ayurveda · London</p>
+            <h1 style="color:#ffffff;font-size:22px;margin:0;font-weight:600">🗓 New Booking Request</h1>
           </div>
-          <p style="margin-top:24px;color:#999;font-size:12px">AK Ayurveda — London, UK | care@akayurveda.co.uk</p>
+          <!-- Alert strip -->
+          <div style="background:#D4A853;padding:12px 32px;text-align:center">
+            <p style="margin:0;color:#0F3D34;font-weight:700;font-size:14px">Action Required — Review &amp; Confirm</p>
+          </div>
+          <!-- Body -->
+          <div style="padding:32px">
+            <!-- Patient info -->
+            <div style="background:#F0FAF7;border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #D0EDE6">
+              <p style="color:#1B6E5C;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 14px">Patient Details</p>
+              <table style="width:100%;border-collapse:collapse">
+                <tr><td style="padding:6px 0;color:#666;font-size:13px;width:120px">👤 Name</td><td style="padding:6px 0;font-weight:700;color:#0F3D34;font-size:14px">${name}</td></tr>
+                <tr><td style="padding:6px 0;color:#666;font-size:13px">📞 Phone</td><td style="padding:6px 0;font-weight:600;color:#1A1A1A;font-size:14px">${phone}</td></tr>
+                <tr><td style="padding:6px 0;color:#666;font-size:13px">✉️ Email</td><td style="padding:6px 0;font-weight:600;color:#1B6E5C;font-size:14px">${email}</td></tr>
+                ${message ? `<tr><td style="padding:6px 0;color:#666;font-size:13px;vertical-align:top">💬 Note</td><td style="padding:6px 0;color:#555;font-size:13px;line-height:1.5">${message}</td></tr>` : ''}
+              </table>
+            </div>
+            <!-- Booking info -->
+            <div style="background:#0F3D34;border-radius:12px;padding:20px;margin-bottom:20px">
+              <p style="color:#D4A853;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 14px">Booking Details</p>
+              <table style="width:100%;border-collapse:collapse">
+                <tr><td style="padding:6px 0;color:rgba(255,255,255,0.6);font-size:13px;width:120px">🌿 Service</td><td style="padding:6px 0;font-weight:700;color:#D4A853;font-size:15px">${service}</td></tr>
+                ${slotDateStr ? `<tr><td style="padding:6px 0;color:rgba(255,255,255,0.6);font-size:13px">📅 Date</td><td style="padding:6px 0;font-weight:600;color:#ffffff;font-size:14px">${slotDateStr}</td></tr>` : ''}
+                ${slotTimeStr ? `<tr><td style="padding:6px 0;color:rgba(255,255,255,0.6);font-size:13px">🕐 Time</td><td style="padding:6px 0;font-weight:600;color:#ffffff;font-size:14px">${slotTimeStr}</td></tr>` : ''}
+                ${selected_duration ? `<tr><td style="padding:6px 0;color:rgba(255,255,255,0.6);font-size:13px">⏱ Duration</td><td style="padding:6px 0;font-weight:600;color:#ffffff;font-size:14px">${selected_duration}</td></tr>` : ''}
+                ${selected_price ? `<tr><td style="padding:6px 0;color:rgba(255,255,255,0.6);font-size:13px">💷 Price</td><td style="padding:6px 0;font-weight:700;color:#D4A853;font-size:14px">${selected_price}</td></tr>` : ''}
+              </table>
+            </div>
+            <!-- Booking ID -->
+            <div style="border:2px dashed #D0EDE6;border-radius:10px;padding:14px 20px;text-align:center;margin-bottom:24px">
+              <p style="margin:0;color:#999;font-size:11px;letter-spacing:1px;text-transform:uppercase">Booking Reference</p>
+              <p style="margin:4px 0 0;color:#0F3D34;font-weight:800;font-size:18px;letter-spacing:2px">${bookingId.toUpperCase()}</p>
+            </div>
+            <!-- CTA -->
+            <div style="text-align:center">
+              <a href="https://ak-ayurveda.vercel.app/admin" style="display:inline-block;background:#1B6E5C;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:700;font-size:14px">View in Admin Dashboard →</a>
+            </div>
+          </div>
+          <!-- Footer -->
+          <div style="background:#F9FAFB;padding:16px 32px;text-align:center;border-top:1px solid #E5E7EB">
+            <p style="margin:0;color:#9CA3AF;font-size:11px">AK Ayurveda · London, UK · bookings@akayurveda.co.uk</p>
+          </div>
         </div>
       `,
     }).catch(() => {})
