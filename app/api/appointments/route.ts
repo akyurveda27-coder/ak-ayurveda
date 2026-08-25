@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
 import { Resend } from 'resend'
 
-const CLINIC_EMAIL = 'contact.classie@gmail.com' // Resend verified email (free tier)
+const CLINIC_EMAIL = 'akyurveda27@gmail.com' // clinic notification email
 // Lazy init — env var only available at runtime, not build time
 const getResend = () => new Resend(process.env.RESEND_API_KEY ?? '')
 
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
 
     // ── Email to clinic ───────────────────────────────────────────────────────
     await getResend().emails.send({
-      from: 'AK Ayurveda Bookings <onboarding@resend.dev>',
+      from: 'AK Ayurveda Bookings <bookings@akayurveda.co.uk>',
       to: [CLINIC_EMAIL],
       subject: `New Booking — ${service}${slotDateStr ? ` · ${slotDateStr}` : ''}`,
       html: `
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
 
     // ── Confirmation email to customer ────────────────────────────────────────
     await getResend().emails.send({
-      from: 'AK Ayurveda <onboarding@resend.dev>',
+      from: 'AK Ayurveda <noreply@akayurveda.co.uk>',
       to: [email],
       subject: 'Your Booking Confirmed — AK Ayurveda',
       html: `
