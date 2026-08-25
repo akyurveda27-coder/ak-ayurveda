@@ -134,3 +134,8 @@ a, button {
     min-width: 0 !important;
   }
 }
+
+/* Admin slot cells — show action buttons only on hover */
+.slot-cell:hover .slot-actions {
+  opacity: 1 !important;
+}

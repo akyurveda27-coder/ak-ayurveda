@@ -1975,22 +1975,23 @@ function SlotsManager() {
                       const tc = slot.is_blocked ? '#9CA3AF' : slot.is_booked ? '#1E40AF' : '#065F46'
                       return (
                         <div key={slot.id}
+                          className="slot-cell"
                           onClick={() => { if (slot.is_booked && appt) setModalData({ slot, appt }) }}
-                          style={{ padding: '3px 5px', borderRadius: 5, background: bg, cursor: slot.is_booked ? 'pointer' : 'default', fontSize: 9 }}>
+                          title={slot.is_booked && appt ? `${appt.name} · ${appt.service}\n📞 ${appt.phone}\n✉️ ${appt.email}` : slot.is_blocked ? 'Blocked — click Unblock to open' : 'Available'}
+                          style={{ padding: '4px 5px', borderRadius: 5, background: bg, cursor: slot.is_booked ? 'pointer' : 'default', fontSize: 9, position: 'relative' }}>
                           <p style={{ fontWeight: 700, color: tc, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {fmtST(slot.start_time)}
                           </p>
-                          {appt && <p style={{ color: '#3B82F6', margin: 0, fontSize: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{appt.name.split(' ')[0]}</p>}
+                          {appt && <p style={{ color: '#1E40AF', margin: 0, fontSize: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{appt.name.split(' ')[0]} · {appt.service?.split('–')[0]?.trim().slice(0, 12)}</p>}
                           {slot.is_blocked && <p style={{ color: '#9CA3AF', margin: 0, fontSize: 8 }}>Blocked</p>}
                           {!slot.is_booked && (
-                            <div style={{ display: 'flex', gap: 2, marginTop: 2 }}>
+                            <div className="slot-actions" style={{ display: 'flex', gap: 2, marginTop: 2, opacity: 0, transition: 'opacity 0.15s' }}>
                               <button onClick={e => { e.stopPropagation(); handleToggleBlock(slot) }} disabled={toggling === slot.id}
-                                style={{ ...btnTiny, background: slot.is_blocked ? '#D1FAE5' : '#F3F4F6', color: slot.is_blocked ? '#065F46' : '#6B7280', opacity: toggling === slot.id ? 0.5 : 1 }}
-                                title={slot.is_blocked ? 'Click to unblock' : 'Click to block this slot'}>
-                                {slot.is_blocked ? '✓ Unblock' : '🚫 Block'}
+                                style={{ ...btnTiny, background: slot.is_blocked ? '#D1FAE5' : '#F3F4F6', color: slot.is_blocked ? '#065F46' : '#6B7280' }}>
+                                {slot.is_blocked ? 'Unblock' : 'Block'}
                               </button>
                               <button onClick={e => { e.stopPropagation(); handleDeleteSlot(slot.id) }}
-                                style={{ ...btnTiny, background: '#FEE2E2', color: '#991B1B' }} title="Delete slot">✕</button>
+                                style={{ ...btnTiny, background: '#FEE2E2', color: '#991B1B' }}>✕</button>
                             </div>
                           )}
                         </div>
