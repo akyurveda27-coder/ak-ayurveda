@@ -1646,6 +1646,35 @@ function ConditionsPageEditor() {
   )
 }
 
+// ─── SlotCell — hover reveals Block/Delete buttons ───────────────────────────
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function SlotCell({ slot, appt, bg, tc, onToggleBlock, onDelete, onOpenModal, toggling, btnTiny, fmtST }: any) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => { if (slot.is_booked && appt) onOpenModal(slot, appt) }}
+      title={slot.is_booked && appt ? `${appt.name} · ${appt.service}\n📞 ${appt.phone}\n✉️ ${appt.email}` : slot.is_blocked ? 'Blocked' : 'Available'}
+      style={{ padding: '4px 5px', borderRadius: 5, background: bg, cursor: slot.is_booked ? 'pointer' : 'default', fontSize: 9, position: 'relative' }}
+    >
+      <p style={{ fontWeight: 700, color: tc, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fmtST(slot.start_time)}</p>
+      {appt && <p style={{ color: '#1E40AF', margin: 0, fontSize: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{appt.name.split(' ')[0]}</p>}
+      {slot.is_blocked && <p style={{ color: '#9CA3AF', margin: 0, fontSize: 8 }}>Blocked</p>}
+      {!slot.is_booked && hovered && (
+        <div style={{ display: 'flex', gap: 2, marginTop: 2 }}>
+          <button onClick={e => { e.stopPropagation(); onToggleBlock(slot) }} disabled={toggling === slot.id}
+            style={{ ...btnTiny, background: slot.is_blocked ? '#D1FAE5' : '#F3F4F6', color: slot.is_blocked ? '#065F46' : '#6B7280' }}>
+            {slot.is_blocked ? 'Unblock' : 'Block'}
+          </button>
+          <button onClick={e => { e.stopPropagation(); onDelete(slot.id) }}
+            style={{ ...btnTiny, background: '#FEE2E2', color: '#991B1B' }}>✕</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Slots Manager ────────────────────────────────────────────────────────────
 
 function getAdminMonday(d: Date): Date {
@@ -1974,27 +2003,10 @@ function SlotsManager() {
                       const bg = slot.is_blocked ? '#F3F4F6' : slot.is_booked ? '#DBEAFE' : '#D1FAE5'
                       const tc = slot.is_blocked ? '#9CA3AF' : slot.is_booked ? '#1E40AF' : '#065F46'
                       return (
-                        <div key={slot.id}
-                          className="slot-cell"
-                          onClick={() => { if (slot.is_booked && appt) setModalData({ slot, appt }) }}
-                          title={slot.is_booked && appt ? `${appt.name} · ${appt.service}\n📞 ${appt.phone}\n✉️ ${appt.email}` : slot.is_blocked ? 'Blocked — click Unblock to open' : 'Available'}
-                          style={{ padding: '4px 5px', borderRadius: 5, background: bg, cursor: slot.is_booked ? 'pointer' : 'default', fontSize: 9, position: 'relative' }}>
-                          <p style={{ fontWeight: 700, color: tc, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {fmtST(slot.start_time)}
-                          </p>
-                          {appt && <p style={{ color: '#1E40AF', margin: 0, fontSize: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{appt.name.split(' ')[0]} · {appt.service?.split('–')[0]?.trim().slice(0, 12)}</p>}
-                          {slot.is_blocked && <p style={{ color: '#9CA3AF', margin: 0, fontSize: 8 }}>Blocked</p>}
-                          {!slot.is_booked && (
-                            <div className="slot-actions" style={{ display: 'flex', gap: 2, marginTop: 2, opacity: 0, transition: 'opacity 0.15s' }}>
-                              <button onClick={e => { e.stopPropagation(); handleToggleBlock(slot) }} disabled={toggling === slot.id}
-                                style={{ ...btnTiny, background: slot.is_blocked ? '#D1FAE5' : '#F3F4F6', color: slot.is_blocked ? '#065F46' : '#6B7280' }}>
-                                {slot.is_blocked ? 'Unblock' : 'Block'}
-                              </button>
-                              <button onClick={e => { e.stopPropagation(); handleDeleteSlot(slot.id) }}
-                                style={{ ...btnTiny, background: '#FEE2E2', color: '#991B1B' }}>✕</button>
-                            </div>
-                          )}
-                        </div>
+                        <SlotCell key={slot.id} slot={slot} appt={appt} bg={bg} tc={tc}
+                          onToggleBlock={handleToggleBlock} onDelete={handleDeleteSlot}
+                          onOpenModal={(s: SlotWithBooked, a: SlotAppt) => setModalData({ slot: s, appt: a })}
+                          toggling={toggling} btnTiny={btnTiny} fmtST={fmtST} />
                       )
                     })}
                     <button onClick={() => { setSingleForm(p => ({ ...p, date: d })); setCreateMode('single') }}
