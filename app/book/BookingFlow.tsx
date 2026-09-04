@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import type { Service, TimeSlot } from '@/lib/types'
+import { pricingOptions, formatDuration, formatPrice, type PricingOption } from '@/lib/pricing'
 
 // ─── Calendar helpers ─────────────────────────────────────────────────────────
 
@@ -154,6 +155,69 @@ function ServiceStep({
             </span>
           </button>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// Pre-select the option a treatment page sent over; auto-select when there is only one.
+function matchOption(service: Service | null, duration: string | null, price: string | null): PricingOption | null {
+  const options = pricingOptions(service)
+  if (options.length === 0) return null
+
+  const wanted = options.find(
+    (o) =>
+      (duration && formatDuration(o.d) === formatDuration(duration)) ||
+      (price && formatPrice(o.p) === formatPrice(price))
+  )
+  if (wanted) return wanted
+  return options.length === 1 ? options[0] : null
+}
+
+// ─── Step 2a: Session option (duration + price) ──────────────────────────────
+
+function OptionStep({
+  options,
+  selectedOption,
+  onSelect,
+}: {
+  options: PricingOption[]
+  selectedOption: PricingOption | null
+  onSelect: (o: PricingOption) => void
+}) {
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <h3 style={{ fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: 22, color: '#0F3D34', marginBottom: 4, fontWeight: 700 }}>
+        Choose Your Session
+      </h3>
+      <p style={{ color: '#6B7280', fontSize: 14, marginBottom: 14 }}>
+        Pick the length of your treatment.
+      </p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+        {options.map((o, i) => {
+          const active = selectedOption === o
+          return (
+            <button
+              key={i}
+              onClick={() => onSelect(o)}
+              style={{
+                padding: '12px 20px', borderRadius: 12, cursor: 'pointer',
+                border: `1.5px solid ${active ? '#1B6E5C' : '#D0EDE6'}`,
+                background: active ? '#F0FAF7' : '#fff',
+                textAlign: 'left', minWidth: 140,
+              }}
+            >
+              <span style={{ display: 'block', fontWeight: 700, color: '#0F3D34', fontSize: 15 }}>
+                {formatDuration(o.d) || 'Session'}
+              </span>
+              {formatPrice(o.p) && (
+                <span style={{ display: 'block', color: '#1B6E5C', fontSize: 14, fontWeight: 600, marginTop: 2 }}>
+                  {formatPrice(o.p)}
+                </span>
+              )}
+            </button>
+          )
+        })}
       </div>
     </div>
   )
@@ -442,6 +506,7 @@ function DateSlotStep({
 
 function ContactStep({
   selectedService,
+  selectedOption,
   selectedSlot,
   selectedDate,
   onSubmit,
@@ -449,6 +514,7 @@ function ContactStep({
   submitError,
 }: {
   selectedService: Service | null
+  selectedOption: PricingOption | null
   selectedSlot: TimeSlot | null
   selectedDate: string | null
   onSubmit: (form: { name: string; email: string; phone: string; notes: string }) => void
@@ -507,13 +573,21 @@ function ContactStep({
             </p>
           </div>
           {selectedService && (
-            <div style={{ marginLeft: 'auto' }}>
+            <div style={{ marginLeft: 'auto', display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'flex-end' }}>
               <span style={{
                 background: '#D0EDE6', color: '#0F3D34',
                 padding: '4px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600,
               }}>
                 {selectedService.icon} {selectedService.name}
               </span>
+              {selectedOption && (
+                <span style={{
+                  background: '#FDF3DC', color: '#7A5B12',
+                  padding: '4px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600,
+                }}>
+                  {[formatDuration(selectedOption.d), formatPrice(selectedOption.p)].filter(Boolean).join(' · ')}
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -734,6 +808,7 @@ export default function BookingFlow() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
   const [services, setServices] = useState<Service[]>([])
   const [selectedService, setSelectedService] = useState<Service | null>(null)
+  const [selectedOption, setSelectedOption] = useState<PricingOption | null>(null)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -757,6 +832,7 @@ export default function BookingFlow() {
             const found = list.find((s) => s.name === svcName)
             if (found) {
               setSelectedService(found)
+              setSelectedOption(matchOption(found, sessionStorage.getItem('book_duration'), sessionStorage.getItem('book_price')))
               setStep(2) // skip service selection
             }
           }
@@ -765,8 +841,12 @@ export default function BookingFlow() {
     })
   }, [])
 
+  const serviceOptions = pricingOptions(selectedService)
+  const needsOption = serviceOptions.length > 0 && !selectedOption
+
   const handleServiceSelect = (s: Service) => {
     setSelectedService(s)
+    setSelectedOption(matchOption(s, null, null))
     setStep(2)
   }
 
@@ -797,6 +877,8 @@ export default function BookingFlow() {
           service: selectedService.name,
           preferred_date: selectedDate,
           slot_id: selectedSlot.id,
+          selected_duration: selectedOption ? formatDuration(selectedOption.d) : formatDuration(selectedService.duration),
+          selected_price: selectedOption ? formatPrice(selectedOption.p) : formatPrice(selectedService.price_from),
         }),
       })
 
@@ -880,6 +962,13 @@ export default function BookingFlow() {
                   </button>
                 </div>
               )}
+              {serviceOptions.length > 0 && (
+                <OptionStep
+                  options={serviceOptions}
+                  selectedOption={selectedOption}
+                  onSelect={setSelectedOption}
+                />
+              )}
               <DateSlotStep
                 selectedDate={selectedDate}
                 selectedSlot={selectedSlot}
@@ -887,12 +976,20 @@ export default function BookingFlow() {
                 onSlotSelect={handleSlotSelect}
               />
               {selectedSlot && (
-                <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
+                <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 14 }}>
+                  {needsOption && (
+                    <span style={{ fontSize: 13, color: '#92400E' }}>
+                      Please choose a session length above.
+                    </span>
+                  )}
                   <button
+                    disabled={needsOption}
                     onClick={() => setStep(3)}
                     style={{
                       padding: '12px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700,
-                      background: '#1B6E5C', color: '#fff', border: 'none', cursor: 'pointer',
+                      background: '#1B6E5C', color: '#fff', border: 'none',
+                      cursor: needsOption ? 'not-allowed' : 'pointer',
+                      opacity: needsOption ? 0.5 : 1,
                     }}
                   >
                     Continue →
@@ -912,6 +1009,7 @@ export default function BookingFlow() {
               </button>
               <ContactStep
                 selectedService={selectedService}
+                selectedOption={selectedOption}
                 selectedSlot={selectedSlot}
                 selectedDate={selectedDate}
                 onSubmit={handleContactSubmit}

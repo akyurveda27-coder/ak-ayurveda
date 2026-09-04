@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BookButton from '@/components/BookButton'
+import { pricingOptions, priceFromLabel, durationLabel, formatDuration, formatPrice } from '@/lib/pricing'
 
 export const revalidate = 60
 
@@ -65,6 +66,7 @@ export default async function TreatmentPage({ params }: { params: { slug: string
 
   const service = allServices?.find(s => toSlug(s.name) === params.slug) ?? null
   const related = allServices?.filter(s => toSlug(s.name) !== params.slug).slice(0, 3) ?? []
+  const options = pricingOptions(service)
 
   if (!service) {
     return (
@@ -200,7 +202,7 @@ export default async function TreatmentPage({ params }: { params: { slug: string
             <div>
               <p className="text-xs tracking-wide text-black/40 uppercase">Duration</p>
               <p className="font-display text-2xl font-semibold" style={{ color: '#0F3D34' }}>
-                {service.duration || '60–90 min'}
+                {durationLabel(service)}
               </p>
             </div>
           </div>
@@ -216,7 +218,7 @@ export default async function TreatmentPage({ params }: { params: { slug: string
             <div>
               <p className="text-xs tracking-wide text-black/40 uppercase">Price</p>
               <p className="font-display text-2xl font-semibold" style={{ color: '#0F3D34' }}>
-                {service.price_from ? `From ${String(service.price_from).replace(/^£+/, '£')}` : 'From £30'}
+                {priceFromLabel(service)}
               </p>
             </div>
           </div>
@@ -238,6 +240,49 @@ export default async function TreatmentPage({ params }: { params: { slug: string
           </div>
         </div>
       </section>
+
+      {/* ── 3b. SESSION OPTIONS (duration + price, from admin) ── */}
+      {options.length > 0 && (
+        <section style={{ background: '#F0FAF7', borderTop: '1px solid #E0F0EB' }}>
+          <div className="max-w-7xl mx-auto px-6 md:px-10 pb-12">
+            <p className="text-xs font-bold uppercase mb-3" style={{ color: '#D4A853', letterSpacing: '0.14em' }}>
+              ✦ Session Options
+            </p>
+            <h2 className="font-display text-3xl md:text-4xl mb-6" style={{ color: '#0F3D34' }}>
+              Choose Your Session
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {options.map((opt, i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-2xl px-6 py-6 shadow-sm flex flex-col gap-4"
+                  style={{ border: '1px solid #E0F0EB' }}
+                >
+                  <div>
+                    <p className="font-display text-2xl font-semibold" style={{ color: '#0F3D34' }}>
+                      {formatDuration(opt.d) || 'Session'}
+                    </p>
+                    {formatPrice(opt.p) && (
+                      <p className="font-display text-3xl font-semibold mt-1" style={{ color: '#1B6E5C' }}>
+                        {formatPrice(opt.p)}
+                      </p>
+                    )}
+                  </div>
+                  <BookButton
+                    serviceName={service.name}
+                    duration={formatDuration(opt.d)}
+                    price={formatPrice(opt.p)}
+                    className="mt-auto inline-flex items-center justify-center rounded-full px-6 py-3 font-semibold transition hover:brightness-105"
+                    style={{ background: '#D4A853', color: '#0F3D34' }}
+                  >
+                    Book This Session
+                  </BookButton>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── 4. BENEFITS ── */}
       <section style={{ background: '#F0FAF7', borderTop: '1px solid #E0F0EB' }}>

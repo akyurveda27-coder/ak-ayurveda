@@ -1,6 +1,7 @@
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { supabase } from '@/lib/supabase'
+import { pricingOptions, priceFromLabel } from '@/lib/pricing'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ interface Service {
   description: string
   icon?: string
   price_from?: string | number | null
+  pricing?: { d: string; p: string }[]
   card_image?: string | null
   hero_image?: string | null
 }
@@ -88,9 +90,9 @@ export default async function ServicesPage({ searchParams }: { searchParams?: { 
                     </div>
                   )}
                   {/* Price badge */}
-                  {service.price_from && (
+                  {(pricingOptions(service).length > 0 || service.price_from) && (
                     <span className="absolute top-3 right-3 rounded-full bg-white/90 backdrop-blur px-3 py-1 text-xs font-semibold" style={{ color: '#1B6E5C' }}>
-                      From {String(service.price_from).replace(/^£+/, '£')}
+                      {priceFromLabel(service)}
                     </span>
                   )}
                 </div>
