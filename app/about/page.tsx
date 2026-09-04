@@ -12,7 +12,7 @@ function optimizeUrl(url: string, w: number): string {
   return url
 }
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export const metadata: Metadata = {
   title: 'About AK Ayurveda | London\'s Authentic Ayurvedic Clinic',

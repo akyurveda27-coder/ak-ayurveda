@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { isAdminRequest, unauthorized } from '@/lib/adminAuth'
 
 // ─── PATCH /api/slots/[id] ────────────────────────────────────────────────────
 // Admin: block or unblock a slot
@@ -10,6 +11,8 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  if (!isAdminRequest(request)) return unauthorized()
+
   try {
     const body = await request.json()
     const { is_blocked } = body as { is_blocked: boolean }
@@ -33,6 +36,8 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  if (!isAdminRequest(request)) return unauthorized()
+
   try {
     // Safety check: don't delete if a live appointment is attached
     const { data: attached } = await supabaseAdmin

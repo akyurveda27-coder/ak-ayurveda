@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
+import { adminDb, adminLogin, adminLogout, adminCheckSession } from '@/lib/adminDb'
 import {
   HeroContent, StatsContent, DoctorContent, ContactContent,
   Service, Condition, Testimonial, FAQ, Appointment, TimeSlot
@@ -22,12 +23,13 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
     e.preventDefault()
     setLoading(true)
     setError('')
-    // Simple client-side check — in production use a proper auth system
-    if (password === 'ayurveda@admin123') {
+    // Password is verified server-side; success sets an httpOnly session cookie.
+    const result = await adminLogin(password)
+    if (result.ok) {
       sessionStorage.setItem('ak_admin_auth', '1')
       onLogin()
     } else {
-      setError('Incorrect password. Please try again.')
+      setError(result.error ?? 'Login failed')
     }
     setLoading(false)
   }
@@ -153,7 +155,7 @@ function HeroEditor() {
 
   const handleSave = async () => {
     saving()
-    const { error: err } = await supabase.from('site_content').upsert({ key: 'hero', value: data, updated_at: new Date().toISOString() })
+    const { error: err } = await adminDb.upsert('site_content', { key: 'hero', value: data, updated_at: new Date().toISOString() })
     err ? error() : saved()
   }
 
@@ -185,7 +187,7 @@ function StatsEditor() {
 
   const handleSave = async () => {
     saving()
-    const { error: err } = await supabase.from('site_content').upsert({ key: 'stats', value: data, updated_at: new Date().toISOString() })
+    const { error: err } = await adminDb.upsert('site_content', { key: 'stats', value: data, updated_at: new Date().toISOString() })
     err ? error() : saved()
   }
 
@@ -217,7 +219,7 @@ function DoctorEditor() {
 
   const handleSave = async () => {
     saving()
-    const { error: err } = await supabase.from('site_content').upsert({ key: 'doctor', value: data, updated_at: new Date().toISOString() })
+    const { error: err } = await adminDb.upsert('site_content', { key: 'doctor', value: data, updated_at: new Date().toISOString() })
     err ? error() : saved()
   }
 
@@ -250,7 +252,7 @@ function ContactEditor() {
 
   const handleSave = async () => {
     saving()
-    const { error: err } = await supabase.from('site_content').upsert({ key: 'contact', value: data, updated_at: new Date().toISOString() })
+    const { error: err } = await adminDb.upsert('site_content', { key: 'contact', value: data, updated_at: new Date().toISOString() })
     err ? error() : saved()
   }
 
@@ -299,7 +301,7 @@ function ServicesEditor() {
 
   const handleUpdate = async (service: Service) => {
     setSaving(service.id)
-    await supabase.from('services').update({
+    await adminDb.update('services', {
       name: service.name, description: service.description, icon: service.icon,
       duration: service.duration ?? null, price_from: service.price_from ?? null,
       hero_image: service.hero_image ?? null,
@@ -316,19 +318,19 @@ function ServicesEditor() {
       testimonial_stars: service.testimonial_stars ?? 5,
       testimonials: service.testimonials ?? [],
       pricing: service.pricing ?? [],
-    }).eq('id', service.id)
+    }, { id: service.id })
     setSaving(null); setSaved(true); setTimeout(() => setSaved(false), 2000)
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this service?')) return
-    await supabase.from('services').delete().eq('id', id)
+    await adminDb.remove('services', { id })
     setSelectedId(null); load()
   }
 
   const handleAdd = async () => {
     if (!newService.name) return
-    const { data } = await supabase.from('services').insert({ ...newService, sort_order: services.length + 1 }).select().single()
+    const { data } = await adminDb.insert<Service>('services', { ...newService, sort_order: services.length + 1 }, { returning: 'single' })
     setNewService({ name: '', description: '', icon: '🌿' })
     await load()
     if (data) setSelectedId(data.id)
@@ -780,8 +782,9 @@ function ConditionsEditor() {
       label: c.label,
       image_url: c.image_url || null,
     }))
-    const { error } = await supabase.from('site_content').upsert(
-      { key: 'conditions', content: payload },
+    const { error } = await adminDb.upsert(
+      'site_content',
+      { key: 'conditions', value: payload, updated_at: new Date().toISOString() },
       { onConflict: 'key' }
     )
     if (error) {
@@ -906,25 +909,25 @@ function TestimonialsEditor() {
   useEffect(() => { load() }, [load])
 
   const handleToggle = async (t: Testimonial) => {
-    await supabase.from('testimonials').update({ is_active: !t.is_active }).eq('id', t.id)
+    await adminDb.update('testimonials', { is_active: !t.is_active }, { id: t.id })
     load()
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this testimonial?')) return
-    await supabase.from('testimonials').delete().eq('id', id)
+    await adminDb.remove('testimonials', { id })
     load()
   }
 
   const handleUpdate = async (t: Testimonial) => {
     setSaving(t.id)
-    await supabase.from('testimonials').update({ quote: t.quote, patient_name: t.patient_name, city: t.city, stars: t.stars }).eq('id', t.id)
+    await adminDb.update('testimonials', { quote: t.quote, patient_name: t.patient_name, city: t.city, stars: t.stars }, { id: t.id })
     setSaving(null)
   }
 
   const handleAdd = async () => {
     if (!newT.quote || !newT.patient_name) return
-    await supabase.from('testimonials').insert({ ...newT, is_active: true })
+    await adminDb.insert('testimonials', { ...newT, is_active: true })
     setNewT({ quote: '', patient_name: '', city: '', stars: 5 })
     load()
   }
@@ -998,19 +1001,19 @@ function FAQEditor() {
 
   const handleUpdate = async (f: FAQ) => {
     setSaving(f.id)
-    await supabase.from('faqs').update({ question: f.question, answer: f.answer }).eq('id', f.id)
+    await adminDb.update('faqs', { question: f.question, answer: f.answer }, { id: f.id })
     setSaving(null)
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this FAQ?')) return
-    await supabase.from('faqs').delete().eq('id', id)
+    await adminDb.remove('faqs', { id })
     load()
   }
 
   const handleAdd = async () => {
     if (!newFaq.question || !newFaq.answer) return
-    await supabase.from('faqs').insert({ ...newFaq, sort_order: faqs.length + 1 })
+    await adminDb.insert('faqs', { ...newFaq, sort_order: faqs.length + 1 })
     setNewFaq({ question: '', answer: '' })
     load()
   }
@@ -1066,23 +1069,24 @@ function AppointmentsViewer() {
 
   const fetchAppointments = () => {
     setLoading(true)
-    supabase
-      .from('appointments')
-      .select('*, slot:time_slots(date, start_time, end_time)')
-      .order('created_at', { ascending: false })
-      .then(({ data }) => { setAppointments((data ?? []) as Appointment[]); setLoading(false) })
+    adminDb
+      .select<Appointment>('appointments', {
+        select: '*, slot:time_slots(date, start_time, end_time)',
+        order: { column: 'created_at', ascending: false },
+      })
+      .then(({ data }) => { setAppointments(data ?? []); setLoading(false) })
   }
 
   useEffect(() => { fetchAppointments() }, [])
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from('appointments').update({ status }).eq('id', id)
+    await adminDb.update('appointments', { status }, { id })
     setAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a))
   }
 
   const deleteAppointment = async (id: string, name: string) => {
     if (!confirm(`Delete booking by "${name}"? This cannot be undone.`)) return
-    await supabase.from('appointments').delete().eq('id', id)
+    await adminDb.remove('appointments', { id })
     setAppointments(prev => prev.filter(a => a.id !== id))
   }
 
@@ -1254,9 +1258,9 @@ function BlogEditor() {
       published_at: form.published ? (form.published_at || new Date().toISOString()) : null,
     }
     if (selected === 'new') {
-      await supabase.from('blogs').insert(payload)
+      await adminDb.insert('blogs', payload)
     } else {
-      await supabase.from('blogs').update(payload).eq('id', selected)
+      await adminDb.update('blogs', payload, { id: selected })
     }
     setSaving(false)
     setSavedMsg('✓ Saved!')
@@ -1267,17 +1271,17 @@ function BlogEditor() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this blog post permanently?')) return
-    await supabase.from('blogs').delete().eq('id', id)
+    await adminDb.remove('blogs', { id })
     if (selected === id) { setSelected(null); setForm(emptyBlog()) }
     load()
   }
 
   const togglePublish = async (b: BlogPost) => {
     const newPub = !b.published
-    await supabase.from('blogs').update({
+    await adminDb.update('blogs', {
       published: newPub,
       published_at: newPub ? (b.published_at || new Date().toISOString()) : null,
-    }).eq('id', b.id)
+    }, { id: b.id })
     load()
   }
 
@@ -1394,8 +1398,8 @@ function ReviewsViewer() {
 
   const load = useCallback(async () => {
     setLoading(true)
-    const { data } = await supabase.from('reviews').select('*').order('created_at', { ascending: false })
-    setReviews((data ?? []) as Review[])
+    const { data } = await adminDb.select<Review>('reviews', { order: { column: 'created_at', ascending: false } })
+    setReviews(data ?? [])
     setLoading(false)
   }, [])
 
@@ -1403,14 +1407,14 @@ function ReviewsViewer() {
 
   const setStatus = async (id: string, status: 'approved' | 'rejected') => {
     setActing(id)
-    await supabase.from('reviews').update({ status }).eq('id', id)
+    await adminDb.update('reviews', { status }, { id })
     await load()
     setActing(null)
   }
 
   const deleteReview = async (id: string) => {
     if (!confirm('Delete this review permanently?')) return
-    await supabase.from('reviews').delete().eq('id', id)
+    await adminDb.remove('reviews', { id })
     await load()
   }
 
@@ -1518,7 +1522,8 @@ function AboutEditor() {
 
   const handleSave = async () => {
     saving()
-    const { error: err } = await supabase.from('site_content').upsert(
+    const { error: err } = await adminDb.upsert(
+      'site_content',
       { key: 'about', value: data, updated_at: new Date().toISOString() },
       { onConflict: 'key' }
     )
@@ -1622,8 +1627,9 @@ function ConditionsPageEditor() {
 
   const handleSave = async () => {
     saving()
-    const { error: err } = await supabase.from('site_content').upsert(
-      { key: 'conditions_page', content: data },
+    const { error: err } = await adminDb.upsert(
+      'site_content',
+      { key: 'conditions_page', value: data, updated_at: new Date().toISOString() },
       { onConflict: 'key' }
     )
     err ? error() : saved()
@@ -1737,14 +1743,17 @@ function SlotsManager() {
       .gte('date', weekDates[0]).lte('date', weekDates[6])
       .order('start_time')
 
-    const slotIds = (slots ?? []).map(s => s.id)
+    const slotIds = new Set((slots ?? []).map(s => s.id))
     let appts: SlotAppt[] = []
-    if (slotIds.length > 0) {
-      const { data } = await supabase
-        .from('appointments')
-        .select('id, slot_id, name, email, phone, service, status')
-        .in('slot_id', slotIds).neq('status', 'cancelled')
-      appts = (data ?? []) as SlotAppt[]
+    let pendingCount = 0
+
+    if (slots?.length) {
+      const { data } = await adminDb.select<SlotAppt>('appointments', {
+        select: 'id, slot_id, name, email, phone, service, status',
+      })
+      const all = data ?? []
+      pendingCount = all.filter(a => a.status === 'pending').length
+      appts = all.filter(a => a.slot_id && slotIds.has(a.slot_id) && a.status !== 'cancelled')
     }
 
     const bookedIds = new Set(appts.map(a => a.slot_id))
@@ -1754,8 +1763,6 @@ function SlotsManager() {
 
     const today = slotYMD(new Date())
     const todaySlots = enriched.filter(s => s.date === today && !s.is_blocked)
-    const { count: pendingCount } = await supabase
-      .from('appointments').select('id', { count: 'exact', head: true }).eq('status', 'pending')
 
     setStats({
       todayBooked: todaySlots.filter(s => s.is_booked).length,
@@ -2174,7 +2181,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               <h1 className="font-display font-semibold text-primary text-base">{currentTab.label}</h1>
             </div>
           </div>
-          <span className="font-body text-xs text-sage hidden sm:block">Changes save directly to Supabase</span>
+          <span className="font-body text-xs text-sage hidden sm:block">Changes go live on the website within a minute</span>
         </header>
 
         {/* Content */}
@@ -2190,15 +2197,30 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false)
+  const [checking, setChecking] = useState(true)
 
   useEffect(() => {
-    if (sessionStorage.getItem('ak_admin_auth') === '1') setAuthed(true)
+    // The server cookie is the source of truth — sessionStorage is only a UI hint.
+    adminCheckSession().then((valid) => {
+      setAuthed(valid)
+      if (!valid) sessionStorage.removeItem('ak_admin_auth')
+      setChecking(false)
+    })
   }, [])
 
   const handleLogin = () => setAuthed(true)
-  const handleLogout = () => {
+  const handleLogout = async () => {
     sessionStorage.removeItem('ak_admin_auth')
     setAuthed(false)
+    await adminLogout()
+  }
+
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="font-body text-sm text-sage">Loading…</p>
+      </div>
+    )
   }
 
   if (!authed) return <LoginScreen onLogin={handleLogin} />

@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
+import { isAdminRequest, unauthorized } from '@/lib/adminAuth'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -36,6 +37,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if (!isAdminRequest(request)) return unauthorized()
+
   try {
     const body = await request.json()
     const { key, value } = body

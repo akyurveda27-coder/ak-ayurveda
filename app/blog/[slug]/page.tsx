@@ -87,7 +87,7 @@ async function getContact(): Promise<ContactContent | null> {
   }
 }
 
-export const revalidate = 0
+export const revalidate = 60
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const blog = await getBlogBySlug(params.slug)

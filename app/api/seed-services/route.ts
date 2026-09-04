@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { isAdminRequest, unauthorized } from '@/lib/adminAuth'
 
 const SERVICES_DATA = [
   {
@@ -499,10 +500,8 @@ const SERVICES_DATA = [
 ]
 
 export async function GET(request: NextRequest) {
-  const key = request.nextUrl.searchParams.get('key')
-  if (key !== 'ayurveda2026') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  // Overwrites every service row — admin session only.
+  if (!isAdminRequest(request)) return unauthorized()
 
   const results: { name: string; success: boolean; error: string | undefined }[] = []
 

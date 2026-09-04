@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, supabaseAdmin } from '@/lib/supabase'
 
 // GET /api/slots/available-dates?month=YYYY-MM
 // Returns dates in the given month that have at least one available (non-blocked, non-booked) slot
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
 
   // Find which slots are already booked (via appointments)
   const slotIds = futureSlots.map(s => s.id)
-  const { data: bookedAppts } = await supabase
+  const { data: bookedAppts } = await supabaseAdmin
     .from('appointments')
     .select('slot_id')
     .in('slot_id', slotIds)
