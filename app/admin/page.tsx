@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { adminDb, adminLogin, adminLogout, adminCheckSession } from '@/lib/adminDb'
+import { pricingOptions, formatDuration, formatPrice } from '@/lib/pricing'
 import {
   HeroContent, StatsContent, DoctorContent, ContactContent,
   Service, Condition, Testimonial, FAQ, Appointment, TimeSlot
@@ -108,6 +109,8 @@ function SaveButton({ status, onClick }: { status: SaveStatus; onClick: () => vo
     </button>
   )
 }
+
+const DURATION_CHOICES = ['15 min', '20 min', '30 min', '45 min', '60 min', '75 min', '90 min', '120 min']
 
 const inputClass = 'w-full px-3 py-2 rounded-lg border border-green-100 font-body text-sm text-textMain bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all'
 const labelClass = 'block font-body text-xs font-semibold text-sage uppercase tracking-wide mb-1'
@@ -396,8 +399,10 @@ function ServicesEditor() {
               <div>
                 <p className="font-display font-semibold text-primary text-base">{s.name}</p>
                 <p className="text-xs text-sage">
-                  {s.pricing && s.pricing.length > 0
-                    ? `${s.pricing.length} pricing option${s.pricing.length > 1 ? 's' : ''} · from ${s.pricing[0].p}`
+                  {pricingOptions(s).length > 0
+                    ? pricingOptions(s)
+                        .map(o => [formatDuration(o.d), formatPrice(o.p)].filter(Boolean).join(' — '))
+                        .join('  ·  ')
                     : (s.duration ?? 'Duration not set') + ' · ' + (s.price_from ?? 'Price not set')}
                 </p>
               </div>
@@ -450,38 +455,55 @@ function ServicesEditor() {
                   <p className="text-xs text-gray-400 mb-2">Each option is a duration + price pair shown as selectable cards on the treatment page.</p>
                   <div className="space-y-2">
                     {((s.pricing ?? []) as {d:string;p:string}[]).map((opt, i) => (
-                      <div key={i} className="flex gap-2 items-center">
-                        <select
-                          value={opt.d}
-                          onChange={e => {
-                            const n = [...((s.pricing ?? []) as {d:string;p:string}[])]
-                            n[i] = { ...n[i], d: e.target.value }
-                            upd(s.id, { pricing: n })
-                          }}
-                          className={`${inputClass} flex-1`}
-                        >
-                          <option value="">Select duration</option>
-                          {['30 min','45 min','60 min','75 min','90 min'].map(d => (
-                            <option key={d} value={d}>{d}</option>
-                          ))}
-                        </select>
-                        <input
-                          value={opt.p}
-                          onChange={e => {
-                            const n = [...((s.pricing ?? []) as {d:string;p:string}[])]
-                            n[i] = { ...n[i], p: e.target.value }
-                            upd(s.id, { pricing: n })
-                          }}
-                          placeholder="£40"
-                          className={`${inputClass} w-28`}
-                        />
+                      <div key={i} className="flex flex-wrap gap-3 items-end bg-green-50/40 rounded-xl p-3">
+                        <div className="flex-1 min-w-[140px]">
+                          <label className="block font-body text-[10px] font-semibold text-sage uppercase tracking-wide mb-1">Duration</label>
+                          <select
+                            value={opt.d}
+                            onChange={e => {
+                              const n = [...((s.pricing ?? []) as {d:string;p:string}[])]
+                              n[i] = { ...n[i], d: e.target.value }
+                              upd(s.id, { pricing: n })
+                            }}
+                            className={inputClass}
+                          >
+                            <option value="">Select duration</option>
+                            {/* Keep any duration already saved, even if it is not in the list */}
+                            {(opt.d && !DURATION_CHOICES.includes(opt.d) ? [opt.d, ...DURATION_CHOICES] : DURATION_CHOICES)
+                              .map(d => <option key={d} value={d}>{d}</option>)}
+                          </select>
+                        </div>
+                        <div className="w-32">
+                          <label className="block font-body text-[10px] font-semibold text-sage uppercase tracking-wide mb-1">Price</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-sage pointer-events-none">£</span>
+                            <input
+                              value={String(opt.p ?? '').replace(/^£+/, '')}
+                              onChange={e => {
+                                const n = [...((s.pricing ?? []) as {d:string;p:string}[])]
+                                n[i] = { ...n[i], p: e.target.value.replace(/^£+/, '') }
+                                upd(s.id, { pricing: n })
+                              }}
+                              inputMode="decimal"
+                              placeholder="40"
+                              className={`${inputClass} pl-7`}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-[150px]">
+                          <p className="font-body text-xs text-sage mb-2">
+                            Website par: <span className="font-semibold text-primary">
+                              {opt.d || '—'} {opt.p ? `— £${String(opt.p).replace(/^£+/, '')}` : ''}
+                            </span>
+                          </p>
+                        </div>
                         <button
                           onClick={() => {
                             const n = [...((s.pricing ?? []) as {d:string;p:string}[])]
                             n.splice(i, 1)
                             upd(s.id, { pricing: n })
                           }}
-                          className="px-2 py-1.5 text-xs bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors shrink-0"
+                          className="px-3 py-2 text-xs bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors shrink-0"
                         >
                           Remove
                         </button>
