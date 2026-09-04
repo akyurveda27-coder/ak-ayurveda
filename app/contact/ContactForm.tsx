@@ -20,7 +20,7 @@ export default function ContactForm() {
         body: JSON.stringify({
           name: form.name,
           email: form.email,
-          phone: 'N/A',
+          phone: '',
           service: 'General Enquiry',
           message: form.message,
         }),

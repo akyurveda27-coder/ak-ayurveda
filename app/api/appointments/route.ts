@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       slot_id, hold_id,
     } = body
 
-    if (!name || !phone || !email || !service) {
+    if (!name || !email || !service) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
@@ -60,7 +60,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 })
     }
 
-    if (String(phone).replace(/\D/g, '').length < 7) {
+    // A booked appointment needs a reachable number; a contact-page enquiry does not.
+    const phoneDigits = String(phone ?? '').replace(/\D/g, '')
+    if (slot_id && phoneDigits.length < 7) {
+      return NextResponse.json({ error: 'Please enter a valid phone number.' }, { status: 400 })
+    }
+    if (phone && phoneDigits.length > 0 && phoneDigits.length < 7) {
       return NextResponse.json({ error: 'Please enter a valid phone number.' }, { status: 400 })
     }
 
@@ -130,7 +135,9 @@ export async function POST(request: NextRequest) {
     const { data: newAppt, error: insertErr } = await supabaseAdmin
       .from('appointments')
       .insert({
-        name, phone, email, service,
+        name, email, service,
+        // Keep the column clean: text with no digits in it is not a phone number.
+        phone: phoneDigits.length > 0 ? phone : null,
         preferred_date: preferred_date || (slot_id ? slotDateStr : null) || null,
         message: message || '',
         status: 'pending',

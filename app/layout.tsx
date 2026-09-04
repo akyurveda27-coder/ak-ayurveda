@@ -3,6 +3,7 @@ import { SITE_URL } from '@/lib/site'
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
 import './globals.css'
 import Analytics from '@/components/Analytics'
+import { SUPABASE_URL } from '@/lib/supabase'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -47,8 +48,8 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        <link rel="preconnect" href="https://dgppbgbawwzkofwbjzsg.supabase.co" />
-        <link rel="dns-prefetch" href="https://dgppbgbawwzkofwbjzsg.supabase.co" />
+        <link rel="preconnect" href={SUPABASE_URL} />
+        <link rel="dns-prefetch" href={SUPABASE_URL} />
       </head>
       <body className="antialiased font-body">
         {children}

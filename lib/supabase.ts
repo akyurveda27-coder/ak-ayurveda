@@ -1,15 +1,31 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js'
 
-const SUPABASE_URL = 'https://dgppbgbawwzkofwbjzsg.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRncHBiZ2Jhd3d6a29md2JqenNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MTY1NzAsImV4cCI6MjA5OTE5MjU3MH0.sYxvlE0OGa2JH4blhuopP7crmyP82EiTIv1GPB-yj3Q'
+// No production fallback on purpose: a deployment with missing environment
+// variables must fail visibly, never quietly attach itself to another site's
+// database. The placeholder host simply cannot resolve to a real project.
+const PLACEHOLDER_URL = 'https://supabase-not-configured.invalid'
 
-// Hardcoded fallbacks so build never fails due to missing env vars
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || SUPABASE_ANON_KEY
+const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const envAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-// Public client — for frontend reads
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+if (!envUrl || !envAnonKey) {
+  console.error(
+    'Supabase is not configured: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.'
+  )
+}
 
-// Admin client — for API routes (bypasses RLS)
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+export const SUPABASE_URL = envUrl || PLACEHOLDER_URL
+
+// Public client — frontend reads, limited by row level security
+export const supabase = createClient(SUPABASE_URL, envAnonKey || 'anon-key-not-configured')
+
+// Admin client — server routes only, bypasses row level security
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+if (!serviceKey && typeof window === 'undefined') {
+  console.error('SUPABASE_SERVICE_ROLE_KEY is not set — admin writes will be rejected.')
+}
+
+export const supabaseAdmin = createClient(
+  SUPABASE_URL,
+  serviceKey || envAnonKey || 'service-key-not-configured'
+)
