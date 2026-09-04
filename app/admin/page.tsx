@@ -304,7 +304,7 @@ function ServicesEditor() {
 
   const handleUpdate = async (service: Service) => {
     setSaving(service.id)
-    await adminDb.update('services', {
+    const { error } = await adminDb.update('services', {
       name: service.name, description: service.description, icon: service.icon,
       duration: service.duration ?? null, price_from: service.price_from ?? null,
       hero_image: service.hero_image ?? null,
@@ -322,7 +322,13 @@ function ServicesEditor() {
       testimonials: service.testimonials ?? [],
       pricing: service.pricing ?? [],
     }, { id: service.id })
-    setSaving(null); setSaved(true); setTimeout(() => setSaved(false), 2000)
+
+    setSaving(null)
+    if (error) return // the banner already reports it — never claim success
+
+    // Re-read so the panel shows what the database actually holds.
+    await load()
+    setSaved(true); setTimeout(() => setSaved(false), 2000)
   }
 
   const handleDelete = async (id: string) => {
@@ -2112,6 +2118,17 @@ const tabs: { id: AdminTab; label: string; icon: string }[] = [
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [activeTab, setActiveTab] = useState<AdminTab>('hero')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [saveError, setSaveError] = useState('')
+
+  // Any failed write anywhere in the panel reports itself here.
+  useEffect(() => {
+    const onError = (e: Event) => {
+      setSaveError((e as CustomEvent<string>).detail)
+      setTimeout(() => setSaveError(''), 12000)
+    }
+    window.addEventListener('ak-admin-error', onError)
+    return () => window.removeEventListener('ak-admin-error', onError)
+  }, [])
 
   const renderContent = () => {
     switch (activeTab) {
@@ -2208,6 +2225,16 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
         {/* Content */}
         <main className="flex-1 p-4 md:p-6 overflow-y-auto w-full">
+          {saveError && (
+            <div className="mb-4 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+              <span className="text-lg leading-none">⚠️</span>
+              <div className="flex-1">
+                <p className="font-body text-sm font-semibold text-red-700">Not saved — the change did not reach the database</p>
+                <p className="font-body text-xs text-red-600 mt-0.5">{saveError}</p>
+              </div>
+              <button onClick={() => setSaveError('')} className="font-body text-xs text-red-500 hover:text-red-700">Dismiss</button>
+            </div>
+          )}
           {renderContent()}
         </main>
       </div>

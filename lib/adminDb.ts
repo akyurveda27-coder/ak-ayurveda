@@ -21,11 +21,20 @@ async function call<T = unknown>(payload: Record<string, unknown>): Promise<Admi
       return { data: null, error: { message: 'Session expired — please log in again.' } }
     }
 
-    if (!res.ok) return { data: null, error: { message: json.error ?? 'Request failed' } }
+    if (!res.ok) return fail(json.error ?? 'Request failed')
     return { data: (json.data ?? null) as T, error: null }
   } catch {
-    return { data: null, error: { message: 'Network error — please try again.' } }
+    return fail('Network error — please try again.')
   }
+}
+
+// Surface every failed write, wherever it was triggered from: a save that
+// silently fails looks identical to one that worked.
+function fail<T>(message: string): AdminResult<T> {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('ak-admin-error', { detail: message }))
+  }
+  return { data: null, error: { message } }
 }
 
 type Values = Record<string, unknown> | Record<string, unknown>[]
