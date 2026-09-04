@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BookButton from '@/components/BookButton'
-import SessionOptions from '@/components/SessionOptions'
+import SessionPicker from '@/components/SessionPicker'
 import { pricingOptions, priceFromLabel, durationLabel } from '@/lib/pricing'
 
 export const revalidate = 60
@@ -189,61 +189,13 @@ export default async function TreatmentPage({ params }: { params: { slug: string
         </div>
       </section>
 
-      {/* ── 3. QUICK INFO STRIP ── */}
-      <section style={{ background: '#F0FAF7' }}>
-        <div className="max-w-7xl mx-auto px-6 md:px-10 py-10 grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {/* Duration */}
-          <div className="flex items-center gap-4 bg-white rounded-2xl px-6 py-5 shadow-sm">
-            <span
-              className="w-11 h-11 rounded-full flex items-center justify-center text-lg flex-shrink-0"
-              style={{ background: 'rgba(27,110,92,0.1)', color: '#1B6E5C' }}
-            >
-              ⏱
-            </span>
-            <div>
-              <p className="text-xs tracking-wide text-black/40 uppercase">Duration</p>
-              <p className="font-display text-2xl font-semibold" style={{ color: '#0F3D34' }}>
-                {durationLabel(service)}
-              </p>
-            </div>
-          </div>
-
-          {/* Price */}
-          <div className="flex items-center gap-4 bg-white rounded-2xl px-6 py-5 shadow-sm">
-            <span
-              className="w-11 h-11 rounded-full flex items-center justify-center text-lg font-bold flex-shrink-0"
-              style={{ background: 'rgba(212,168,83,0.14)', color: '#D4A853' }}
-            >
-              £
-            </span>
-            <div>
-              <p className="text-xs tracking-wide text-black/40 uppercase">Price</p>
-              <p className="font-display text-2xl font-semibold" style={{ color: '#0F3D34' }}>
-                {priceFromLabel(service)}
-              </p>
-            </div>
-          </div>
-
-          {/* Category */}
-          <div className="flex items-center gap-4 bg-white rounded-2xl px-6 py-5 shadow-sm">
-            <span
-              className="w-11 h-11 rounded-full flex items-center justify-center text-lg flex-shrink-0"
-              style={{ background: 'rgba(27,110,92,0.1)', color: '#1B6E5C' }}
-            >
-              🌿
-            </span>
-            <div>
-              <p className="text-xs tracking-wide text-black/40 uppercase">Category</p>
-              <p className="font-display text-2xl font-semibold" style={{ color: '#0F3D34' }}>
-                Ayurvedic Therapy
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 3b. SESSION OPTIONS (duration + price, from admin) ── */}
-      <SessionOptions serviceName={service.name} options={options} />
+      {/* ── 3. QUICK INFO STRIP (duration picker + live price) ── */}
+      <SessionPicker
+        serviceName={service.name}
+        options={options}
+        durationFallback={durationLabel(service)}
+        priceFallback={priceFromLabel(service)}
+      />
 
       {/* ── 4. BENEFITS ── */}
       <section style={{ background: '#F0FAF7', borderTop: '1px solid #E0F0EB' }}>
