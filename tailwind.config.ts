@@ -33,10 +33,15 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' },
         },
+        priceIn: {
+          '0%': { opacity: '0', transform: 'translateY(6px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         fadeInUp: 'fadeInUp 0.6s ease forwards',
         float: 'float 4s ease-in-out infinite',
+        priceIn: 'priceIn 0.28s cubic-bezier(0.22, 1, 0.36, 1)',
       },
     },
   },

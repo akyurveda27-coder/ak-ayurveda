@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import BookButton from '@/components/BookButton'
 import { formatDuration, formatPrice, type PricingOption } from '@/lib/pricing'
 
-// Quick-info strip. When the service has session options from admin, the
-// Duration card becomes a picker and the Price card follows the choice.
+// Quick-info strip under the treatment hero. With more than one session option
+// from admin, the length becomes a segmented control and the price follows it.
 export default function SessionPicker({
   serviceName,
   options,
@@ -18,6 +19,8 @@ export default function SessionPicker({
 }) {
   const [index, setIndex] = useState(0)
   const selected = options[index]
+  const choosable = options.length > 1
+  const optionRefs = useRef<(HTMLButtonElement | null)[]>([])
 
   // Remember the choice so the Book buttons on this page carry it into /book.
   useEffect(() => {
@@ -29,82 +32,97 @@ export default function SessionPicker({
     } catch { /* ignore */ }
   }, [selected, serviceName])
 
-  const cardClass = 'flex items-center gap-4 bg-white rounded-2xl px-6 py-5 shadow-sm'
-  const iconClass = 'w-11 h-11 rounded-full flex items-center justify-center text-lg flex-shrink-0'
+  // Left/right arrows move between options, as a radio group should.
+  const handleKeyDown = (e: React.KeyboardEvent, i: number) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
+    e.preventDefault()
+    const next = e.key === 'ArrowRight' ? (i + 1) % options.length : (i - 1 + options.length) % options.length
+    setIndex(next)
+    optionRefs.current[next]?.focus()
+  }
+
+  const label = 'text-[11px] font-semibold tracking-[0.14em] text-black/40 uppercase'
 
   return (
     <section style={{ background: '#F0FAF7' }}>
-      <div className="max-w-7xl mx-auto px-6 md:px-10 py-10 grid grid-cols-1 sm:grid-cols-3 gap-6">
-        {/* Duration — a picker when there are options to choose from */}
-        <div
-          className={`${cardClass} transition-all duration-200 ${
-            options.length > 1 ? 'hover:shadow-md ring-1 ring-transparent hover:ring-[#D4A853]/40' : ''
-          }`}
-        >
-          <span className={iconClass} style={{ background: 'rgba(27,110,92,0.1)', color: '#1B6E5C' }}>
-            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </span>
+      <div className="max-w-7xl mx-auto px-6 md:px-10 py-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Session — length picker + the price it maps to */}
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-[#E0F0EB] shadow-[0_1px_3px_rgba(15,61,52,0.05)] px-6 py-6 sm:px-8">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className={label}>{choosable ? 'Choose your session' : 'Session'}</p>
 
-          <div className="min-w-0 flex-1">
-            <p className="text-xs tracking-wide text-black/40 uppercase">Duration</p>
+              {choosable ? (
+                <div
+                  role="radiogroup"
+                  aria-label="Session length"
+                  className="mt-3 inline-flex gap-1 rounded-full p-1"
+                  style={{ background: '#E3F1EC' }}
+                >
+                  {options.map((o, i) => {
+                    const active = i === index
+                    return (
+                      <button
+                        key={i}
+                        ref={(el) => { optionRefs.current[i] = el }}
+                        role="radio"
+                        aria-checked={active}
+                        tabIndex={active ? 0 : -1}
+                        onClick={() => setIndex(i)}
+                        onKeyDown={(e) => handleKeyDown(e, i)}
+                        className={`rounded-full px-6 py-3 font-body text-[15px] font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A853] ${
+                          active
+                            ? 'bg-white shadow-[0_2px_8px_rgba(15,61,52,0.12)]'
+                            : 'text-[#1B6E5C]/70 hover:text-[#0F3D34]'
+                        }`}
+                        style={active ? { color: '#0F3D34' } : undefined}
+                      >
+                        {formatDuration(o.d) || 'Session'}
+                      </button>
+                    )
+                  })}
+                </div>
+              ) : (
+                <p className="mt-2 font-display text-3xl font-semibold" style={{ color: '#0F3D34' }}>
+                  {selected ? formatDuration(selected.d) : durationFallback}
+                </p>
+              )}
+            </div>
 
-            {options.length > 1 ? (
-              <>
-              <div className="relative -ml-1 inline-block">
-                <select
-                  value={index}
-                  onChange={(e) => setIndex(Number(e.target.value))}
-                  aria-label="Choose session length"
-                  className="w-auto appearance-none cursor-pointer bg-transparent pl-1 pr-7 font-display text-2xl font-semibold rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A853]"
-                  style={{ color: '#0F3D34' }}
-                >
-                  {options.map((o, i) => (
-                    <option key={i} value={i}>
-                      {formatDuration(o.d) || 'Session'}
-                    </option>
-                  ))}
-                </select>
-                <svg
-                  className="pointer-events-none absolute right-1 top-1/2 h-4 w-4 -translate-y-1/2 transition-transform duration-200 group-hover:translate-y-[-40%]"
-                  viewBox="0 0 24 24" fill="none" stroke="#D4A853" strokeWidth={2.5} aria-hidden="true"
-                >
-                  <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <p className="text-[11px] text-black/35 mt-0.5">{options.length} session lengths available</p>
-              </>
-            ) : (
-              <p className="font-display text-2xl font-semibold" style={{ color: '#0F3D34' }}>
-                {selected ? formatDuration(selected.d) : durationFallback}
+            {/* Price for the selected length */}
+            <div className="sm:border-l sm:border-[#E0F0EB] sm:pl-8">
+              <p className={label}>Price</p>
+              <p key={index} className="mt-1.5 flex items-baseline gap-2 animate-priceIn">
+                <span className="font-display text-4xl font-semibold leading-none" style={{ color: '#0F3D34' }}>
+                  {selected && formatPrice(selected.p) ? formatPrice(selected.p) : priceFallback}
+                </span>
+                <span className="text-xs text-black/40">per session</span>
               </p>
-            )}
-          </div>
-        </div>
+            </div>
 
-        {/* Price — follows the chosen option */}
-        <div className={cardClass}>
-          <span className={iconClass} style={{ background: 'rgba(212,168,83,0.14)', color: '#D4A853' }}>
-            £
-          </span>
-          <div>
-            <p className="text-xs tracking-wide text-black/40 uppercase">Price</p>
-            <p className="font-display text-2xl font-semibold" style={{ color: '#0F3D34' }}>
-              {selected && formatPrice(selected.p) ? formatPrice(selected.p) : priceFallback}
-            </p>
+            <BookButton
+              serviceName={serviceName}
+              duration={selected ? formatDuration(selected.d) : undefined}
+              price={selected ? formatPrice(selected.p) : undefined}
+              className="w-full sm:w-auto whitespace-nowrap rounded-full px-7 py-3.5 font-body text-sm font-semibold shadow-sm transition-all duration-200 hover:shadow-md hover:brightness-[1.03]"
+              style={{ background: '#D4A853', color: '#0F3D34' }}
+            >
+              Book This Session
+            </BookButton>
           </div>
         </div>
 
         {/* Category */}
-        <div className={cardClass}>
-          <span className={iconClass} style={{ background: 'rgba(27,110,92,0.1)', color: '#1B6E5C' }}>
+        <div className="bg-white rounded-2xl border border-[#E0F0EB] shadow-[0_1px_3px_rgba(15,61,52,0.05)] px-6 py-6 sm:px-8 flex items-center gap-4">
+          <span
+            className="w-12 h-12 rounded-full flex items-center justify-center text-lg flex-shrink-0"
+            style={{ background: 'rgba(27,110,92,0.1)' }}
+          >
             🌿
           </span>
           <div>
-            <p className="text-xs tracking-wide text-black/40 uppercase">Category</p>
-            <p className="font-display text-2xl font-semibold" style={{ color: '#0F3D34' }}>
+            <p className={label}>Category</p>
+            <p className="mt-1 font-display text-xl sm:text-2xl font-semibold whitespace-nowrap" style={{ color: '#0F3D34' }}>
               Ayurvedic Therapy
             </p>
           </div>
