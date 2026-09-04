@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
+import { londonNow } from '@/lib/clinicTime'
 
 // GET /api/slots/available-dates?month=YYYY-MM
 // Returns dates in the given month that have at least one available (non-blocked, non-booked) slot
@@ -18,15 +19,14 @@ export async function GET(request: NextRequest) {
   const lastDay = new Date(year, monthNum, 0).getDate()
   const endDate = `${month}-${String(lastDay).padStart(2, '0')}`
 
-  // Today's date string in YYYY-MM-DD (UTC)
-  const now = new Date()
-  const todayStr = now.toISOString().slice(0, 10)
-  const currentTimeStr = now.toISOString().slice(11, 16) // "HH:MM"
+  // "Now" in clinic time (London), not UTC — otherwise British Summer Time makes
+  // the cut-off an hour early and slots that have already passed look available.
+  const { todayStr, currentTimeStr } = londonNow()
 
   // Fetch ALL non-blocked slots for the month (including today)
   const { data: slots, error } = await supabase
     .from('time_slots')
-    .select('id, date, start_time')
+    .select('id, date, start_time, hold_until')
     .eq('is_blocked', false)
     .gte('date', startDate)
     .lte('date', endDate)
@@ -55,10 +55,13 @@ export async function GET(request: NextRequest) {
     ((bookedAppts ?? []).map(a => a.slot_id).filter(Boolean)) as string[]
   )
 
-  // A date is "available" if it has at least one un-booked slot
+  // A date is "available" if it has at least one slot that is neither booked
+  // nor currently held by another customer.
+  const nowMs = Date.now()
   const availableDates = new Set<string>()
   for (const slot of futureSlots) {
-    if (!bookedSlotIds.has(slot.id)) {
+    const held = slot.hold_until && new Date(slot.hold_until).getTime() > nowMs
+    if (!bookedSlotIds.has(slot.id) && !held) {
       availableDates.add(slot.date)
     }
   }

@@ -1,7 +1,7 @@
 export const revalidate = 60
 
 import type { Metadata } from 'next'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ContactForm from './ContactForm'
@@ -42,10 +42,6 @@ export default async function ContactPage() {
   let contact: ContactContent = defaultContact
 
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    )
     const { data } = await supabase
       .from('site_content')
       .select('value')

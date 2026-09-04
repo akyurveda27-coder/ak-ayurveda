@@ -8,6 +8,7 @@ import Footer from '@/components/Footer'
 import { supabase } from '@/lib/supabase'
 import { defaultHero, defaultStats } from '@/lib/defaults'
 import type { HeroContent, StatsContent } from '@/lib/types'
+import { SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'AK Ayurveda London | Authentic Ayurvedic Clinic & Treatments',
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     title: 'AK Ayurveda London | Authentic Ayurvedic Clinic',
     description: 'London\'s trusted Ayurvedic clinic. Abhyanga, Shirodhara, Panchakarma & personalised wellness consultations.',
     type: 'website',
-    url: 'https://ak-ayurveda.vercel.app',
+    url: SITE_URL,
   },
 }
 
@@ -251,7 +252,7 @@ export default async function HomePage() {
             "@type": "HealthAndBeautyBusiness",
             "name": "AK Ayurveda",
             "description": "Authentic Ayurvedic clinic in London offering Abhyanga, Shirodhara, Panchakarma and personalised Ayurvedic consultations.",
-            "url": "https://ak-ayurveda.vercel.app",
+            "url": SITE_URL,
             "telephone": "+44-20-7946-0958",
             "email": "info@akayurveda.co.uk",
             "address": {

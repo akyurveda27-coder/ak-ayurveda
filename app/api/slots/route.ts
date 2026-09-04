@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
 import { isAdminRequest, unauthorized } from '@/lib/adminAuth'
+import { londonNow } from '@/lib/clinicTime'
 
 // ─── GET /api/slots?date=YYYY-MM-DD ─────────────────────────────────────────
 // Returns all slots for a date, each enriched with is_booked (derived)
@@ -33,8 +34,21 @@ export async function GET(request: NextRequest) {
     bookedIds = ((appts ?? []).map((a) => a.slot_id).filter(Boolean)) as string[]
   }
 
+  // A slot is unavailable if it is booked, if it is being held by someone else
+  // right now, or if its start time has already passed today (clinic time).
+  const myHold = searchParams.get('hold')
+  const { todayStr, currentTimeStr } = londonNow()
+  const now = Date.now()
+
   return NextResponse.json({
-    slots: (slots ?? []).map((s) => ({ ...s, is_booked: bookedIds.includes(s.id) })),
+    slots: (slots ?? []).map((s) => ({
+      ...s,
+      is_booked: bookedIds.includes(s.id),
+      is_held: Boolean(
+        s.hold_until && new Date(s.hold_until).getTime() > now && s.hold_booking_id !== myHold
+      ),
+      is_past: date < todayStr || (date === todayStr && String(s.start_time).slice(0, 5) <= currentTimeStr),
+    })),
   })
 }
 

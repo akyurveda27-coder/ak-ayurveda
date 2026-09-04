@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
 import { isAdminRequest, unauthorized } from '@/lib/adminAuth'
+import { SITE_URL } from '@/lib/site'
 import { Resend } from 'resend'
 
 const CLINIC_EMAIL = 'akyurveda27@gmail.com' // clinic notification email
@@ -47,11 +48,20 @@ export async function POST(request: NextRequest) {
       name, phone, email, service,
       preferred_date, message,
       selected_duration, selected_price,
-      slot_id,
+      slot_id, hold_id,
     } = body
 
     if (!name || !phone || !email || !service) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    // Without this an invalid address is stored and the customer never hears back.
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email).trim())) {
+      return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 })
+    }
+
+    if (String(phone).replace(/\D/g, '').length < 7) {
+      return NextResponse.json({ error: 'Please enter a valid phone number.' }, { status: 400 })
     }
 
     // ── Slot race condition protection ────────────────────────────────────────
@@ -78,12 +88,18 @@ export async function POST(request: NextRequest) {
       const holdUntil = new Date(Date.now() + 10 * 60 * 1000).toISOString()
       const holdId = crypto.randomUUID()
 
+      // The customer's own hold (taken when they reached the details step) counts
+      // as free — anyone else's live hold does not.
+      const freeCondition = hold_id
+        ? `hold_until.is.null,hold_until.lt.${now},hold_booking_id.eq.${hold_id}`
+        : `hold_until.is.null,hold_until.lt.${now}`
+
       const { data: claimed, error: claimErr } = await supabaseAdmin
         .from('time_slots')
         .update({ hold_until: holdUntil, hold_booking_id: holdId })
         .eq('id', slot_id)
         .eq('is_blocked', false)
-        .or(`hold_until.is.null,hold_until.lt.${now}`)
+        .or(freeCondition)
         .select('id')
 
       if (claimErr || !claimed || claimed.length === 0) {
@@ -136,8 +152,6 @@ export async function POST(request: NextRequest) {
     }
 
     const bookingId = newAppt?.id ?? ''
-    const displayDate = slotDateStr || preferred_date || 'TBD'
-    const displayTime = slotTimeStr || ''
 
     // ── Email to clinic ───────────────────────────────────────────────────────
     await sendEmail({
@@ -185,7 +199,7 @@ export async function POST(request: NextRequest) {
             </div>
             <!-- CTA -->
             <div style="text-align:center">
-              <a href="https://ak-ayurveda.vercel.app/admin" style="display:inline-block;background:#1B6E5C;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:700;font-size:14px">View in Admin Dashboard →</a>
+              <a href="${SITE_URL}/admin" style="display:inline-block;background:#1B6E5C;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:700;font-size:14px">View in Admin Dashboard →</a>
             </div>
           </div>
           <!-- Footer -->

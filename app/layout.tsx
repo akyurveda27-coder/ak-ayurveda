@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { SITE_URL } from '@/lib/site'
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
 import './globals.css'
 
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
   },
   description: 'London\'s authentic Ayurvedic clinic offering personalised treatments rooted in 5,000 years of Vedic wisdom.',
   keywords: 'ayurveda london, ayurvedic clinic london, ayurvedic massage london, holistic wellness london, ayurveda uk',
-  metadataBase: new URL('https://ak-ayurveda.vercel.app'),
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     siteName: 'AK Ayurveda London',
     type: 'website',

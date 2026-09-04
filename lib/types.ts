@@ -103,6 +103,8 @@ export interface TimeSlot {
   created_at: string
   /** Derived — not a DB column */
   is_booked?: boolean
+  is_held?: boolean
+  is_past?: boolean
 }
 
 export interface Appointment {

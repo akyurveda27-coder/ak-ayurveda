@@ -499,8 +499,9 @@ const SERVICES_DATA = [
   }
 ]
 
-export async function GET(request: NextRequest) {
-  // Overwrites every service row — admin session only.
+// POST, not GET: this overwrites every service row, and a GET could be
+// triggered by simply following a link while logged in as admin.
+export async function POST(request: NextRequest) {
   if (!isAdminRequest(request)) return unauthorized()
 
   const results: { name: string; success: boolean; error: string | undefined }[] = []

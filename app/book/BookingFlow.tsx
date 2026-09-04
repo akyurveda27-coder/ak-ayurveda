@@ -18,7 +18,10 @@ function getMonthOffset(year: number, month: number) {
 }
 
 function toYYYYMMDD(d: Date) {
-  return d.toISOString().split('T')[0]
+  // Local parts, not toISOString(): after 00:00 BST the UTC date is still yesterday.
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${day}`
 }
 
 const DAY_LABELS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
@@ -230,11 +233,13 @@ function DateSlotStep({
   selectedSlot,
   onDateSelect,
   onSlotSelect,
+  holdId,
 }: {
   selectedDate: string | null
   selectedSlot: TimeSlot | null
   onDateSelect: (d: string) => void
   onSlotSelect: (s: TimeSlot) => void
+  holdId: string | null
 }) {
   const today = toYYYYMMDD(new Date())
   const [calMonth, setCalMonth] = useState(() => {
@@ -264,7 +269,7 @@ function DateSlotStep({
     setLoadingSlots(true)
     setSlots([])
     try {
-      const res = await fetch(`/api/slots?date=${date}`)
+      const res = await fetch(`/api/slots?date=${date}${holdId ? `&hold=${holdId}` : ''}`)
       const json = await res.json()
       setSlots(json.slots ?? [])
     } catch {
@@ -272,7 +277,7 @@ function DateSlotStep({
     } finally {
       setLoadingSlots(false)
     }
-  }, [])
+  }, [holdId])
 
   useEffect(() => {
     fetchAvailableDates(calMonth.year, calMonth.month)
@@ -302,7 +307,7 @@ function DateSlotStep({
     return i - offset + 1
   })
 
-  const availableCount = slots.filter((s) => !s.is_booked && !s.is_blocked).length
+  const availableCount = slots.filter((s) => !s.is_booked && !s.is_blocked && !s.is_held && !s.is_past).length
 
   return (
     <div>
@@ -443,7 +448,7 @@ function DateSlotStep({
                   className="slots-grid"
                 >
                   {slots.map((slot) => {
-                    const isBooked = slot.is_booked || slot.is_blocked
+                    const isBooked = slot.is_booked || slot.is_blocked || slot.is_held || slot.is_past
                     const isSelected = selectedSlot?.id === slot.id
 
                     return (
@@ -522,6 +527,22 @@ function ContactStep({
   submitError: string
 }) {
   const [form, setForm] = useState({ name: '', email: '', phone: '', notes: '' })
+  const [formError, setFormError] = useState('')
+
+  // These inputs are not inside a <form>, so browser validation never runs —
+  // check here, and the API checks again.
+  const validateAndSubmit = () => {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) {
+      setFormError('Please enter a valid email address — your confirmation goes there.')
+      return
+    }
+    if (form.phone.replace(/\D/g, '').length < 7) {
+      setFormError('Please enter a valid phone number.')
+      return
+    }
+    setFormError('')
+    onSubmit(form)
+  }
 
   useEffect(() => {
     // Pre-fill from sessionStorage if recent (from service pages)
@@ -601,7 +622,7 @@ function ContactStep({
       }}>
         <span>🔒</span>
         <p style={{ fontSize: 13, color: '#92400E', margin: 0 }}>
-          Slot held for 10 minutes while you complete this form.
+          This slot is held for you for 10 minutes while you complete this form.
         </p>
       </div>
 
@@ -649,17 +670,17 @@ function ContactStep({
           />
         </div>
 
-        {submitError && (
+        {(formError || submitError) && (
           <div style={{
             padding: '12px 16px', borderRadius: 10,
             background: '#FEF2F2', border: '1px solid #FECACA',
           }}>
-            <p style={{ color: '#EF4444', fontSize: 14, margin: 0 }}>⚠️ {submitError}</p>
+            <p style={{ color: '#EF4444', fontSize: 14, margin: 0 }}>⚠️ {formError || submitError}</p>
           </div>
         )}
 
         <button
-          onClick={() => onSubmit(form)}
+          onClick={validateAndSubmit}
           disabled={submitting || !form.name || !form.email || !form.phone}
           style={{
             padding: '14px 32px', borderRadius: 12, fontSize: 16, fontWeight: 700,
@@ -811,6 +832,9 @@ export default function BookingFlow() {
   const [selectedOption, setSelectedOption] = useState<PricingOption | null>(null)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
+  const [holdId, setHoldId] = useState<string | null>(null)
+  const [holdError, setHoldError] = useState('')
+  const [holding, setHolding] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [bookingId, setBookingId] = useState('')
@@ -854,6 +878,38 @@ export default function BookingFlow() {
     setSelectedSlot(slot)
   }
 
+  // Hold the slot while the customer fills in their details, and let it go if
+  // they step back — otherwise two people can fill the same slot in parallel.
+  const holdSlotAndContinue = async () => {
+    if (!selectedSlot) return
+    setHolding(true)
+    setHoldError('')
+    try {
+      const res = await fetch(`/api/slots/${selectedSlot.id}/hold`, { method: 'POST' })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setHoldError(json.error ?? 'This slot is no longer available. Please choose another.')
+        setSelectedSlot(null)
+        return
+      }
+      setHoldId(json.hold_id ?? null)
+      setStep(3)
+    } catch {
+      setHoldError('Network error. Please try again.')
+    } finally {
+      setHolding(false)
+    }
+  }
+
+  const releaseHoldAndBack = async () => {
+    setStep(2)
+    if (selectedSlot && holdId) {
+      const id = holdId
+      setHoldId(null)
+      await fetch(`/api/slots/${selectedSlot.id}/hold?hold=${id}`, { method: 'DELETE' }).catch(() => {})
+    }
+  }
+
   const handleDateSelect = (date: string) => {
     setSelectedDate(date)
     setSelectedSlot(null) // clear slot when date changes
@@ -877,6 +933,7 @@ export default function BookingFlow() {
           service: selectedService.name,
           preferred_date: selectedDate,
           slot_id: selectedSlot.id,
+          hold_id: holdId,
           selected_duration: selectedOption ? formatDuration(selectedOption.d) : formatDuration(selectedService.duration),
           selected_price: selectedOption ? formatPrice(selectedOption.p) : formatPrice(selectedService.price_from),
         }),
@@ -962,6 +1019,11 @@ export default function BookingFlow() {
                   </button>
                 </div>
               )}
+              {holdError && (
+                <div style={{ padding: '12px 16px', borderRadius: 10, marginBottom: 16, background: '#FEF2F2', border: '1px solid #FECACA' }}>
+                  <p style={{ color: '#EF4444', fontSize: 14, margin: 0 }}>⚠️ {holdError}</p>
+                </div>
+              )}
               {serviceOptions.length > 0 && (
                 <OptionStep
                   options={serviceOptions}
@@ -974,6 +1036,7 @@ export default function BookingFlow() {
                 selectedSlot={selectedSlot}
                 onDateSelect={handleDateSelect}
                 onSlotSelect={handleSlotSelect}
+                holdId={holdId}
               />
               {selectedSlot && (
                 <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 14 }}>
@@ -983,8 +1046,8 @@ export default function BookingFlow() {
                     </span>
                   )}
                   <button
-                    disabled={needsOption}
-                    onClick={() => setStep(3)}
+                    disabled={needsOption || holding}
+                    onClick={holdSlotAndContinue}
                     style={{
                       padding: '12px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700,
                       background: '#1B6E5C', color: '#fff', border: 'none',
@@ -992,7 +1055,7 @@ export default function BookingFlow() {
                       opacity: needsOption ? 0.5 : 1,
                     }}
                   >
-                    Continue →
+                    {holding ? 'Holding slot…' : 'Continue →'}
                   </button>
                 </div>
               )}
@@ -1002,7 +1065,7 @@ export default function BookingFlow() {
           {step === 3 && (
             <div>
               <button
-                onClick={() => setStep(2)}
+                onClick={releaseHoldAndBack}
                 style={{ fontSize: 13, color: '#1B6E5C', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, marginBottom: 16 }}
               >
                 ← Back to time selection
