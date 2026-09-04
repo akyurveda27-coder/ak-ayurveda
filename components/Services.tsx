@@ -64,10 +64,11 @@ export default function Services({ services }: ServicesProps) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {data.map((service) => (
-        <Link
+        // Card is a div, not a link: the "Learn more" link below is stretched over the
+        // whole card instead, so "Book" stays a separate link and the HTML stays valid.
+        <div
           key={service.slug}
-          href={`/services/${service.slug}`}
-          className="relative rounded-2xl border border-[#E0F0EB] bg-white p-6 shadow-sm transition hover:shadow-md overflow-hidden block cursor-pointer"
+          className="group relative rounded-2xl border border-[#E0F0EB] bg-white p-6 shadow-sm transition hover:shadow-md overflow-hidden"
         >
           {/* Subtle background image — card_image preferred, fallback to hero_image */}
           {((service as ServiceItem & { card_image?: string | null; hero_image?: string | null }).card_image || (service as ServiceItem & { hero_image?: string | null }).hero_image) && (
@@ -91,15 +92,18 @@ export default function Services({ services }: ServicesProps) {
             {service.description}
           </p>
           <div className="relative z-10 mt-4 flex items-center gap-4 text-sm font-medium text-primary">
-            <Link href={`/services/${service.slug}`} className="hover:underline">
+            <Link
+              href={`/services/${service.slug}`}
+              className="hover:underline after:absolute after:inset-0 after:content-['']"
+            >
               Learn more →
             </Link>
             <span className="text-gray-300">|</span>
-            <a href="/book" className="hover:underline">
+            <Link href="/book" className="relative z-20 hover:underline">
               Book
-            </a>
+            </Link>
           </div>
-        </Link>
+        </div>
       ))}
     </div>
   )

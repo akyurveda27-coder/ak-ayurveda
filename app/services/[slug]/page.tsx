@@ -106,7 +106,11 @@ export default async function TreatmentPage({ params }: { params: { slug: string
 
   return (
     <>
-      <style>{`
+      {/* Set as raw HTML: as a child, the ">" selectors are escaped on the server
+          but not on the client, which breaks hydration for the whole page. */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
         details[open] .chev { transform: rotate(180deg); }
@@ -114,7 +118,9 @@ export default async function TreatmentPage({ params }: { params: { slug: string
         @media (min-width: 768px) {
           .step-line-h { background: linear-gradient(90deg, rgba(27,110,92,0.35), rgba(27,110,92,0.08)); }
         }
-      `}</style>
+      `,
+        }}
+      />
 
       {/* ── 1. NAVBAR ── */}
       <Navbar />

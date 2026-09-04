@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap');
+/* Fonts come from next/font in app/layout.tsx (Cormorant Garamond + DM Sans).
+   A Google Fonts @import here would block rendering to fetch faces nothing uses. */
 
 @tailwind base;
 @tailwind components;
@@ -20,7 +21,7 @@ html {
 body {
   background-color: var(--color-background);
   color: var(--color-text);
-  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body), 'Helvetica Neue', sans-serif;
   overflow-x: hidden;
 }
 

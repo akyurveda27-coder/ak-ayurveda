@@ -73,7 +73,9 @@ export default async function ServicesPage({ searchParams }: { searchParams?: { 
           )}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((service) => (
-              <a key={service.id} href={`/services/${toSlug(service.name)}`} className="group rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white border border-[#E0F0EB] block cursor-pointer">
+              // Card is a div: the "Learn more" link is stretched across it, so "Book"
+              // stays its own link and anchors are never nested.
+              <div key={service.id} className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white border border-[#E0F0EB]">
                 {/* Image top */}
                 <div className="relative h-48 overflow-hidden">
                   {(service.card_image || service.hero_image) ? (
@@ -104,12 +106,12 @@ export default async function ServicesPage({ searchParams }: { searchParams?: { 
                   </div>
                   <p className="text-sm text-gray-500 leading-relaxed line-clamp-2 mb-4">{service.description}</p>
                   <div className="flex items-center gap-4 text-sm font-semibold" style={{ color: '#1B6E5C' }}>
-                    <a href={`/services/${toSlug(service.name)}`} className="hover:underline">Learn more →</a>
+                    <a href={`/services/${toSlug(service.name)}`} className="hover:underline after:absolute after:inset-0 after:content-['']">Learn more →</a>
                     <span className="text-gray-200">|</span>
-                    <a href="/book" className="hover:underline">Book</a>
+                    <a href="/book" className="relative z-20 hover:underline">Book</a>
                   </div>
                 </div>
-              </a>
+              </div>
             ))}
           </div>
 

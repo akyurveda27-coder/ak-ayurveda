@@ -6,8 +6,22 @@ import { isAdminRequest, unauthorized } from '@/lib/adminAuth'
 import { Resend } from 'resend'
 
 const CLINIC_EMAIL = 'akyurveda27@gmail.com' // clinic notification email
-// Lazy init — env var only available at runtime, not build time
-const getResend = () => new Resend(process.env.RESEND_API_KEY ?? '')
+
+// The booking is already saved by the time we email, so nothing here may throw:
+// a missing key makes the Resend constructor throw, which would otherwise report
+// a saved booking back to the customer as a failure.
+async function sendEmail(payload: { from: string; to: string[]; subject: string; html: string }) {
+  const key = process.env.RESEND_API_KEY
+  if (!key) {
+    console.error('RESEND_API_KEY is not set — booking saved but no email sent')
+    return
+  }
+  try {
+    await new Resend(key).emails.send(payload)
+  } catch (err) {
+    console.error('Booking email failed to send', err)
+  }
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -126,7 +140,7 @@ export async function POST(request: NextRequest) {
     const displayTime = slotTimeStr || ''
 
     // ── Email to clinic ───────────────────────────────────────────────────────
-    await getResend().emails.send({
+    await sendEmail({
       from: 'AK Ayurveda Bookings <bookings@akayurveda.co.uk>',
       to: [CLINIC_EMAIL],
       subject: `New Booking — ${service}${slotDateStr ? ` · ${slotDateStr}` : ''}`,
@@ -180,10 +194,10 @@ export async function POST(request: NextRequest) {
           </div>
         </div>
       `,
-    }).catch(() => {})
+    })
 
     // ── Confirmation email to customer ────────────────────────────────────────
-    await getResend().emails.send({
+    await sendEmail({
       from: 'AK Ayurveda <bookings@akayurveda.co.uk>',
       to: [email],
       subject: `Booking Received — ${service} · AK Ayurveda London`,
@@ -243,7 +257,7 @@ export async function POST(request: NextRequest) {
           </div>
         </div>
       `,
-    }).catch(() => {})
+    })
 
     return NextResponse.json({
       success: true,

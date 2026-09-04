@@ -19,10 +19,12 @@ const config: Config = {
         mintBorder: '#D0EDE6',
         sectionBorder: '#E0F0EB',
       },
+      // next/font generates hashed family names and exposes them as these CSS
+      // variables; the literal names are never defined, so use the variables.
       fontFamily: {
-        display: ['Cormorant Garamond', 'Georgia', 'serif'],
-        heading: ['Cormorant Garamond', 'Georgia', 'serif'],
-        body: ['DM Sans', 'Helvetica Neue', 'sans-serif'],
+        display: ['var(--font-display)', 'Georgia', 'serif'],
+        heading: ['var(--font-display)', 'Georgia', 'serif'],
+        body: ['var(--font-body)', 'Helvetica Neue', 'sans-serif'],
       },
       keyframes: {
         fadeInUp: {
