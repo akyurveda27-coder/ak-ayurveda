@@ -1,5 +1,5 @@
-'use client'
 import Link from 'next/link'
+import { getContactContent, formatHours, telHref } from '@/lib/siteContent'
 
 const quickLinks = [
   { label: 'Services', href: '/services' },
@@ -10,14 +10,16 @@ const quickLinks = [
   { label: 'Book Appointment', href: '/book' },
 ]
 
-const contact = [
-  { icon: '📍', text: '42, Ayurveda Lane, London, UK' },
-  { icon: '📞', text: '+44 20 7946 0958', href: 'tel:+442079460958' },
-  { icon: '✉️', text: 'care@akayurveda.co.uk', href: 'mailto:care@akayurveda.co.uk' },
-  { icon: '🕐', text: 'Mon–Sat: 9AM–7PM' },
-]
+export default async function Footer() {
+  // Address, phone, email and hours come from the admin Contact tab.
+  const c = await getContactContent()
+  const contact = [
+    { icon: '📍', text: c.address },
+    { icon: '📞', text: c.phone, href: telHref(c.phone) },
+    { icon: '✉️', text: c.email, href: `mailto:${c.email}` },
+    { icon: '🕐', text: formatHours(c.hours) },
+  ].filter((item) => item.text)
 
-export default function Footer() {
   return (
     <footer id="footer" className="w-full bg-[#0F3D34] py-16 text-white">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 md:grid-cols-3 md:px-10">

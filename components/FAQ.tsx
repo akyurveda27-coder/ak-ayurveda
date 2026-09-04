@@ -1,29 +1,9 @@
-'use client'
+import { getFAQs } from '@/lib/siteContent'
 
-const faqs = [
-  {
-    question: 'What is Ayurveda?',
-    answer: 'An ancient holistic wellness tradition developed over 5,000 years ago in India, focused on balancing the body, mind, and spirit through natural therapies and lifestyle practices.',
-  },
-  {
-    question: 'How long does a session take?',
-    answer: 'Most sessions run between 45 and 90 minutes, depending on the therapy selected. Your practitioner will advise the ideal duration during your initial consultation.',
-  },
-  {
-    question: 'Is it safe alongside modern healthcare?',
-    answer: 'Our therapies are designed to complement your existing routine. We recommend discussing any concerns with your GP, and our practitioners will always ask about your current health before treatment.',
-  },
-  {
-    question: 'How many sessions are recommended?',
-    answer: 'This varies by individual. Your practitioner will suggest a personalised plan after your first consultation, taking into account your constitution and wellness goals.',
-  },
-  {
-    question: 'Are online consultations available?',
-    answer: 'Yes, we offer online consultations for clients who are unable to visit us in person. Please select "General Consultation" when booking.',
-  },
-]
+// Questions come from the admin FAQs tab (falling back to the defaults).
+export default async function FAQ() {
+  const faqs = await getFAQs()
 
-export default function FAQ() {
   return (
     <div className="mx-auto max-w-4xl px-6">
       {/* Header */}

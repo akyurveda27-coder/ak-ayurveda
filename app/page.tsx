@@ -9,8 +9,10 @@ import { supabase } from '@/lib/supabase'
 import { defaultHero, defaultStats } from '@/lib/defaults'
 import type { HeroContent, StatsContent } from '@/lib/types'
 import { SITE_URL } from '@/lib/site'
+import { getContactContent, getFAQs, formatHours } from '@/lib/siteContent'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/' },
   title: 'AK Ayurveda London | Authentic Ayurvedic Clinic & Treatments',
   description: 'London\'s trusted Ayurvedic clinic offering Abhyanga, Shirodhara, Panchakarma & personalised wellness consultations. Book your Ayurvedic treatment in London today.',
   keywords: 'ayurveda london, ayurvedic clinic london, ayurvedic massage london, shirodhara london, abhyanga london, panchakarma london, ayurveda uk, holistic wellness london',
@@ -26,10 +28,12 @@ export const revalidate = 60 // revalidate every 60 seconds
 
 export default async function HomePage() {
   // Fetch hero + stats + services from admin (site_content table)
-  const [heroRow, statsRow, servicesRow] = await Promise.all([
+  const [heroRow, statsRow, servicesRow, contact, faqs] = await Promise.all([
     supabase.from('site_content').select('value').eq('key', 'hero').single(),
     supabase.from('site_content').select('value').eq('key', 'stats').single(),
     supabase.from('services').select('id, name, description, icon, hero_image, card_image').order('sort_order', { ascending: true }).limit(6),
+    getContactContent(),
+    getFAQs(),
   ])
   const hero: HeroContent = (heroRow.data?.value as HeroContent) ?? defaultHero
   const stats: StatsContent = (statsRow.data?.value as StatsContent) ?? defaultStats
@@ -253,26 +257,18 @@ export default async function HomePage() {
             "name": "AK Ayurveda",
             "description": "Authentic Ayurvedic clinic in London offering Abhyanga, Shirodhara, Panchakarma and personalised Ayurvedic consultations.",
             "url": SITE_URL,
-            "telephone": "+44-20-7946-0958",
-            "email": "info@akayurveda.co.uk",
+            "telephone": contact.phone,
+            "email": contact.email,
             "address": {
               "@type": "PostalAddress",
-              "streetAddress": "London",
+              "streetAddress": contact.address,
               "addressLocality": "London",
               "addressCountry": "GB"
             },
-            "openingHoursSpecification": [
-              {
-                "@type": "OpeningHoursSpecification",
-                "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-                "opens": "09:00",
-                "closes": "19:00"
-              }
-            ],
+            "openingHours": formatHours(contact.hours),
             "priceRange": "££",
             "currenciesAccepted": "GBP",
-            "hasMap": "https://maps.google.com/?q=London+Ayurveda+Clinic",
-            "sameAs": [],
+            "sameAs": [contact.facebook_url, contact.instagram_url, contact.twitter_url, contact.youtube_url].filter(Boolean),
             "serviceArea": {
               "@type": "City",
               "name": "London"
@@ -288,48 +284,11 @@ export default async function HomePage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            "mainEntity": [
-              {
-                "@type": "Question",
-                "name": "What is Ayurveda?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "An ancient holistic wellness tradition developed over 5,000 years ago in India, focused on balancing the body, mind, and spirit through natural therapies and lifestyle practices."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "How long does an Ayurvedic session take at AK Ayurveda London?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Most sessions run between 45 and 90 minutes, depending on the therapy selected. Your practitioner will advise the ideal duration during your initial consultation."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Is Ayurvedic treatment safe alongside modern healthcare?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Our therapies are designed to complement your existing routine. We recommend discussing any concerns with your GP, and our practitioners will always ask about your current health before treatment."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "How many Ayurvedic sessions are recommended?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "This varies by individual. Your practitioner will suggest a personalised plan after your first consultation, taking into account your constitution and wellness goals."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Are online Ayurvedic consultations available?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Yes, we offer online consultations for clients who are unable to visit us in person. Please select 'General Consultation' when booking."
-                }
-              }
-            ]
+            "mainEntity": faqs.map((f) => ({
+              "@type": "Question",
+              "name": f.question,
+              "acceptedAnswer": { "@type": "Answer", "text": f.answer },
+            })),
           })
         }}
       />

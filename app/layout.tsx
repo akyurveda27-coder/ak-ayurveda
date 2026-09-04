@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { SITE_URL } from '@/lib/site'
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
 import './globals.css'
+import Analytics from '@/components/Analytics'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -49,7 +50,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://dgppbgbawwzkofwbjzsg.supabase.co" />
         <link rel="dns-prefetch" href="https://dgppbgbawwzkofwbjzsg.supabase.co" />
       </head>
-      <body className="antialiased font-body">{children}</body>
+      <body className="antialiased font-body">
+        {children}
+        <Analytics />
+      </body>
     </html>
   )
 }

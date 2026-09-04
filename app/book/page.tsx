@@ -4,6 +4,7 @@ import BookingFlow from './BookingFlow'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/book' },
   title: 'Book Ayurvedic Treatment London | AK Ayurveda',
   description:
     'Book your Ayurvedic treatment or consultation at AK Ayurveda London. Choose your date and time slot online. Same-day confirmation.',

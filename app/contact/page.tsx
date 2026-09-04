@@ -9,6 +9,7 @@ import { defaultContact } from '@/lib/defaults'
 import { ContactContent } from '@/lib/types'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/contact' },
   title: 'Contact AK Ayurveda London | Book Ayurvedic Consultation',
   description: 'Contact AK Ayurveda in London to book an Ayurvedic consultation or treatment. Located in London, UK. Mon–Sat 9AM–7PM. Call +44 20 7946 0958.',
   keywords: 'ayurvedic clinic london contact, book ayurvedic consultation london, ayurvedic massage near me london, ayurveda appointment london',

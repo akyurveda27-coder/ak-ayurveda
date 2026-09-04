@@ -5,6 +5,7 @@ import { pricingOptions, priceFromLabel } from '@/lib/pricing'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/services' },
   title: 'Ayurvedic Treatments London | 18 Therapies | AK Ayurveda',
   description: 'Explore 18 authentic Ayurvedic treatments in London — Abhyanga, Shirodhara, Kati Vasti, Udvartana, Indian Head Massage & more. Personalised to your constitution.',
   keywords: 'ayurvedic treatments london, abhyanga massage london, shirodhara london, kati vasti london, udvartana london, indian head massage london, ayurvedic facial london, janu vasti london',

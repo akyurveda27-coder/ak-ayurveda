@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/blog' },
   title: 'Ayurveda Blog UK | Wellness Articles | AK Ayurveda London',
   description: 'Expert articles on Ayurveda, holistic health, dosha types, Ayurvedic nutrition & seasonal wellness. Written for UK readers exploring Ayurvedic living.',
   keywords: 'ayurveda blog uk, ayurvedic tips uk, dosha test uk, ayurvedic nutrition uk, holistic health articles, ayurveda for beginners uk',

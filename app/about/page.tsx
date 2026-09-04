@@ -15,6 +15,7 @@ function optimizeUrl(url: string, w: number): string {
 export const revalidate = 60
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/about' },
   title: 'About AK Ayurveda | London\'s Authentic Ayurvedic Clinic',
   description: 'Learn about AK Ayurveda — London\'s authentic Ayurvedic clinic rooted in 5,000 years of Vedic tradition. Meet our practitioners and discover our approach to holistic wellness.',
   keywords: 'ayurvedic clinic london, ayurvedic doctor london, best ayurvedic clinic london, ayurveda uk, holistic wellness london, vedic medicine london',
