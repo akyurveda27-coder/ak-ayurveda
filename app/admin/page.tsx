@@ -492,7 +492,7 @@ function ServicesEditor() {
                         </div>
                         <div className="flex-1 min-w-[150px]">
                           <p className="font-body text-xs text-sage mb-2">
-                            Website par: <span className="font-semibold text-primary">
+                            Shown on website: <span className="font-semibold text-primary">
                               {opt.d || '—'} {opt.p ? `— £${String(opt.p).replace(/^£+/, '')}` : ''}
                             </span>
                           </p>
