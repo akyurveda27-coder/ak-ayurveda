@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
+import { isAdminRequest, unauthorized } from '@/lib/adminAuth'
 
 // ─── GET /api/slots?date=YYYY-MM-DD ─────────────────────────────────────────
 // Returns all slots for a date, each enriched with is_booked (derived)
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
   let bookedIds: string[] = []
 
   if (slotIds.length > 0) {
-    const { data: appts } = await supabase
+    const { data: appts } = await supabaseAdmin
       .from('appointments')
       .select('slot_id')
       .in('slot_id', slotIds)
@@ -41,6 +42,8 @@ export async function GET(request: NextRequest) {
 // Admin: bulk-create slots for a set of dates with a given time range + duration
 // Body: { dates: string[], start_time: string, end_time: string, duration_minutes: number }
 export async function POST(request: NextRequest) {
+  if (!isAdminRequest(request)) return unauthorized()
+
   try {
     const body = await request.json()
     const { dates, start_time, end_time, duration_minutes } = body as {

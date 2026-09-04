@@ -4,7 +4,7 @@ import Footer from '@/components/Footer'
 import { defaultConditions } from '@/components/Conditions'
 import { supabase } from '@/lib/supabase'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export const metadata: Metadata = {
   title: 'Conditions We Support | Ayurvedic Wellness London | AK Ayurveda',

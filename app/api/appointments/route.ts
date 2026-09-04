@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
+import { isAdminRequest, unauthorized } from '@/lib/adminAuth'
 import { Resend } from 'resend'
 
 const CLINIC_EMAIL = 'akyurveda27@gmail.com' // clinic notification email
@@ -257,9 +258,12 @@ export async function POST(request: NextRequest) {
 }
 
 // ─── GET /api/appointments ────────────────────────────────────────────────────
-export async function GET() {
+// Customer bookings contain personal data — admin session only.
+export async function GET(request: NextRequest) {
+  if (!isAdminRequest(request)) return unauthorized()
+
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('appointments')
       .select('*, slot:time_slots(date, start_time, end_time)')
       .order('created_at', { ascending: false })

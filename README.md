@@ -33,17 +33,25 @@ npm install
 cp .env.example .env.local
 ```
 
-Edit `.env.local` with your Supabase credentials:
+Edit `.env.local` — see `.env.example` for the full list:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-ADMIN_PASSWORD=ayurveda@admin123
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+ADMIN_PASSWORD=choose-a-strong-password
+RESEND_API_KEY=your-resend-key
 ```
 
-> Find your URL and anon key in **Supabase → Settings → API**
+> Find your keys in **Supabase → Settings → API**
 
-### 4. Run Development Server
+### 4. Lock down the database
+
+Run `supabase/lockdown.sql` in the **SQL Editor** once. It leaves the public key
+able to read website content only — every write, and all customer data, goes
+through the password-protected admin API.
+
+### 5. Run Development Server
 
 ```bash
 npm run dev
@@ -65,7 +73,11 @@ Open [http://localhost:3000](http://localhost:3000)
 ## Admin Panel
 
 **URL:** `/admin`  
-**Password:** `ayurveda@admin123`
+**Password:** whatever you set as `ADMIN_PASSWORD` (server-side only — never in the code)
+
+Login is verified on the server and issues an httpOnly session cookie valid for
+7 days. Every content change and every read of customer data goes through
+`/api/admin/*`, which rejects any request without that cookie.
 
 ### What's Editable
 
@@ -115,7 +127,9 @@ vercel
 # Set environment variables in Vercel dashboard:
 # NEXT_PUBLIC_SUPABASE_URL
 # NEXT_PUBLIC_SUPABASE_ANON_KEY
-# ADMIN_PASSWORD
+# SUPABASE_SERVICE_ROLE_KEY   ← required for admin saves
+# ADMIN_PASSWORD              ← required for admin login
+# RESEND_API_KEY              ← required for booking emails
 ```
 
 Or connect your Git repo directly at [vercel.com](https://vercel.com) for automatic deployments.
@@ -192,9 +206,9 @@ ak-ayurveda/
 
 ## Production Notes
 
-1. **Admin Security:** The current password check is client-side only. For production, implement proper authentication (Supabase Auth, NextAuth, or middleware-protected routes).
+1. **Admin Security:** The password is verified server-side against `ADMIN_PASSWORD` and never ships to the browser. Session = signed httpOnly cookie.
 
-2. **RLS Policies:** The seed.sql includes read-only public policies. For admin write operations, you'll want to use a service role key (server-side only) or implement proper Supabase Auth.
+2. **RLS Policies:** Run `supabase/lockdown.sql` so the public key cannot write anything or read customer data.
 
 3. **Images:** The doctor photo uses an Unsplash placeholder. Replace with an actual hosted image URL.
 
